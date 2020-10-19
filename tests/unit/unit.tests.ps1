@@ -113,8 +113,7 @@ Describe "[NIC Unit Tests]" {
 
         #Add SRIOV and min number of VFs supported should change based on standard/premium
         Context 'INF Keywords: Network Direct Kernel Provider Interface' {
-            # Tests for both *NetworkDirect and *NetworkDirectTechnology
-            
+            # Tests for both *NetworkDirect            
             It "*NetworkDirect: Should have the *NetworkDirect keyword" {
                 ($thisAdapterAdvancedProperties | Where RegistryKeyword -eq `*NetworkDirect) | Should -Not -BeNullOrEmpty
             }
@@ -148,6 +147,29 @@ Describe "[NIC Unit Tests]" {
                     It "*RSCIPv4: Should only the possible value of $thisPossibleValue" {
                         $thisPossibleValue | Should -BeIn $($AdapterDefinition.RSC.RSCIPv6.PossibleValues)
                     }
+                }
+            }
+
+            # Tests for both *NetworkDirectTechnology - We will not test for adapter default as it is dependent on the adapter         
+            It "*NetworkDirectTechnology: Should have the *NetworkDirectTechnology keyword" {
+                ($thisAdapterAdvancedProperties | Where RegistryKeyword -eq `*NetworkDirectTechnology) | Should -Not -BeNullOrEmpty
+            }
+
+            It "*NetworkDirectTechnology: Should be of type $($AdapterDefinition.NDKPI.NetworkDirectTechnology.RegistryDataType)" {
+                ($AdapterConfiguration | Where RegistryKeyword -eq `*NetworkDirectTechnology).RegistryDataType | Should Be $($AdapterDefinition.NDKPI.NetworkDirectTechnology.RegistryDataType)
+            }
+
+            <#  Since the adapter can choose to support one or more of the possible values, we will only test to ensure
+                that the values specified by the IHV are in the list of possible values. This will specifically catch 
+                the mistake in this key which first allowed for *NetworkDirectTechnology = 0 (Device Default) which was later removed
+            #>
+
+            ($thisAdapterAdvancedProperties | Where RegistryKeyword -eq `*NetworkDirect).ValidRegistryValues | ForEach-Object {
+                $thisPossibleValue = $_
+
+                # Ensure thisPossibleValue is in the list specified by MSFT
+                It "*NetworkDirecTechnology: Specifies the value $thisPossibleAdapter which should also exist in the MSFT defined list of values" {
+                    $thisPossibleValue | Should -BeIn $($AdapterDefinition.NDKPI.NetworkDirectTechnology.PossibleValues)
                 }
             }
         }
