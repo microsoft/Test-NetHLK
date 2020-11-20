@@ -9,7 +9,7 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-RootModule = 'Validate-NIC.psm1'
+RootModule = 'Test-NICProperties.psm1'
 
 # Version number of this module.
 ModuleVersion = '1.0.0.0'
@@ -51,9 +51,7 @@ Description = 'Validate-NIC is a module that compares a NICs driver details agai
 # ProcessorArchitecture = ''
 
 # Modules that must be imported into the global environment prior to importing this module
-RequiredModules = @(
-    @{ModuleName = 'Validate-DCB'; ModuleVersion = '20201011.2.2.109'; }
-    @{ModuleName = 'Pester'; RequiredVersion = '4.9.0'; })
+RequiredModules = @()
 
 # Assemblies that must be loaded prior to importing this module
 # RequiredAssemblies = @()
@@ -71,7 +69,7 @@ RequiredModules = @(
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Assert-NICValidation'
+FunctionsToExport = 'Test-NICProperties'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -80,7 +78,7 @@ CmdletsToExport = @()
 VariablesToExport = '*'
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'Validate-NIC'
+# AliasesToExport = '*'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

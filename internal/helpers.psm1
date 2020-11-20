@@ -26,7 +26,6 @@ Function Get-AdvancedRegistryKeyInfo {
     $NetAdapter = Get-NetAdapter -Name $interfaceName -ErrorAction SilentlyContinue
     If (-not ($NetAdapter)) { return 'Error: Adapter Does Not Exist' }
 
-
     $ReturnKeyInfo = @()
     Get-ChildItem 'HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e972-e325-11ce-bfc1-08002be10318}' -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
         $psPath = $_.PSPath
