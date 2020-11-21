@@ -80,6 +80,16 @@ $Adapters | ForEach-Object {
 
         }
 
+        { $_.RegistryKeyword -eq '*PacketDirect' } {
+
+            # *PacketDirect: RegistryDefaultValue
+            Test-RegistryDefaultValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.PacketDirect
+
+            # *PacketDirect: DisplayParameterType
+            Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.PacketDirect
+
+        }
+
         { $_.RegistryKeyword -eq '*QOS' } {
 
             # *QOS: RegistryDefaultValue

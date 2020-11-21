@@ -91,6 +91,24 @@ Class NDKPI {
 }
 #endregion NDKPI
 
+#region LSO
+enum PacketDirectVal {
+    Disabled = 0
+    Enabled  = 1
+}
+
+Class PacketDirect {
+    [string]   $RegistryKeyword      = '*PacketDirect'
+    [int]      $DisplayParameterType = 5
+
+    [string]   $RegistryDefaultValue = [PacketDirectVal]::Disabled.Value__
+    [string]   $DisplayDefaultValue  = [PacketDirectVal]::Disabled
+    [string[]] $PossibleValues       = [System.Enum]::GetValues('PacketDirectVal').Value__
+
+    PacketDirect () {}
+}
+#endregion PacketDirect
+
 #region QOS - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/standardized-inf-keywords-for-ndis-qos
 enum QOSVal {
     Disabled = 0
@@ -258,10 +276,12 @@ Class TransmitBuffers {
 #endregion
 #>
 
-# *MaxRSSProcessors, *NumRSSQueues
-# *QOS
-# IOV Subkeys - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/standardized-inf-keywords-for-sr-iov
 
+# RSS https://docs.microsoft.com/en-us/windows-hardware/drivers/network/standardized-inf-keywords-for-rss
+    # *RSS, *MaxRSSProcessors, *NumRSSQueues
+# IOV Subkeys - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/standardized-inf-keywords-for-sr-iov
+    # *NumVFs
+# A bunch of stuff - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/standardized-inf-keywords-for-network-devices
 
 Class AdapterDefinition {
     $JumboPacket = [JumboPacket]::new()
@@ -269,6 +289,8 @@ Class AdapterDefinition {
     $LSO   = [LSO]::new()
 
     $NDKPI = [NDKPI]::new()
+
+    $PacketDirect = [PacketDirect]::new()
 
     $QOS   = [QOS]::new()
     $RSC   = [RSC]::new()
