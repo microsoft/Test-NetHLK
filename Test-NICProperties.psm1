@@ -20,9 +20,9 @@ function Test-NICProperties {
     Clear-Host
     $startTime = Get-Date -format:'yyyyMMdd-HHmmss'
 
-    $pass = '+'
-    $fail = '-'
-    $testsFailed = 0
+    $global:pass = '+'
+    $global:fail = 'X'
+    $global:testsFailed = 0
 
     # Once in the Program Files path, use this:
     # $here = Split-Path -Parent (Get-Module -Name Test-NICProperties -ListAvailable | Select-Object -First 1).Path
@@ -32,7 +32,7 @@ function Test-NICProperties {
     # Classes cannot be imported using Import-Module so this must be a ps1
     . $here\internal\datatypes.ps1
 
-    $Log = New-Item -Name 'Results.txt' -Path "$here\Results" -ItemType File -Force
+    $global:Log = New-Item -Name 'Results.txt' -Path "$here\Results" -ItemType File -Force
 
     #TODO: Remove this before going live.
     $Credential = . ..\wolfpack.ps1

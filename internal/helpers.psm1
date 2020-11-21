@@ -10,7 +10,7 @@ Function Get-AdvancedRegistryKeyInfo {
     class AdvancedRegKeyInfo {
         $RegistryKeyword
         $RegistryDataType
-        $RegistryDefaultValue
+        $DisplayParameterType
 
         AdvancedRegKeyInfo(
             [string]$Keyword,
@@ -19,7 +19,7 @@ Function Get-AdvancedRegistryKeyInfo {
         ) {
             $this.RegistryKeyword      = $Keyword
             $this.RegistryDataType     = $Type
-            $this.RegistryDefaultValue = $Value
+            $this.DisplayParameterType = $Value
         }
     }
 
@@ -46,4 +46,77 @@ Function Get-AdvancedRegistryKeyInfo {
     }
 
     return $ReturnKeyInfo
+}
+
+Function Test-RegistryDefaultValue {
+    param (
+        $AdvancedRegistryKey ,
+        $DefinitionPath
+    )
+
+    # *NetworkDirect: RegistryDefaultValue
+    if ($AdvancedRegistryKey.RegistryDefaultValue -eq $DefinitionPath.RegistryDefaultValue) { $PassFail = $pass }
+    Else { $PassFail = $fail; $testsFailed ++ }
+
+    "[$PassFail] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) RegistryDefaultValue is $($DefinitionPath.RegistryDefaultValue)" | Out-File -FilePath $Log -Append
+}
+
+Function Test-DisplayParameterType {
+    param (
+        $AdvancedRegistryKey ,
+        $DefinitionPath
+    )
+
+    if ($AdvancedRegistryKey.DisplayParameterType -eq $DefinitionPath.DisplayParameterType) { $PassFail = $pass }
+    Else { $PassFail = $fail; $testsFailed ++ }
+
+    "[$PassFail] $thisAdapter *NetworkDirect DisplayParameterType is $($DefinitionPath.DisplayParameterType)" | Out-File -FilePath $Log -Append
+}
+
+Function Test-NumericParameterBaseValue {
+    param (
+        $AdvancedRegistryKey ,
+        $DefinitionPath
+    )
+
+    if ($AdvancedRegistryKey.NumericParameterBaseValue -eq $DefinitionPath.NumericParameterBaseValue) { $PassFail = $pass }
+    Else { $PassFail = $fail; $testsFailed ++ }
+
+    "[$PassFail] $thisAdapter *NetworkDirect NumericParameterBaseValue is $($DefinitionPath.NumericParameterBaseValue)" | Out-File -FilePath $Log -Append
+}
+
+Function Test-NumericParameterStepValue {
+    param (
+        $AdvancedRegistryKey ,
+        $DefinitionPath
+    )
+
+    if ($AdvancedRegistryKey.NumericParameterStepValue -eq $DefinitionPath.NumericParameterStepValue) { $PassFail = $pass }
+    Else { $PassFail = $fail; $testsFailed ++ }
+
+    "[$PassFail] $thisAdapter *NetworkDirect NumericParameterStepValue is $($DefinitionPath.NumericParameterStepValue)" | Out-File -FilePath $Log -Append
+}
+
+Function Test-NumericParameterMaxValue {
+    param (
+        $AdvancedRegistryKey ,
+        $DefinitionPath
+    )
+
+    if ($AdvancedRegistryKey.NumericParameterMaxValue -ge $DefinitionPath.NumericParameterMaxValue) { $PassFail = $pass }
+    Else { $PassFail = $fail; $testsFailed ++ }
+
+    "[$PassFail] $thisAdapter *NetworkDirect NumericParameterMaxValue is $($DefinitionPath.NumericParameterMaxValue)" | Out-File -FilePath $Log -Append
+}
+
+Function Test-NumericParameterMinValue {
+    param (
+        $AdvancedRegistryKey ,
+        $DefinitionPath
+    )
+
+    if ($AdvancedRegistryKey.NumericParameterMinValue -le $DefinitionPath.NumericParameterMinValue) { $PassFail = $pass }
+    Else { $PassFail = $fail; $testsFailed ++ }
+
+    "[$PassFail] $thisAdapter *NetworkDirect NumericParameterMinValue is $($DefinitionPath.NumericParameterMinValue)" | Out-File -FilePath $Log -Append
 }
