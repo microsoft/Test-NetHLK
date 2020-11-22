@@ -10,13 +10,23 @@
 $AdapterDefinition = [AdapterDefinition]::new()
 
 $Adapters | ForEach-Object {
-    $thisAdapter = $_.Name
-    $thisAdapterAdvancedProperties = $AdapterAdvancedProperties | Where-Object Name -eq $thisAdapter
+    $thisAdapter = $_
+    $thisAdapterAdvancedProperties = $AdapterAdvancedProperties | Where-Object Name -eq $thisAdapter.Name
 
     # This is the configuration from the remote pNIC
-    $AdapterConfiguration = Invoke-Command ${function:Get-AdvancedRegistryKeyInfo} -Session $PSSession -ArgumentList $thisAdapter, $thisAdapterAdvancedProperties.RegistryKeyword
+    $AdapterConfiguration = Invoke-Command ${function:Get-AdvancedRegistryKeyInfo} -Session $PSSession -ArgumentList $thisAdapter.Name, $thisAdapterAdvancedProperties
 
-    Switch ($AdapterConfiguration) {
+    # This turns the enums from the requirements into an array with the Remove method
+    [System.Collections.ArrayList] $RemainingRequirements = $Requirements[0..$Requirements.count].ForEach({ $_.foreach({ $_ }) })
+
+    # Device.Network.LAN.Base.100MbOrGreater Windows Server Ethernet devices must be able to link at 1Gbps or higher speeds
+    if ($thisAdapter.Speed -ge 1000000000) { $PassFail = $pass }
+    else { $PassFail = $fail; $testsFailed ++ }
+
+    "[$PassFail] $($thisAdapter.Name) is 1Gbps or higher" | Out-File -FilePath $Log -Append
+    Remove-Variable -Name PassFail -ErrorAction SilentlyContinue
+
+    Switch -Wildcard ($AdapterConfiguration) {
 
         { $_.RegistryKeyword -eq '*JumboPacket' } {
 
@@ -87,6 +97,10 @@ $Adapters | ForEach-Object {
 
             # *PacketDirect: DisplayParameterType
             Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.PacketDirect
+
+        }
+
+        { $_.RegistryKeyword -eq '*PriorityVLANTag' } {
 
         }
 
@@ -168,6 +182,16 @@ $Adapters | ForEach-Object {
             # *VMQ: DisplayParameterType
             Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQ
 
+        }
+
+        { $_.RegistryKeyword -eq 'VLANID' } {
+            # Device.Network.LAN.Base.PriorityVLAN - Since all WS devices must be -ge 1Gbps, they must implement
+            # Ethernet devices that implement link speeds of gigabit or greater must implement Priority & VLAN tagging according to the IEEE 802.1q specification.
+        }
+
+        '*' {
+            # Always Remove if in the remaining requirements list
+            $RemainingRequirements.Remove( $_.RegistryKeyword )
         }
     }
 

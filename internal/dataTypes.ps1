@@ -128,39 +128,39 @@ Class QOS {
 #endregion QOS
 
 #region RSC - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/standardized-inf-keywords-for-rsc
-    enum RSCVal {
-        Disabled = 0
-        Enabled  = 1
-    }
+enum RSCVal {
+    Disabled = 0
+    Enabled  = 1
+}
 
-    Class RSCIPv4 {
-        [string]   $RegistryKeyword      = '*RSCIPv4'
-        [int]      $DisplayParameterType = 5
+Class RSCIPv4 {
+    [string]   $RegistryKeyword      = '*RSCIPv4'
+    [int]      $DisplayParameterType = 5
 
-        [string]   $RegistryDefaultValue = [RSCVal]::Enabled.Value__
-        [string]   $DisplayDefaultValue  = [RSCVal]::Enabled
-        [string[]] $PossibleValues       = [System.Enum]::GetValues('RSCVal').Value__
+    [string]   $RegistryDefaultValue = [RSCVal]::Enabled.Value__
+    [string]   $DisplayDefaultValue  = [RSCVal]::Enabled
+    [string[]] $PossibleValues       = [System.Enum]::GetValues('RSCVal').Value__
 
-        RSCIPv4 () {}
-    }
+    RSCIPv4 () {}
+}
 
-    Class RSCIPv6 {
-        [string]   $RegistryKeyword      = '*RSCIPv6'
-        [int]      $DisplayParameterType = 5
+Class RSCIPv6 {
+    [string]   $RegistryKeyword      = '*RSCIPv6'
+    [int]      $DisplayParameterType = 5
 
-        [string]   $RegistryDefaultValue = [RSCVal]::Enabled.Value__
-        [string]   $DisplayDefaultValue  = [RSCVal]::Enabled
-        [string[]] $PossibleValues       = [System.Enum]::GetValues('RSCVal').Value__
+    [string]   $RegistryDefaultValue = [RSCVal]::Enabled.Value__
+    [string]   $DisplayDefaultValue  = [RSCVal]::Enabled
+    [string[]] $PossibleValues       = [System.Enum]::GetValues('RSCVal').Value__
 
-        RSCIPv6 () {}
-    }
+    RSCIPv6 () {}
+}
 
-    Class RSC {
-        $RSCIPv4 = [RSCIPv4]::new()
-        $RSCIPv6 = [RSCIPv6]::new()
+Class RSC {
+    $RSCIPv4 = [RSCIPv4]::new()
+    $RSCIPv6 = [RSCIPv6]::new()
 
-        RSC () {}
-    }
+    RSC () {}
+}
 #endregion
 
 #region RSS - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/standardized-inf-keywords-for-rss#:~:text=The%20RSS%20interface%20supports%20standardized%20INF%20keywords%20that,shows%20the%20enumeration%20standardized%20INF%20keywords%20for%20RSS%3A
@@ -283,6 +283,8 @@ Class TransmitBuffers {
     # *NumVFs
 # A bunch of stuff - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/standardized-inf-keywords-for-network-devices
 
+# Note several Requirements (e.g. NumRSSQueues etc) outlined here https://go.microsoft.com/fwlink/?linkid=2027110
+
 Class AdapterDefinition {
     $JumboPacket = [JumboPacket]::new()
 
@@ -301,3 +303,32 @@ Class AdapterDefinition {
     $USO   = [USO]::new()
     $VMQ   = [VMQ]::new()
 }
+
+
+#region Requirements
+
+enum Base {
+    VLANID
+    QOS
+    PriorityVLANTag
+}
+
+enum TenGbEOrGreater {
+    RSCIPv4
+}
+
+enum Standard {
+    RSCIPv6
+}
+
+enum Premium {
+    RSS
+}
+
+$Requirements = @()
+if ($TestScope -eq 'Base')                { $Requirements = [System.Enum]::GetValues('Base') }
+elseif ($TestScope -eq 'TenGbEOrGreater') { $Requirements = [System.Enum]::GetValues('Base'), [System.Enum]::GetValues('TenGbEOrGreater') }
+elseif ($TestScope -eq 'Standard')        { $Requirements = [System.Enum]::GetValues('Base'), [System.Enum]::GetValues('TenGbEOrGreater'), [System.Enum]::GetValues('Standard') }
+elseif ($TestScope -eq 'Premium')         { $Requirements = [System.Enum]::GetValues('Base'), [System.Enum]::GetValues('TenGbEOrGreater'), [System.Enum]::GetValues('Standard'), [System.Enum]::GetValues('Premium') }
+
+#endregion Requirements

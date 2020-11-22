@@ -14,6 +14,10 @@ function Test-NICProperties {
         [string[]] $DUT = '*',
 
         [Parameter(Mandatory=$false)]
+        [ValidateSet('Base', '10GbE', 'Standard', 'Premium')]
+        [string[]] $TestScope = 'Premium',
+
+        [Parameter(Mandatory=$false)]
         [string] $ReportPath
     )
 
@@ -34,9 +38,16 @@ function Test-NICProperties {
 
     $global:Log = New-Item -Name 'Results.txt' -Path "$here\Results" -ItemType File -Force
 
+# $abc = Get-AdvancedRegistryKeyInfo -interfaceName $interfaceName -AdapterAdvancedProperties $Properties
+
     #TODO: Remove this before going live.
     $Credential = . ..\wolfpack.ps1
     $PSSession = New-PSSession -Credential $Credential -ComputerName 'TK5-3WP07R0511'
+
+    if (-not($PSSession)) {
+        "[Fatal Error] Could not establish a remote session to the target node" | Out-File -FilePath $Log -Append
+        throw '"[Fatal Error] Could not establish a remote session to the target node"'
+    }
 
     # Get the details from the remote adapter
     #TODO: Check that the adapter exists

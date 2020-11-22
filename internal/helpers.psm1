@@ -4,22 +4,47 @@ Function Get-AdvancedRegistryKeyInfo {
         [string] $interfaceName ,
 
         [parameter(Mandatory = $true)]
-        [string[]] $registryKeyword
+        $AdapterAdvancedProperties
     )
 
     class AdvancedRegKeyInfo {
         $RegistryKeyword
-        $RegistryDataType
         $DisplayParameterType
+        $DefaultRegistryValue
+        $ValidRegistryValues
+        $NumericParameterBaseValue
+        $NumericParameterMaxValue
+        $NumericParameterMinValue
+        $NumericParameterStepValue
 
-        AdvancedRegKeyInfo(
-            [string]$Keyword,
-            [string]$Type,
-            [string]$Value
+        AdvancedRegKeyInfo (
+            [string]   $Keyword,
+            [string]   $DisplayParameterType,
+            [string]   $DefaultRegistryValue,
+            [string[]] $ValidRegistryValues
         ) {
             $this.RegistryKeyword      = $Keyword
-            $this.RegistryDataType     = $Type
-            $this.DisplayParameterType = $Value
+            $this.DisplayParameterType = $DisplayParameterType
+            $this.DefaultRegistryValue = $DefaultRegistryValue
+            $this.ValidRegistryValues  = $ValidRegistryValues
+        }
+
+        AdvancedRegKeyInfo (
+            [string]$Keyword,
+            [string]$DisplayParameterType,
+            [string]$DefaultRegistryValue,
+            [string]$NumericParameterBaseValue,
+            [string]$NumericParameterMaxValue,
+            [string]$NumericParameterMinValue,
+            [string]$NumericParameterStepValue
+        ) {
+            $this.RegistryKeyword      = $Keyword
+            $this.DisplayParameterType = $DisplayParameterType
+            $this.DefaultRegistryValue = $DefaultRegistryValue
+            $this.NumericParameterBaseValue = $NumericParameterBaseValue
+            $this.NumericParameterMaxValue  = $NumericParameterMaxValue
+            $this.NumericParameterMinValue  = $NumericParameterMinValue
+            $this.NumericParameterStepValue = $NumericParameterStepValue
         }
     }
 
@@ -31,14 +56,28 @@ Function Get-AdvancedRegistryKeyInfo {
         $psPath = $_.PSPath
 
         if (( Get-ItemProperty -Path $PsPath ) -match ($NetAdapter).InterfaceGuid ) {
-            foreach ($keyword in $registryKeyword) {
-                $RegistryValue = (Get-ItemProperty -Path $PsPath).$keyword
+            foreach ($keyword in $AdapterAdvancedProperties) {
+                $thisKeyword = $keyword.RegistryKeyword
+                $RegistryValue = (Get-ItemProperty -Path $PsPath).$thisKeyword
 
-                $AdvancedRegistryKeyDataType     = Get-ItemProperty -Path "$PSPath\NDI\Params\$keyword" -Name Type    -ErrorAction SilentlyContinue
-                $AdvancedRegistryKeyDefaultValue = Get-ItemProperty -Path "$PSPath\NDI\Params\$keyword" -Name Default -ErrorAction SilentlyContinue
+                $DisplayParameterType = $keyword.DisplayParameterType
+                $DefaultRegistryValue = $keyword.DefaultRegistryValue
 
-                $regKeyInfo = [AdvancedRegKeyInfo]::new($keyword, $AdvancedRegistryKeyDataType.Type, $AdvancedRegistryKeyDefaultValue.Default)
-                Remove-Variable AdvancedRegistryKeyDataType, AdvancedRegistryKeyDefaultValue -ErrorAction SilentlyContinue
+                if ($DisplayParameterType -eq 5) {
+                    $ValidRegistryValues = $keyword.ValidRegistryValues
+                    $regKeyInfo = [AdvancedRegKeyInfo]::new($thisKeyword, $DisplayParameterType, $DefaultRegistryValue, $ValidRegistryValues)
+                }
+                ElseIf ($DisplayParameterType -le 4) {
+                    $NumericParameterBaseValue = $keyword.NumericParameterBaseValue
+                    $NumericParameterMaxValue  = $keyword.NumericParameterMaxValue
+                    $NumericParameterMinValue  = $keyword.NumericParameterMinValue
+                    $NumericParameterStepValue = $keyword.NumericParameterStepValue
+
+                    $regKeyInfo = [AdvancedRegKeyInfo]::new($thisKeyword, $DisplayParameterType, $DefaultRegistryValue, $NumericParameterBaseValue, $NumericParameterMaxValue, $NumericParameterMinValue, $NumericParameterStepValue)
+                }
+
+                Remove-Variable DisplayParameterType, DefaultRegistryValue, ValidRegistryValues, NumericParameterBaseValue, `
+                                NumericParameterMaxValue, NumericParameterMinValue, NumericParameterStepValue -ErrorAction SilentlyContinue
 
                 $ReturnKeyInfo += $regKeyInfo
             }
