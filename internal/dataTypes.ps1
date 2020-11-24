@@ -1,3 +1,36 @@
+#region Buffers - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/keywords-that-can-be-edited
+Class ReceiveBuffers {
+    [string]   $RegistryKeyword      = '*ReceiveBuffers'
+    [int]      $DisplayParameterType = '4' # 4 byte unsigned integer
+
+    # There is some variability in this right now; for example Intel has steps of 8 while mellanox steps by 1, etc.
+    #[int]      $NumericParameterBaseValue = 10   # Must be this value
+    #[int]      $NumericParameterMaxValue =   # Must be >= this value 9014 + EncapOverhead (160)
+    #[int]      $NumericParameterMinValue =    # Must be < than this value
+    #[int]      $NumericParameterStepValue = 1    # Must be this value
+
+    ReceiveBuffers () {}
+}
+
+Class TransmitBuffers {
+    [string]   $RegistryKeyword      = '*TransmitBuffers'
+    [int]      $DisplayParameterType = '4' # 4 byte unsigned integer
+
+    TransmitBuffers () {}
+}
+
+Class Buffers {
+    $ReceiveBuffers = [ReceiveBuffers]::new()
+    $TransmitBuffers = [TransmitBuffers]::new()
+
+    Buffers () {}
+}
+#endregion
+
+#region ChecksumOffload
+#https://docs.microsoft.com/en-us/windows-hardware/drivers/network/enumeration-keywords
+#endregion ChecksumOffload
+
 #region JumboPacket - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/keywords-that-can-be-edited
 Class JumboPacket {
     [string]   $RegistryKeyword      = '*JumboPacket'
@@ -6,7 +39,7 @@ Class JumboPacket {
 
     [int]      $NumericParameterBaseValue = 10   # Must be this value
     [int]      $NumericParameterMaxValue = 9174  # Must be >= this value 9014 + EncapOverhead (160)
-    [int]      $NumericParameterMinValue = 800   # Must be < than this value
+    [int]      $NumericParameterMinValue = 800   # Must be <= than this value
     [int]      $NumericParameterStepValue = 1    # Must be this value
 
     JumboPacket () {}
@@ -25,7 +58,7 @@ Class JumboPacket {
 
         [string]   $RegistryDefaultValue = [LSOVal]::Enabled.Value__
         [string]   $DisplayDefaultValue  = [LSOVal]::Enabled
-        [string[]] $PossibleValues       = [System.Enum]::GetValues('LSOVal').Value__
+        [string[]] $ValidRegistryValues       = [System.Enum]::GetValues('LSOVal').Value__
 
         LSOIPv4 () {}
     }
@@ -36,7 +69,7 @@ Class JumboPacket {
 
         [string]   $RegistryDefaultValue = [LSOVal]::Enabled.Value__
         [string]   $DisplayDefaultValue  = [LSOVal]::Enabled
-        [string[]] $PossibleValues       = [System.Enum]::GetValues('LSOVal').Value__
+        [string[]] $ValidRegistryValues       = [System.Enum]::GetValues('LSOVal').Value__
 
         LSOIPv6 () {}
     }
@@ -68,7 +101,7 @@ Class NetworkDirect {
 
     [string]   $RegistryDefaultValue = [NetworkDirectVal]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [NetworkDirectVal]::Enabled
-    [string[]] $PossibleValues       = [System.Enum]::GetValues('NetworkDirectVal').Value__
+    [string[]] $ValidRegistryValues       = [System.Enum]::GetValues('NetworkDirectVal').Value__
 
     NetworkDirect () {}
 }
@@ -80,7 +113,7 @@ Class NetworkDirectTechnology {
     # Should this have a default? Vendors will only put in what they support; probably not worth testing
     #[string] $RegistryDefaultValue = [NetworkDirectTechnologyVal]::iWARP
 
-    [string[]] $PossibleValues = [System.Enum]::GetValues('NetworkDirectTechnologyVal').Value__
+    [string[]] $ValidRegistryValues = [System.Enum]::GetValues('NetworkDirectTechnologyVal').Value__
 
     NetworkDirectTechnology () {}
 }
@@ -91,23 +124,25 @@ Class NDKPI {
 }
 #endregion NDKPI
 
-#region LSO
-enum PacketDirectVal {
-    Disabled = 0
-    Enabled  = 1
+#region PriorityVLANTag - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/enumeration-keywords
+enum PriorityVLANTagVal {
+    PriorityVLANDisabled = 0
+    PriorityEnabled      = 1
+    VLANEnabled          = 2
+    PriorityVLANEnabled  = 3
 }
 
-Class PacketDirect {
-    [string]   $RegistryKeyword      = '*PacketDirect'
+Class PriorityVLANTag {
+    [string]   $RegistryKeyword      = '*PriorityVLANTag'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [PacketDirectVal]::Disabled.Value__
-    [string]   $DisplayDefaultValue  = [PacketDirectVal]::Disabled
-    [string[]] $PossibleValues       = [System.Enum]::GetValues('PacketDirectVal').Value__
+    [string]   $RegistryDefaultValue = [PriorityVLANTagVal]::PriorityVLANEnabled.Value__
+    [string]   $DisplayDefaultValue  = [PriorityVLANTagVal]::PriorityVLANEnabled
+    [string[]] $ValidRegistryValues       = [System.Enum]::GetValues('PriorityVLANTagVal').Value__
 
-    PacketDirect () {}
+    PriorityVLANTag () {}
 }
-#endregion PacketDirect
+#endregion PriorityVLANTag
 
 #region QOS - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/standardized-inf-keywords-for-ndis-qos
 enum QOSVal {
@@ -121,7 +156,7 @@ Class QOS {
 
     [string]   $RegistryDefaultValue = [QOSVal]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [QOSVal]::Enabled
-    [string[]] $PossibleValues       = [System.Enum]::GetValues('QOSVal').Value__
+    [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('QOSVal').Value__
 
     QOS () {}
 }
@@ -139,7 +174,7 @@ Class RSCIPv4 {
 
     [string]   $RegistryDefaultValue = [RSCVal]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [RSCVal]::Enabled
-    [string[]] $PossibleValues       = [System.Enum]::GetValues('RSCVal').Value__
+    [string[]] $ValidRegistryValues       = [System.Enum]::GetValues('RSCVal').Value__
 
     RSCIPv4 () {}
 }
@@ -150,7 +185,7 @@ Class RSCIPv6 {
 
     [string]   $RegistryDefaultValue = [RSCVal]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [RSCVal]::Enabled
-    [string[]] $PossibleValues       = [System.Enum]::GetValues('RSCVal').Value__
+    [string[]] $ValidRegistryValues       = [System.Enum]::GetValues('RSCVal').Value__
 
     RSCIPv6 () {}
 }
@@ -175,9 +210,65 @@ Class RSC {
 
         [string]   $RegistryDefaultValue = [RSSVal]::Enabled.Value__
         [string]   $DisplayDefaultValue  = [RSSVal]::Enabled
-        [string[]] $PossibleValues       = [System.Enum]::GetValues('RSSVal').Value__
+        [string[]] $ValidRegistryValues       = [System.Enum]::GetValues('RSSVal').Value__
 
         RSS () {}
+    }
+
+    enum RSSProfileVal {
+        ClosestProcessor       = 1
+        ClosestProcessorStatic = 2
+        NUMAScaling            = 3
+        NUMAScalingStatic      = 4
+        ConservativeScaling    = 5
+    }
+
+    Class RSSProfile {
+        [string]   $RegistryKeyword      = '*RSSProfile'
+        [int]      $DisplayParameterType = 5
+
+        [string]   $RegistryDefaultValue = [RSSProfileVal]::NUMAScalingStatic.Value__
+        [string]   $DisplayDefaultValue  = [RSSProfileVal]::NUMAScalingStatic
+        [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('RSSProfileVal').Value__
+
+        RSSProfile () {}
+    }
+
+    Class RssBaseProcGroup {
+        [string]   $RegistryKeyword      = '*RssBaseProcGroup'
+        [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
+
+        [int]      $RegistryDefaultValue = 0
+
+        [int]      $NumericParameterBaseValue = 10   # Must be this value
+        #[int]      $NumericParameterMaxValue =      # System specific
+        [int]      $NumericParameterMinValue = 0   # Must be < than this value
+        [int]      $NumericParameterStepValue = 1    # Must be this value
+
+        RssBaseProcGroup () {}
+    }
+
+    Class NumaNodeId {
+        [string]   $RegistryKeyword      = '*NumaNodeId'
+        [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
+
+        [int]      $RegistryDefaultValue = 65535
+
+        [int]      $NumericParameterBaseValue = 10   # Must be this value
+        [int]      $NumericParameterMaxValue = 65535 # Must be this value
+        [int]      $NumericParameterMinValue = 0   # Must be < than this value
+        [int]      $NumericParameterStepValue = 1    # Must be this value
+
+        NumaNodeId () {}
+    }
+
+    Class RSSClass {
+        $RSS              = [RSS]::new()
+        $RSSProfile       = [RSSProfile]::new()
+        $RssBaseProcGroup = [RssBaseProcGroup]::new()
+        $NumaNodeId       = [NumaNodeId]::new()
+
+        RSSClass () {}
     }
 #endregion RSS
 
@@ -193,7 +284,7 @@ Class SRIOV {
 
     [string]   $RegistryDefaultValue = [SRIOVVal]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [SRIOVVal]::Enabled
-    [string[]] $PossibleValues       = [System.Enum]::GetValues('SRIOVVal').Value__
+    [string[]] $ValidRegistryValues       = [System.Enum]::GetValues('SRIOVVal').Value__
 
     SRIOV () {}
 }
@@ -211,7 +302,7 @@ Class SRIOV {
 
         [string]   $RegistryDefaultValue = [USOVal]::Enabled.Value__
         [string]   $DisplayDefaultValue  = [USOVal]::Enabled
-        [string[]] $PossibleValues       = [System.Enum]::GetValues('USOVal').Value__
+        [string[]] $ValidRegistryValues       = [System.Enum]::GetValues('USOVal').Value__
 
         USOIPv4 () {}
     }
@@ -222,7 +313,7 @@ Class SRIOV {
 
         [string]   $RegistryDefaultValue = [USOVal]::Enabled.Value__
         [string]   $DisplayDefaultValue  = [USOVal]::Enabled
-        [string[]] $PossibleValues       = [System.Enum]::GetValues('USOVal').Value__
+        [string[]] $ValidRegistryValues       = [System.Enum]::GetValues('USOVal').Value__
 
         USOIPv6 () {}
     }
@@ -247,33 +338,31 @@ Class SRIOV {
 
         [string]   $RegistryDefaultValue = [VMQVal]::Enabled.Value__
         [string]   $DisplayDefaultValue  = [VMQVal]::Enabled
-        [string[]] $PossibleValues       = [System.Enum]::GetValues('VMQVal').Value__
+        [string[]] $ValidRegistryValues       = [System.Enum]::GetValues('VMQVal').Value__
 
         VMQ () {}
     }
 #endregion VMQ
 
-<# https://docs.microsoft.com/en-us/windows-hardware/drivers/network/keywords-that-can-be-edited
-Class ReceiveBuffers {
-    [string]   $RegistryKeyword      = '*ReceiveBuffers'
-    [string]   $RegistryDataType     = 'enum'
-    [string]   $RegistryDefaultValue = [RSCVal]::Enabled.Value__
-    [string]   $DisplayDefaultValue  = [RSCVal]::Enabled
-    [string[]] $PossibleValues       = [System.Enum]::GetValues('ReceiveBuffers').Value__
-
-    JumboPacket () {}
+#region VLANID
+enum VLANIDVal {
+    Disabled = 0
+    Enabled  = 1
 }
 
-Class TransmitBuffers {
-    [string]   $RegistryKeyword      = '*TransmitBuffers'
-    [string]   $RegistryDataType     = 'enum'
-    [string]   $RegistryDefaultValue = [RSCVal]::Enabled.Value__
-    [string]   $DisplayDefaultValue  = [RSCVal]::Enabled
-    [string[]] $PossibleValues       = [System.Enum]::GetValues('TransmitBuffers').Value__
+Class VLANID {
+    [string] $RegistryKeyword      = 'VLANID'
+    [int]    $DisplayParameterType = 4 # 4 byte unsigned integer
 
-    JumboPacket () {}
+    [string] $RegistryDefaultValue = 0
+    [int]    $NumericParameterBaseValue = 10  # Must be this value
+    [int]    $NumericParameterMaxValue = 4095 # Must be >= this value 9014 + EncapOverhead (160)
+    [int]    $NumericParameterMinValue = 0    # Must be < than this value
+    [int]    $NumericParameterStepValue = 1   # Must be this value
+
+    VLANID () {}
 }
-#endregion
+#endregion VLANID
 #>
 
 
@@ -286,47 +375,65 @@ Class TransmitBuffers {
 # Note several Requirements (e.g. NumRSSQueues etc) outlined here https://go.microsoft.com/fwlink/?linkid=2027110
 
 Class AdapterDefinition {
+    $Buffers     = [Buffers]::new()
     $JumboPacket = [JumboPacket]::new()
 
     $LSO   = [LSO]::new()
-
     $NDKPI = [NDKPI]::new()
 
-    $PacketDirect = [PacketDirect]::new()
+    $PriorityVLANTag = [PriorityVLANTag]::new()
 
     $QOS   = [QOS]::new()
     $RSC   = [RSC]::new()
-    $RSS   = [RSS]::new()
+
+    $RSSClass = [RSSClass]::new()
 
     $SRIOV = [SRIOV]::new()
 
     $USO   = [USO]::new()
     $VMQ   = [VMQ]::new()
+
+    $VLANID = [VLANID]::new()
 }
 
 
 #region Requirements
 
 enum Base {
-    VLANID
-    QOS
-    PriorityVLANTag
+    PriorityVLANTag # Done
+    QOS             # Done - Must be since the PriorityVLANTag requires this
 }
 
 enum TenGbEOrGreater {
-    RSCIPv4
+    RSCIPv4         # Done
+    RSCIPv6         # Done
+    VLANID          # Done - We should move this to BASE
+    LSOIPv4         # Done
+    LSOIPv6         # Done
+    JumboPacket
+    RSS
+    RSSProfile
+    RSSBaseProcGroup
+    NumaNodeId
 }
 
 enum Standard {
-    RSCIPv6
+    RSSOnHostVPorts
+    TransmitBuffers
+    ReceiveBuffers
+    SRIOV
+    VMQ
+    ChecksumOffload # https://docs.microsoft.com/en-us/windows-hardware/drivers/network/enumeration-keywords
 }
 
 enum Premium {
-    RSS
+    RSSv2
+    USO
+    Timestamping
 }
 
 $Requirements = @()
-if ($TestScope -eq 'Base')                { $Requirements = [System.Enum]::GetValues('Base') }
+if     ($TestScope -eq 'Base')            { $Requirements = [System.Enum]::GetValues('Base') }
 elseif ($TestScope -eq 'TenGbEOrGreater') { $Requirements = [System.Enum]::GetValues('Base'), [System.Enum]::GetValues('TenGbEOrGreater') }
 elseif ($TestScope -eq 'Standard')        { $Requirements = [System.Enum]::GetValues('Base'), [System.Enum]::GetValues('TenGbEOrGreater'), [System.Enum]::GetValues('Standard') }
 elseif ($TestScope -eq 'Premium')         { $Requirements = [System.Enum]::GetValues('Base'), [System.Enum]::GetValues('TenGbEOrGreater'), [System.Enum]::GetValues('Standard'), [System.Enum]::GetValues('Premium') }
