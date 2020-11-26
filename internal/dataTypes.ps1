@@ -33,6 +33,12 @@ Class Buffers {
 #endregion
 
 #region ChecksumOffload - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/enumeration-keywords
+#Send and Receive TCP Checksum Offload for IPv4 and IPv6
+#Send and Receive IP Checksum Offload for IPv4
+#Send and Receive UDP Checksum offload for IPv4 and IPv6
+#Support for TCP Checksum Standardized Keywords is mandatory.
+
+
 #endregion ChecksumOffload
 
 #region EncapOverhead
@@ -78,21 +84,6 @@ Class EncapsulatedPacketTaskOffloadNvgre {
     EncapsulatedPacketTaskOffloadNvgre () {}
 }
 #endregion EncapsulatedPacketTaskOffloadNvgre
-
-#region VxlanUDPPortNumber
-Class VxlanUDPPortNumber {
-    [string]   $RegistryKeyword      = '*VxlanUDPPortNumber'
-    [int]      $DisplayParameterType = '2' # 4 byte unsigned integer
-    [int]      $RegistryDefaultValue = 4789
-
-    [int]      $NumericParameterBaseValue = 10    # Must be this value
-    [int]      $NumericParameterMaxValue  = 65535 # Must be < this value
-    [int]      $NumericParameterMinValue  = 1024  # Must be this value
-    [int]      $NumericParameterStepValue = 1     # Must be this value
-
-    VxlanUDPPortNumber () {}
-}
-#endregion VxlanUDPPortNumber
 
 #region FlowControl - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/enumeration-keywords
 enum FlowControlVal {
@@ -211,6 +202,18 @@ Class NDKPI {
 }
 #endregion NDKPI
 
+#region NicSwitch
+Class NicSwitch {
+    $SwitchName = 'Default Switch'  # Must be this value
+    $Flags      = 0  # Must be this value
+    $SwitchType = 1  # Must be this value
+    $SwitchId   = 0  # Must be this value
+    $NumVFs     = 32 # Not sure if this is accurate but should be only for 10GbE or higher
+
+    NicSwitch () {}
+}
+#endregion NicSwitch
+
 #region PriorityVLANTag - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/enumeration-keywords
 enum PriorityVLANTagVal {
     PriorityVLANDisabled = 0
@@ -230,6 +233,19 @@ Class PriorityVLANTag {
     PriorityVLANTag () {}
 }
 #endregion PriorityVLANTag
+
+#region PtpHardwareTimestamp
+Class PtpHardwareTimestamp {
+    [string]   $RegistryKeyword      = '*PtpHardwareTimestamp'
+    [int]      $DisplayParameterType = 5
+
+    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
+    [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
+
+    PtpHardwareTimestamp () {}
+}
+#endregion
 
 #region QOS - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/standardized-inf-keywords-for-ndis-qos
 Class QOS {
@@ -526,19 +542,6 @@ Class RSSClass {
 }
 #endregion RSS
 
-#region VMMQ -
-Class VMMQ {
-    [string]   $RegistryKeyword      = '*RSSOnHostVPorts'
-    [int]      $DisplayParameterType = 5
-
-    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
-    [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
-    [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
-
-    VMMQ () {}
-}
-#endregion VMMQ
-
 #region SRIOV - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/standardized-inf-keywords-for-sr-iov
 Class SRIOV {
     [string]   $RegistryKeyword      = '*SRIOV'
@@ -548,21 +551,6 @@ Class SRIOV {
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
-<#
- - The default initial switch configuration must be in the INF file.
- - The PF INF must set the UpperRange to "ndis5" and LowerRange to "ethernet".
- - The INF must not include the *SriovPreferred keyword.
- - Coalesced filters must be set in NDIS_RECEIVED_FILTER_CAPABILITIES.
- - An SR-IOV NIC must include a Virtual Ethernet Bridge (VEB).
- - If RSS is supported for VF miniports, the NIC must be able to support an independent RSS hash for each function,
-physical or virtual.
-Both the PF and VF miniport drivers must be able to pass the LAN logo tests.
-The default vPort cannot be deleted; non-default vPorts on a VF can be deleted.
-If SRIOV is disabled, the NIC and miniport must function as a standard Ethernet NIC.
-An SRIOV NIC must also advertise and implement VMQ. Queue pairs not allocated to IOV must be available for VMQ.
-On report of media connected, the VF miniport must be ready to accept traffic.
-A VF miniport must specify an UpperRange of "ndisvf" and a LowerRange of "iovvf".
-#>
     SRIOV () {}
 }
 #endregion SRIOV
@@ -597,6 +585,21 @@ A VF miniport must specify an UpperRange of "ndisvf" and a LowerRange of "iovvf"
         USO () {}
     }
 #endregion USO
+
+#region VLANID
+Class VLANID {
+    [string] $RegistryKeyword      = 'VLANID'
+    [int]    $DisplayParameterType = 4 # 4 byte unsigned integer
+
+    [string] $RegistryDefaultValue = 0
+    [int]    $NumericParameterBaseValue = 10  # Must be this value
+    [int]    $NumericParameterMaxValue = 4095 # Must be >= this value 9014 + EncapOverhead (160)
+    [int]    $NumericParameterMinValue = 0    # Must be < than this value
+    [int]    $NumericParameterStepValue = 1   # Must be this value
+
+    VLANID () {}
+}
+#endregion VLANID
 
 #region VMQ - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/standardized-inf-keywords-for-vmq#vmq-rss
 Class VMQVlanFiltering {
@@ -644,50 +647,33 @@ Class VMQClass {
 }
 #endregion VMQ
 
-#region VLANID
-Class VLANID {
-    [string] $RegistryKeyword      = 'VLANID'
-    [int]    $DisplayParameterType = 4 # 4 byte unsigned integer
+#region VMMQ -
+Class VMMQ {
+    [string]   $RegistryKeyword      = '*RSSOnHostVPorts'
+    [int]      $DisplayParameterType = 5
 
-    [string] $RegistryDefaultValue = 0
-    [int]    $NumericParameterBaseValue = 10  # Must be this value
-    [int]    $NumericParameterMaxValue = 4095 # Must be >= this value 9014 + EncapOverhead (160)
-    [int]    $NumericParameterMinValue = 0    # Must be < than this value
-    [int]    $NumericParameterStepValue = 1   # Must be this value
+    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
+    [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
-    VLANID () {}
+    VMMQ () {}
 }
-#endregion VLANID
-#>
+#endregion VMMQ
 
+#region VxlanUDPPortNumber
+Class VxlanUDPPortNumber {
+    [string]   $RegistryKeyword      = '*VxlanUDPPortNumber'
+    [int]      $DisplayParameterType = '2' # 4 byte unsigned integer
+    [int]      $RegistryDefaultValue = 4789
 
-# IOV Subkeys - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/standardized-inf-keywords-for-sr-iov
-    # *NumVFs
-# A bunch of stuff - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/standardized-inf-keywords-for-network-devices
+    [int]      $NumericParameterBaseValue = 10    # Must be this value
+    [int]      $NumericParameterMaxValue  = 65535 # Must be < this value
+    [int]      $NumericParameterMinValue  = 1024  # Must be this value
+    [int]      $NumericParameterStepValue = 1     # Must be this value
 
-# Note several Requirements (e.g. NumRSSQueues etc) outlined here https://go.microsoft.com/fwlink/?linkid=2027110
-
-Class AdapterDefinition {
-    $Buffers     = [Buffers]::new()
-    $JumboPacket = [JumboPacket]::new()
-
-    $LSO   = [LSO]::new()
-    $NDKPI = [NDKPI]::new()
-
-    $PriorityVLANTag = [PriorityVLANTag]::new()
-
-    $QOS   = [QOS]::new()
-    $RSC   = [RSC]::new()
-
-    $RSSClass = [RSSClass]::new()
-
-    $SRIOV = [SRIOV]::new()
-
-    $USO   = [USO]::new()
-    $VMQ   = [VMQ]::new()
-
-    $VLANID = [VLANID]::new()
+    VxlanUDPPortNumber () {}
 }
+#endregion VxlanUDPPortNumber
 
 #region Requirements
 
@@ -787,3 +773,38 @@ Class Requirements {
 }
 
 #endregion Requirements
+
+Class AdapterDefinition {
+    $Buffers = [Buffers]::new()
+    # $ChecksumOffload  - Not yet implemented
+
+    $EncapOverhead = [EncapOverhead]::new()
+    # $EncapsulatedPacketTaskOffload = [EncapsulatedPacketTaskOffload]::new() - Is this needed
+    $EncapsulatedPacketTaskOffloadNVGRE = [EncapsulatedPacketTaskOffloadNVGRE]::new()
+    $EncapsulatedPacketTaskOffloadVxlan = [EncapsulatedPacketTaskOffloadVxlan]::new()
+
+    $FlowControl         = [FlowControl]::new()
+    $InterruptModeration = [InterruptModeration]::new()
+    $JumboPacket         = [JumboPacket]::new()
+
+    $LSO   = [LSO]::new()
+    $NDKPI = [NDKPI]::new()
+
+    $NicSwitch = [NicSwitch]::new()
+
+    $PriorityVLANTag      = [PriorityVLANTag]::new()
+    $PtpHardwareTimestamp = [PtpHardwareTimestamp]::new()
+
+    $QOS   = [QOS]::new()
+    $RSC   = [RSC]::new()
+
+    $RSSClass = [RSSClass]::new()
+    $SRIOV    = [SRIOV]::new()
+    $USO      = [USO]::new()
+    $VLANID   = [VLANID]::new()
+
+    $VMQ  = [VMQ]::new()
+    $VMMQ = [VMMQ]::new()
+
+    $VxlanUDPPortNumber = [VxlanUDPPortNumber]::new()
+}
