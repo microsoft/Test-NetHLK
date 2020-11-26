@@ -18,6 +18,7 @@ $Adapters | ForEach-Object {
     $thisAdapterAdvancedProperties = $AdapterAdvancedProperties | Where-Object Name -eq $thisAdapter.Name
 
     # This is the configuration from the remote pNIC
+    $abc = Get-AdvancedRegistryKeyInfo -interfaceName $thisAdapter.Name -AdapterAdvancedProperties $thisAdapterAdvancedProperties
     $AdapterConfiguration = Invoke-Command ${function:Get-AdvancedRegistryKeyInfo} -Session $PSSession -ArgumentList $thisAdapter.Name, $thisAdapterAdvancedProperties
 
     # This turns the enums from the requirements into an array with the Remove method
@@ -226,6 +227,25 @@ $Adapters | ForEach-Object {
 
             # *RSSBaseProcGroup: NumericParameterMinValue
             Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcGroup
+
+        }
+
+        { $_.RegistryKeyword -eq '*RSSBaseProcNumber' } {
+
+            # *RSSBaseProcNumber: RegistryDefaultValue
+            Test-RegistryDefaultValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcNumber
+
+            # *RSSBaseProcNumber: DisplayParameterType
+            Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcNumber -MaxValue 4
+
+            # *RSSBaseProcNumber: NumericParameterBaseValue
+            Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcNumber
+
+            # *RSSBaseProcNumber: NumericParameterStepValue
+            Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcNumber
+
+            # *RSSBaseProcNumber: NumericParameterMinValue
+            Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcNumber
 
         }
 

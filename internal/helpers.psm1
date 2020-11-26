@@ -81,6 +81,8 @@ Function Get-AdvancedRegistryKeyInfo {
 
                 $ReturnKeyInfo += $regKeyInfo
             }
+
+            $NicSwitch = (Get-ItemProperty -Path "$PsPath\NicSwitches\0").$thisKeyword
         }
     }
 

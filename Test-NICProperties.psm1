@@ -38,8 +38,6 @@ function Test-NICProperties {
 
     $global:Log = New-Item -Name 'Results.txt' -Path "$here\Results" -ItemType File -Force
 
-# $abc = Get-AdvancedRegistryKeyInfo -interfaceName $interfaceName -AdapterAdvancedProperties $Properties
-
     #TODO: Remove this before going live.
     $Credential = . ..\wolfpack.ps1
     $PSSession = New-PSSession -Credential $Credential -ComputerName 'TK5-3WP07R0511'
@@ -51,12 +49,24 @@ function Test-NICProperties {
 
     # Get the details from the remote adapter
     #TODO: Check that the adapter exists
-    $Adapters, $AdapterAdvancedProperties = Invoke-Command -Session $PSSession -ScriptBlock {
+    $Adapters, $AdapterAdvancedProperties, $NodeOS = Invoke-Command -Session $PSSession -ScriptBlock {
         $Adapters = Get-NetAdapter -Name $using:DUT -Physical | Where-Object MediaType -eq '802.3'
         $AdapterAdvancedProperties = Get-NetAdapterAdvancedProperty -Name $using:DUT -AllProperties
+        $NodeOS = Get-CimInstance -ClassName 'Win32_OperatingSystem'
 
-        Return $Adapters, $AdapterAdvancedProperties
+        Return $Adapters, $AdapterAdvancedProperties, $NodeOS
     }
+
+
+
+    ### Verify the TestHost is sufficient version
+        $caption =  ($NodeOS.Caption -like '*Windows Server 2022*') -or
+                    ($NodeOS.Caption -like '*Azure Stack HCI*')
+
+        $caption | Should be $true
+
+    if ($edition.Edition -eq 'ServerAzureStackHCICor' -or $edition.Edition -like '*Server*') { $PassFail = $pass }
+    Else { $PassFail = $fail; $testsFailed ++ }
 
     $testFile = . "$here\tests\unit\unit.tests.ps1"
 
