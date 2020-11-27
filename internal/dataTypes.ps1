@@ -59,19 +59,6 @@ Class EncapOverhead {
 #region EncapsulatedPacketTaskOffload
 #endregion EncapsulatedPacketTaskOffload
 
-#region EncapsulatedPacketTaskOffloadVxlan
-Class EncapsulatedPacketTaskOffloadVxlan {
-    [string]   $RegistryKeyword      = '*EncapsulatedPacketTaskOffloadVxlan'
-    [int]      $DisplayParameterType = 5
-
-    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
-    [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
-    [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
-
-    EncapsulatedPacketTaskOffloadVxlan () {}
-}
-#endregion EncapsulatedPacketTaskOffloadVxlan
-
 #region EncapsulatedPacketTaskOffloadNvgre
 Class EncapsulatedPacketTaskOffloadNvgre {
     [string]   $RegistryKeyword      = '*EncapsulatedPacketTaskOffloadNvgre'
@@ -84,6 +71,19 @@ Class EncapsulatedPacketTaskOffloadNvgre {
     EncapsulatedPacketTaskOffloadNvgre () {}
 }
 #endregion EncapsulatedPacketTaskOffloadNvgre
+
+#region EncapsulatedPacketTaskOffloadVxlan
+Class EncapsulatedPacketTaskOffloadVxlan {
+    [string]   $RegistryKeyword      = '*EncapsulatedPacketTaskOffloadVxlan'
+    [int]      $DisplayParameterType = 5
+
+    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
+    [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
+
+    EncapsulatedPacketTaskOffloadVxlan () {}
+}
+#endregion EncapsulatedPacketTaskOffloadVxlan
 
 #region FlowControl - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/enumeration-keywords
 enum FlowControlVal {
@@ -135,34 +135,34 @@ Class JumboPacket {
 #endregion JumboPacket
 
 #region LSO - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/using-registry-values-to-enable-and-disable-task-offloading
-    Class LSOIPv4 {
-        [string]   $RegistryKeyword      = '*LSOIPv4'
-        [int]      $DisplayParameterType = 5
+Class LSOIPv4 {
+    [string]   $RegistryKeyword      = '*LSOIPv4'
+    [int]      $DisplayParameterType = 5
 
-        [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
-        [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
-        [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
+    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
+    [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
-        LSOIPv4 () {}
-    }
+    LSOIPv4 () {}
+}
 
-    Class LSOIPv6 {
-        [string]   $RegistryKeyword      = '*LSOIPv6'
-        [int]      $DisplayParameterType = 5
+Class LSOIPv6 {
+    [string]   $RegistryKeyword      = '*LSOIPv6'
+    [int]      $DisplayParameterType = 5
 
-        [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
-        [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
-        [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
+    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
+    [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
-        LSOIPv6 () {}
-    }
+    LSOIPv6 () {}
+}
 
-    Class LSO {
-        $LSOIPv4 = [LSOIPv4]::new()
-        $LSOIPv6 = [LSOIPv6]::new()
+Class LSO {
+    $LSOIPv4 = [LSOIPv4]::new()
+    $LSOIPv6 = [LSOIPv6]::new()
 
-        LSO () {}
-    }
+    LSO () {}
+}
 #endregion LSO
 
 #region NDKPI - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/inf-requirements-for-ndkpi
@@ -542,6 +542,19 @@ Class RSSClass {
 }
 #endregion RSS
 
+#region RSSOnHostVPorts
+Class RSSOnHostVPorts {
+    [string]   $RegistryKeyword      = '*RSSOnHostVPorts'
+    [int]      $DisplayParameterType = 5
+
+    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
+    [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
+
+    RSSOnHostVPorts () {}
+}
+#endregion RSSOnHostVPorts
+
 #region SRIOV - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/standardized-inf-keywords-for-sr-iov
 Class SRIOV {
     [string]   $RegistryKeyword      = '*SRIOV'
@@ -647,19 +660,6 @@ Class VMQClass {
 }
 #endregion VMQ
 
-#region VMMQ -
-Class VMMQ {
-    [string]   $RegistryKeyword      = '*RSSOnHostVPorts'
-    [int]      $DisplayParameterType = 5
-
-    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
-    [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
-    [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
-
-    VMMQ () {}
-}
-#endregion VMMQ
-
 #region VxlanUDPPortNumber
 Class VxlanUDPPortNumber {
     [string]   $RegistryKeyword      = '*VxlanUDPPortNumber'
@@ -674,105 +674,6 @@ Class VxlanUDPPortNumber {
     VxlanUDPPortNumber () {}
 }
 #endregion VxlanUDPPortNumber
-
-#region Requirements
-
-enum Base_WS2019_HCIv1 {
-    PriorityVLANTag # Done
-    FlowControl
-    InterruptModeration
-}
-
-enum TenGbEOrGreater_WS2019_HCIv1 {
-    RSCIPv4         # Done
-    RSCIPv6         # Done
-    VLANID          # Done - We should move this to BASE
-    LSOIPv4         # Done
-    LSOIPv6         # Done
-    JumboPacket
-    RSS
-    RSSProfile
-    RSSBaseProcGroup
-    NumaNodeId
-    QOS             # Done - Must be since the PriorityVLANTag requires this
-}
-
-enum Standard_WS2019_HCIv1 {
-    RSSOnHostVPorts
-    TransmitBuffers
-    ReceiveBuffers
-    SRIOV
-    VMQ
-    VMMQ
-    ChecksumOffload # https://docs.microsoft.com/en-us/windows-hardware/drivers/network/enumeration-keywords
-}
-
-enum Premium_WS2019_HCIv1 {
-    RSSv2
-    USO
-    Timestamping
-}
-
-enum Base_WS2022_HCIv2 {
-    PriorityVLANTag # Done
-    FlowControl
-    InterruptModeration
-}
-
-enum TenGbEOrGreater_WS2022_HCIv2 {
-    RSCIPv4         # Done
-    RSCIPv6         # Done
-    VLANID          # Done - We should move this to BASE
-    LSOIPv4         # Done
-    LSOIPv6         # Done
-    JumboPacket
-    RSS
-    RSSProfile
-    RSSBaseProcGroup
-    NumaNodeId
-    QOS             # Done - Must be since the PriorityVLANTag requires this
-}
-
-enum Standard_WS2022_HCIv2 {
-    RSSOnHostVPorts
-    TransmitBuffers
-    ReceiveBuffers
-    SRIOV
-    VMQ
-    VMMQ
-    ChecksumOffload # https://docs.microsoft.com/en-us/windows-hardware/drivers/network/enumeration-keywords
-}
-
-enum Premium_WS2022_HCIv2 {
-    RSSv2
-    USO
-    Timestamping
-}
-
-Class WS2019_HCIv1 {
-    $Base            = [System.Enum]::GetValues('Base_WS2019_HCIv1')
-    $TenGbEOrGreater = [System.Enum]::GetValues('Base_WS2019_HCIv1'), [System.Enum]::GetValues('TenGbEOrGreater_WS2019_HCIv1')
-
-    $Standard = [System.Enum]::GetValues('Base_WS2019_HCIv1'), [System.Enum]::GetValues('TenGbEOrGreater_WS2019_HCIv1'), [System.Enum]::GetValues('Standard_WS2019_HCIv1')
-    $Premium  = [System.Enum]::GetValues('Base_WS2019_HCIv1'), [System.Enum]::GetValues('TenGbEOrGreater_WS2019_HCIv1'), [System.Enum]::GetValues('Standard_WS2019_HCIv1'), [System.Enum]::GetValues('Premium_WS2019_HCIv1')
-}
-
-Class WS2022_HCIv2 {
-    $Base            = [System.Enum]::GetValues('Base_WS2022_HCIv2')
-    $TenGbEOrGreater = [System.Enum]::GetValues('Base_WS2022_HCIv2'), [System.Enum]::GetValues('TenGbEOrGreater_WS2022_HCIv2')
-
-    $Standard = [System.Enum]::GetValues('Base_WS2022_HCIv2'), [System.Enum]::GetValues('TenGbEOrGreater_WS2022_HCIv2'), [System.Enum]::GetValues('Standard_WS2022_HCIv2')
-    $Premium  = [System.Enum]::GetValues('Base_WS2022_HCIv2'), [System.Enum]::GetValues('TenGbEOrGreater_WS2022_HCIv2'), [System.Enum]::GetValues('Standard_WS2022_HCIv2'), [System.Enum]::GetValues('Premium_WS2022_HCIv2')
-}
-
-Class Requirements {
-    $WS2019_HCIv1 = [WS2019_HCIv1]::new()
-    $WS2022_HCIv2 = [WS2022_HCIv2]::new()
-
-    Requirements () {}
-}
-
-#endregion Requirements
 
 Class AdapterDefinition {
     $Buffers = [Buffers]::new()
@@ -799,12 +700,214 @@ Class AdapterDefinition {
     $RSC   = [RSC]::new()
 
     $RSSClass = [RSSClass]::new()
+
+    $RSSOnHostVPorts = [RSSOnHostVPorts]::new()
+
     $SRIOV    = [SRIOV]::new()
     $USO      = [USO]::new()
     $VLANID   = [VLANID]::new()
-
-    $VMQ  = [VMQ]::new()
-    $VMMQ = [VMMQ]::new()
+    $VMQClass = [VMQClass]::new()
 
     $VxlanUDPPortNumber = [VxlanUDPPortNumber]::new()
 }
+
+
+#region Requirements
+
+enum Base_WS2019_HCIv1 {
+    PriorityVLANTag # Done
+    FlowControl
+    InterruptModeration
+    JumboPacket
+}
+
+enum TenGbEOrGreater_WS2019_HCIv1 {
+    RSCIPv4         # Done
+    RSCIPv6         # Done
+    VLANID          # Done - We should move this to BASE for Server
+    LSOIPv4         # Done
+    LSOIPv6         # Done
+
+    RSS
+    MaxRSSProcessors
+    NumRSSQueues
+    RSSProfile
+    NumaNodeId
+    RssBaseProcGroup
+    RSSMaxProcGroup
+    RssBaseProcNumber
+    RssMaxProcNumber
+
+    QOS             # Done
+    VMQ
+    VMQVlanFiltering
+    RssOrVmqPreference
+
+    # ChecksumOffload - Not yet implemented
+    TransmitBuffers
+    ReceiveBuffers
+}
+
+enum Standard_WS2019_HCIv1 {
+    RSSOnHostVPorts
+    SRIOV
+    #NicSwitch - Not a keyword but should be verified
+
+    VxlanUDPPortNumber
+    EncapOverhead
+
+    # EncapsulatedPacketTaskOffload - Not Implemented yet
+    EncapsulatedPacketTaskOffloadNVGRE
+    EncapsulatedPacketTaskOffloadVXLAN
+
+    NetworkDirect
+    NetworkDirectTechnology
+
+    RSSOnHostVPorts
+}
+
+enum Premium_WS2019_HCIv1 {
+    RSSv2
+    #NDKm3
+}
+
+enum Base_WS2022_HCIv2 {
+    PriorityVLANTag # Done
+    FlowControl
+    InterruptModeration
+    JumboPacket
+}
+
+enum TenGbEOrGreater_WS2022_HCIv2 {
+    RSCIPv4         # Done
+    RSCIPv6         # Done
+    VLANID          # Done - We should move this to BASE for Server
+    LSOIPv4         # Done
+    LSOIPv6         # Done
+
+    RSS
+    MaxRSSProcessors
+    NumRSSQueues
+    RSSProfile
+    NumaNodeId
+    RssBaseProcGroup
+    RSSMaxProcGroup
+    RssBaseProcNumber
+    RssMaxProcNumber
+
+    QOS             # Done
+    VMQ
+    VMQVlanFiltering
+    RssOrVmqPreference
+
+        # ChecksumOffload - Not yet implemented
+    TransmitBuffers
+    ReceiveBuffers
+}
+
+enum Standard_WS2022_HCIv2 {
+    RSSOnHostVPorts
+    SRIOV
+    #NicSwitch - Not a keyword but should be verified
+
+    VxlanUDPPortNumber
+    EncapOverhead
+
+    # EncapsulatedPacketTaskOffload - Not Implemented yet
+    EncapsulatedPacketTaskOffloadNVGRE
+    EncapsulatedPacketTaskOffloadVXLAN
+
+    NetworkDirect
+    NetworkDirectTechnology
+
+    RSSOnHostVPorts
+
+    RSSv2
+    #NDKm3
+}
+
+enum Premium_WS2022_HCIv2 {
+    PtpHardwareTimestamp
+
+    USOIPv4
+    USOIPv6
+}
+
+Class WS2019_HCIv1 {
+    $Base            = [System.Enum]::GetValues('Base_WS2019_HCIv1')
+    $TenGbEOrGreater = [System.Enum]::GetValues('Base_WS2019_HCIv1'), [System.Enum]::GetValues('TenGbEOrGreater_WS2019_HCIv1')
+
+    $Standard = [System.Enum]::GetValues('Base_WS2019_HCIv1'), [System.Enum]::GetValues('TenGbEOrGreater_WS2019_HCIv1'), [System.Enum]::GetValues('Standard_WS2019_HCIv1')
+    $Premium  = [System.Enum]::GetValues('Base_WS2019_HCIv1'), [System.Enum]::GetValues('TenGbEOrGreater_WS2019_HCIv1'), [System.Enum]::GetValues('Standard_WS2019_HCIv1'), [System.Enum]::GetValues('Premium_WS2019_HCIv1')
+}
+
+Class WS2022_HCIv2 {
+    $Base            = [System.Enum]::GetValues('Base_WS2022_HCIv2')
+    $TenGbEOrGreater = [System.Enum]::GetValues('Base_WS2022_HCIv2'), [System.Enum]::GetValues('TenGbEOrGreater_WS2022_HCIv2')
+
+    $Standard = [System.Enum]::GetValues('Base_WS2022_HCIv2'), [System.Enum]::GetValues('TenGbEOrGreater_WS2022_HCIv2'), [System.Enum]::GetValues('Standard_WS2022_HCIv2')
+    $Premium  = [System.Enum]::GetValues('Base_WS2022_HCIv2'), [System.Enum]::GetValues('TenGbEOrGreater_WS2022_HCIv2'), [System.Enum]::GetValues('Standard_WS2022_HCIv2'), [System.Enum]::GetValues('Premium_WS2022_HCIv2')
+}
+
+Class Requirements {
+    $WS2019_HCIv1 = [WS2019_HCIv1]::new()
+    $WS2022_HCIv2 = [WS2022_HCIv2]::new()
+
+    Requirements () {}
+}
+#endregion Requirements
+
+
+<# -- All Keywords --
+    ReceiveBuffers
+    TransmitBuffers
+
+    # ChecksumOffloads - Not Implemented yet
+
+    EncapOverhead
+
+    # EncapsulatedPacketTaskOffload - Not Implemented yet
+    EncapsulatedPacketTaskOffloadNVGRE
+    EncapsulatedPacketTaskOffloadVXLAN
+
+    FlowControl
+    InterruptModeration
+    JumboPacket
+
+    LSOIPv4
+    LSOIPv6
+
+    NetworkDirect
+    NetworkDirectTechnology
+
+    #NicSwitch - Not a keyword but should be verified
+
+    PriorityVLANTag
+    PtpHardwareTimestamp
+    QOS
+
+    RSCIPv4
+    RSCIPv6
+
+    RSS
+    MaxRSSProcessors
+    NumRSSQueues
+    RSSProfile
+    NumaNodeId
+    RssBaseProcGroup
+    RSSMaxProcGroup
+    RssBaseProcNumber
+    RssMaxProcNumber
+
+    SRIOV
+    USOIPv4
+    USOIPv6
+
+    VLANID
+    VMQVlanFiltering
+    RssOrVmqPreference
+    VMQ
+    RSSOnHostVPorts
+
+    VxlanUDPPortNumber
+#>
