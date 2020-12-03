@@ -14,15 +14,14 @@
 $AdapterDefinition = [AdapterDefinition]::new()
 
 $Adapters | ForEach-Object {
+
+
     $thisAdapter = $_
     $thisAdapterAdvancedProperties = $AdapterAdvancedProperties | Where-Object Name -eq $thisAdapter.Name
 
     # This is the configuration from the remote pNIC
-    $abc = Get-AdvancedRegistryKeyInfo -interfaceName $thisAdapter.Name -AdapterAdvancedProperties $thisAdapterAdvancedProperties
-    $AdapterConfiguration = Invoke-Command ${function:Get-AdvancedRegistryKeyInfo} -Session $PSSession -ArgumentList $thisAdapter.Name, $thisAdapterAdvancedProperties
-
-    # This turns the enums from the requirements into an array with the Remove method
-    [System.Collections.ArrayList] $RemainingRequirements = $Requirements[0..$Requirements.count].ForEach({ $_.foreach({ $_ }) })
+    $AdapterConfiguration   = Invoke-Command ${function:Get-AdvancedRegistryKeyInfo} -Session $PSSession -ArgumentList $thisAdapter.Name, $thisAdapterAdvancedProperties
+    $NicSwitchConfiguration = Invoke-Command ${function:Get-NicSwitchInfo} -Session $PSSession -ArgumentList $thisAdapter.Name
 
     # Device.Network.LAN.Base.100MbOrGreater Windows Server Ethernet devices must be able to link at 1Gbps or higher speeds
     if ($thisAdapter.Speed -ge 1000000000) { $PassFail = $pass }
@@ -31,6 +30,7 @@ $Adapters | ForEach-Object {
     "[$PassFail] $($thisAdapter.Name) is 1Gbps or higher" | Out-File -FilePath $Log -Append
     Remove-Variable -Name PassFail -ErrorAction SilentlyContinue
 
+    $RequirementsTested = @()
     Switch -Wildcard ($AdapterConfiguration) {
 
         { $_.RegistryKeyword -eq '*JumboPacket' } {
@@ -261,6 +261,8 @@ $Adapters | ForEach-Object {
             Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.SRIOV
             Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.SRIOV
 
+            # Test NICSwitch Defaults
+            $NicSwitchConfiguration
         }
 
         { $_.RegistryKeyword -eq '*TransmitBuffers' } {
@@ -324,36 +326,19 @@ $Adapters | ForEach-Object {
         }
 
         '*' {
-            # Always Remove if in the remaining requirements list
-            $RemainingRequirements.Remove( $_.RegistryKeyword )
+            $RequirementsTested += $_.RegistryKeyword
         }
     }
 
-<#
-        # Each value in the adapter definition must be a possible value for the feature
-        # Iterate through the list of possible values
-        $($AdapterDefinition.RSC.RSS.PossibleValues) | ForEach-Object {
-            $thisPossibleValue = $_
+    $Requirements = ([Requirements]::new())
+    if (($OSVersion -eq '2019') -or ($OSVersion -eq 'HCIv1')) {
 
-            # Ensure thisPossibleValue is in the list specified by the IHV
-            It "*RSS: Should have the possible value of $thisPossibleValue" {
-                $thisPossibleValue | Should -BeIn ($thisAdapterAdvancedProperties | Where RegistryKeyword -eq `*RSS).ValidRegistryValues
-            }
-        }
+    }
+    elseif (($OSVersion -eq '2022') -or ($OSVersion -eq 'HCIv2')) { $Requirements = ([Requirements]::new()) }
 
-        # The opposite case. The adapter cannot support extra options beyond that specified in the spec.
-        # Iterate through the list of possible values
-        ($thisAdapterAdvancedProperties | Where RegistryKeyword -eq `*RSS).ValidRegistryValues | ForEach-Object {
-            $thisPossibleValue = $_
+    # Always Remove if in the remaining requirements list
+    $RemainingRequirements.Remove( $_.RegistryKeyword )
 
-            # To reduce redundancy we'll pretest the value from the adapter to ensure its not in the MSFT Definition
-            # If it is not in the MSFT definition, then that is a failure.
-            if ($thisPossibleValue -notin $($AdapterDefinition.RSC.RSS.PossibleValues)) {
-                # Ensure thisPossibleValue is in the list specified by MSFT
-                It "*RSS: Should only the possible value of $thisPossibleValue" {
-                    $thisPossibleValue | Should -BeIn $($AdapterDefinition.RSC.RSS.PossibleValues)
-                }
-            }
-        }
-    #>
+
+                #[System.Collections.ArrayList] $RemainingRequirements = $Requirements[0..$Requirements.count].ForEach({ $_.foreach({ $_ }) })
 }

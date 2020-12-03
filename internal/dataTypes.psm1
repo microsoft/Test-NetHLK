@@ -66,7 +66,7 @@ Class EncapsulatedPacketTaskOffloadNvgre {
 
     [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
-    [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
+    [string[]] $ValidRegistryValues  = [enum]::GetValues([EnableDisable])
 
     EncapsulatedPacketTaskOffloadNvgre () {}
 }
@@ -762,8 +762,6 @@ enum Standard_WS2019_HCIv1 {
 
     NetworkDirect
     NetworkDirectTechnology
-
-    RSSOnHostVPorts
 }
 
 enum Premium_WS2019_HCIv1 {
@@ -800,7 +798,7 @@ enum TenGbEOrGreater_WS2022_HCIv2 {
     VMQVlanFiltering
     RssOrVmqPreference
 
-        # ChecksumOffload - Not yet implemented
+    # ChecksumOffload - Not yet implemented
     TransmitBuffers
     ReceiveBuffers
 }
@@ -820,9 +818,7 @@ enum Standard_WS2022_HCIv2 {
     NetworkDirect
     NetworkDirectTechnology
 
-    RSSOnHostVPorts
-
-    RSSv2
+    #RSSv2
     #NDKm3
 }
 
@@ -852,8 +848,6 @@ Class WS2022_HCIv2 {
 Class Requirements {
     $WS2019_HCIv1 = [WS2019_HCIv1]::new()
     $WS2022_HCIv2 = [WS2022_HCIv2]::new()
-
-    Requirements () {}
 }
 #endregion Requirements
 

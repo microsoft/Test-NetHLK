@@ -17,6 +17,7 @@ Function Get-AdvancedRegistryKeyInfo {
         $NumericParameterMinValue
         $NumericParameterStepValue
 
+        #region Enum Constructor
         AdvancedRegKeyInfo (
             [string]   $Keyword,
             [string]   $DisplayParameterType,
@@ -28,7 +29,9 @@ Function Get-AdvancedRegistryKeyInfo {
             $this.DefaultRegistryValue = $DefaultRegistryValue
             $this.ValidRegistryValues  = $ValidRegistryValues
         }
+        #endregion Enum Constructor
 
+        #region Int Constructor
         AdvancedRegKeyInfo (
             [string]$Keyword,
             [string]$DisplayParameterType,
@@ -46,6 +49,7 @@ Function Get-AdvancedRegistryKeyInfo {
             $this.NumericParameterMinValue  = $NumericParameterMinValue
             $this.NumericParameterStepValue = $NumericParameterStepValue
         }
+        #endregion Int Constructor
     }
 
     $NetAdapter = Get-NetAdapter -Name $interfaceName -ErrorAction SilentlyContinue
@@ -58,7 +62,6 @@ Function Get-AdvancedRegistryKeyInfo {
         if (( Get-ItemProperty -Path $PsPath ) -match ($NetAdapter).InterfaceGuid ) {
             foreach ($keyword in $AdapterAdvancedProperties) {
                 $thisKeyword = $keyword.RegistryKeyword
-                $RegistryValue = (Get-ItemProperty -Path $PsPath).$thisKeyword
 
                 $DisplayParameterType = $keyword.DisplayParameterType
                 $DefaultRegistryValue = $keyword.DefaultRegistryValue
@@ -81,12 +84,68 @@ Function Get-AdvancedRegistryKeyInfo {
 
                 $ReturnKeyInfo += $regKeyInfo
             }
-
-            $NicSwitch = (Get-ItemProperty -Path "$PsPath\NicSwitches\0").$thisKeyword
         }
     }
 
     return $ReturnKeyInfo
+}
+
+Function Get-NicSwitchInfo {
+    param (
+        [parameter(Mandatory = $true)]
+        [string] $interfaceName
+    )
+
+    class NicSwitchInfo {
+        $SwitchName
+        $Flags
+        $SwitchType
+        $SwitchId
+        $NumVFs
+
+        #region NicSwitch Constructor
+        NicSwitchInfo (
+            [string]$SwitchName,
+            [string]$Flags,
+            [string]$SwitchType,
+            [string]$SwitchId,
+            [string]$NumVFs
+        ) {
+            $this.SwitchName = $SwitchName
+            $this.Flags      = $Flags
+            $this.SwitchType = $SwitchType
+            $this.SwitchId   = $SwitchId
+            $this.NumVFs     = $NumVFs
+        }
+        #endregion NicSwitch Constructor
+    }
+
+    $NetAdapter = Get-NetAdapter -Name $interfaceName -ErrorAction SilentlyContinue
+    If (-not ($NetAdapter)) { return 'Error: Adapter Does Not Exist' }
+
+    $ReturnKeyInfo = @()
+    Get-ChildItem 'HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e972-e325-11ce-bfc1-08002be10318}' -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
+        $psPath = $_.PSPath
+
+        if (( Get-ItemProperty -Path $PsPath ) -match ($NetAdapter).InterfaceGuid ) {
+            Remove-Variable NicSwitchInfo, thisNicSwitch -ErrorAction SilentlyContinue
+
+            $thisNicSwitch = Get-ItemProperty -Path "$PsPath\NicSwitches\0"
+
+            $SwitchName = $thisNicSwitch.'*SwitchName'
+            $Flags      = $thisNicSwitch.'*Flags'
+            $SwitchType = $thisNicSwitch.'*SwitchType'
+            $SwitchId   = $thisNicSwitch.'*SwitchId'
+            $NumVFs     = $thisNicSwitch.'*NumVFs'
+
+            $NicSwitchInfo = [NicSwitchInfo]::new($SwitchName, $Flags, $SwitchType, $SwitchId, $NumVFs)
+
+            Remove-Variable SwitchName, Flags, SwitchType, SwitchId, NumVFs -ErrorAction SilentlyContinue
+
+            $ReturnKeyInfo += $NicSwitchInfo
+            return $ReturnKeyInfo
+        }
+    }
 }
 
 Function Test-RegistryDefaultValue {

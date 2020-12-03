@@ -1,3 +1,6 @@
+using module .\internal\helpers.psm1
+using module .\internal\datatypes.psm1
+
 function Test-NICProperties {
     <#
     .SYNOPSIS
@@ -18,7 +21,14 @@ function Test-NICProperties {
         [string[]] $TestScope = 'Premium',
 
         [Parameter(Mandatory=$false)]
-        [string] $ReportPath
+        [ValidateSet('2019', '2022', 'HCIv1', 'HCIv2')]
+        [string[]] $OSVersion = '2022',
+
+        [Parameter(Mandatory=$false)]
+        [string] $ReportPath,
+
+        [Parameter(Mandatory=$false)]
+        [PSCredential] $Credential
     )
 
     Clear-Host
@@ -28,19 +38,17 @@ function Test-NICProperties {
     $global:fail = 'X'
     $global:testsFailed = 0
 
+    if ($Credential -eq $Null) {
+        $Credential = . ..\wolfpack.ps1
+    }
+
+    $PSSession = New-PSSession -Credential $Credential -ComputerName 'TK5-3WP07R0511'
+
     # Once in the Program Files path, use this:
     # $here = Split-Path -Parent (Get-Module -Name Test-NICProperties -ListAvailable | Select-Object -First 1).Path
-    $here = Split-Path -Parent (Get-Module -Name Test-NICProperties | Select-Object -First 1).Path
-    Import-Module $here\internal\helpers.psm1 -force
-
-    # Classes cannot be imported using Import-Module so this must be a ps1
-    . $here\internal\datatypes.ps1
+      $here = Split-Path -Parent (Get-Module -Name Test-NICProperties | Select-Object -First 1).Path
 
     $global:Log = New-Item -Name 'Results.txt' -Path "$here\Results" -ItemType File -Force
-
-    #TODO: Remove this before going live.
-    $Credential = . ..\wolfpack.ps1
-    $PSSession = New-PSSession -Credential $Credential -ComputerName 'TK5-3WP07R0511'
 
     if (-not($PSSession)) {
         "[Fatal Error] Could not establish a remote session to the target node" | Out-File -FilePath $Log -Append
@@ -56,8 +64,6 @@ function Test-NICProperties {
 
         Return $Adapters, $AdapterAdvancedProperties, $NodeOS
     }
-
-
 
     ### Verify the TestHost is sufficient version
         $caption =  ($NodeOS.Caption -like '*Windows Server 2022*') -or
