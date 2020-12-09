@@ -13,9 +13,11 @@
 # This is the MSFT definition
 $AdapterDefinition = [AdapterDefinition]::new()
 
+$Requirements = ([Requirements]::new())
+if     (($OSVersion -eq '2019') -or ($OSVersion -eq 'HCIv1')) { $Requirements = ([Requirements]::new()).WS2019_HCIv1 }
+elseif (($OSVersion -eq '2022') -or ($OSVersion -eq 'HCIv2')) { $Requirements = ([Requirements]::new()).WS2022_HCIv2 }
+
 $Adapters | ForEach-Object {
-
-
     $thisAdapter = $_
     $thisAdapterAdvancedProperties = $AdapterAdvancedProperties | Where-Object Name -eq $thisAdapter.Name
 
@@ -53,6 +55,8 @@ $Adapters | ForEach-Object {
             # *JumboPacket: NumericParameterMinValue
             Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.JumboPacket -OrLess
 
+            $RequirementsTested += $_.RegistryKeyword
+
         }
 
         { $_.RegistryKeyword -eq '*LsoV2IPv4' } {
@@ -66,6 +70,8 @@ $Adapters | ForEach-Object {
             # *LsoV2IPv4: ValidRegistryValues
             Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.LSO.LsoV2IPv4
             Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.LSO.LsoV2IPv4
+
+            $RequirementsTested += $_.RegistryKeyword
 
         }
 
@@ -81,6 +87,8 @@ $Adapters | ForEach-Object {
             Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.LSO.LsoV2IPv6
             Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.LSO.LsoV2IPv6
 
+            $RequirementsTested += $_.RegistryKeyword
+
         }
 
         { $_.RegistryKeyword -eq '*NetworkDirect' } {
@@ -94,6 +102,8 @@ $Adapters | ForEach-Object {
             # *NetworkDirect: ValidRegistryValues
             Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.NDKPI.NetworkDirect
             Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.NDKPI.NetworkDirect
+
+            $RequirementsTested += $_.RegistryKeyword
 
         }
 
@@ -109,6 +119,8 @@ $Adapters | ForEach-Object {
                 # As the adapter can choose to support one or more of these types, we will only check that the contained values are within the MSFT defined range
                 # We will not test to ensure that all defined values are found unlike other enums (because an adapter may support both RoCE and RoCEv2 but not iWARP and visa versa)
             Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.NDKPI.NetworkDirectTechnology
+
+            $RequirementsTested += $_.RegistryKeyword
 
         }
 
@@ -132,6 +144,8 @@ $Adapters | ForEach-Object {
             # *NumaNodeId: NumericParameterMinValue
             Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.NumaNodeId
 
+            $RequirementsTested += $_.RegistryKeyword
+
         }
 
         { $_.RegistryKeyword -eq '*PriorityVLANTag' } {
@@ -145,6 +159,8 @@ $Adapters | ForEach-Object {
             # *PriorityVLANTag: ValidRegistryValues
             Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.PriorityVLANTag
             Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.PriorityVLANTag
+
+            $RequirementsTested += $_.RegistryKeyword
 
         }
 
@@ -160,12 +176,16 @@ $Adapters | ForEach-Object {
             Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.QOS
             Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.QOS
 
+            $RequirementsTested += $_.RegistryKeyword
+
         }
 
         { $_.RegistryKeyword -eq '*ReceiveBuffers' } {
 
             # *ReceiveBuffers: DisplayParameterType
             Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.Buffers.ReceiveBuffers
+
+            $RequirementsTested += $_.RegistryKeyword
 
         }
 
@@ -181,6 +201,8 @@ $Adapters | ForEach-Object {
             Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSC.RSCIPv4
             Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSC.RSCIPv4
 
+            $RequirementsTested += $_.RegistryKeyword
+
         }
 
         { $_.RegistryKeyword -eq '*RSCIPv6' } {
@@ -195,6 +217,8 @@ $Adapters | ForEach-Object {
             Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSC.RSCIPv6
             Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSC.RSCIPv6
 
+            $RequirementsTested += $_.RegistryKeyword
+
         }
 
         { $_.RegistryKeyword -eq '*RSS' } {
@@ -208,6 +232,8 @@ $Adapters | ForEach-Object {
             # *RSS: ValidRegistryValues
             Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSS
             Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSS
+
+            $RequirementsTested += $_.RegistryKeyword
 
         }
 
@@ -228,6 +254,8 @@ $Adapters | ForEach-Object {
             # *RSSBaseProcGroup: NumericParameterMinValue
             Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcGroup
 
+            $RequirementsTested += $_.RegistryKeyword
+
         }
 
         { $_.RegistryKeyword -eq '*RSSBaseProcNumber' } {
@@ -247,6 +275,8 @@ $Adapters | ForEach-Object {
             # *RSSBaseProcNumber: NumericParameterMinValue
             Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcNumber
 
+            $RequirementsTested += $_.RegistryKeyword
+
         }
 
         { $_.RegistryKeyword -eq '*SRIOV' } {
@@ -263,12 +293,17 @@ $Adapters | ForEach-Object {
 
             # Test NICSwitch Defaults
             $NicSwitchConfiguration
+
+            $RequirementsTested += $_.RegistryKeyword
+
         }
 
         { $_.RegistryKeyword -eq '*TransmitBuffers' } {
 
             # *TransmitBuffers: DisplayParameterType
             Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.Buffers.TransmitBuffers
+
+            $RequirementsTested += $_.RegistryKeyword
 
         }
 
@@ -280,6 +315,8 @@ $Adapters | ForEach-Object {
             # *UsoIPv4: DisplayParameterType
             Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.USO.UsoIPv4
 
+            $RequirementsTested += $_.RegistryKeyword
+
         }
 
         { $_.RegistryKeyword -eq '*UsoIPv6' } {
@@ -290,6 +327,8 @@ $Adapters | ForEach-Object {
             # *UsoIPv6: DisplayParameterType
             Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.USO.UsoIPv6
 
+            $RequirementsTested += $_.RegistryKeyword
+
         }
 
         { $_.RegistryKeyword -eq '*VMQ' } {
@@ -299,6 +338,8 @@ $Adapters | ForEach-Object {
 
             # *VMQ: DisplayParameterType
             Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQ
+
+            $RequirementsTested += $_.RegistryKeyword
 
         }
 
@@ -323,22 +364,25 @@ $Adapters | ForEach-Object {
 
             # VLANID: NumericParameterMinValue
             Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VLANID
-        }
 
-        '*' {
             $RequirementsTested += $_.RegistryKeyword
+
         }
     }
 
-    $Requirements = ([Requirements]::new())
-    if (($OSVersion -eq '2019') -or ($OSVersion -eq 'HCIv1')) {
+    Write-Host ''
 
+    $RequirementsTested | ForEach-Object {
+        $ThisTestedRequirement = $_.TrimStart('*')
+        Write-Host $ThisTestedRequirement
+
+        $Requirements.Base = $Requirements.Base | Where-Object { $_ -ne $ThisTestedRequirement }
+        $Requirements.TenGbEOrGreater = $Requirements.TenGbEOrGreater | Where-Object { $_ -ne $ThisTestedRequirement }
+        $Requirements.Standard = $Requirements.Standard | Where-Object { $_ -ne $ThisTestedRequirement }
+        $Requirements.Premium  = $Requirements.Premium | Where-Object { $_ -ne $ThisTestedRequirement }
     }
-    elseif (($OSVersion -eq '2022') -or ($OSVersion -eq 'HCIv2')) { $Requirements = ([Requirements]::new()) }
 
-    # Always Remove if in the remaining requirements list
-    $RemainingRequirements.Remove( $_.RegistryKeyword )
+    Write-Host ''
 
-
-                #[System.Collections.ArrayList] $RemainingRequirements = $Requirements[0..$Requirements.count].ForEach({ $_.foreach({ $_ }) })
+    #[System.Collections.ArrayList] $RemainingRequirements = $Requirements[0..$Requirements.count].ForEach({ $_.foreach({ $_ }) })
 }

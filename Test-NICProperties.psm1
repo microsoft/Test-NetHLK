@@ -32,15 +32,12 @@ function Test-NICProperties {
     )
 
     Clear-Host
-    $startTime = Get-Date -format:'yyyyMMdd-HHmmss'
 
     $global:pass = '+'
     $global:fail = 'X'
     $global:testsFailed = 0
 
-    if ($Credential -eq $Null) {
-        $Credential = . ..\wolfpack.ps1
-    }
+    if ($Credential -eq $Null) { $Credential = . ..\wolfpack.ps1 }
 
     $PSSession = New-PSSession -Credential $Credential -ComputerName 'TK5-3WP07R0511'
 

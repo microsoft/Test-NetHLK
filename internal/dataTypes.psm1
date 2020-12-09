@@ -829,6 +829,12 @@ enum Premium_WS2022_HCIv2 {
     USOIPv6
 }
 
+$Base = [System.Enum]::GetValues('Base_WS2019_HCIv1') | Foreach-Object { $_ }
+$TenGbEOrGreater = [System.Enum]::GetValues('Base_WS2019_HCIv1'), [System.Enum]::GetValues('TenGbEOrGreater_WS2019_HCIv1') | Foreach-Object { $_ }
+$Standard = [System.Enum]::GetValues('Base_WS2019_HCIv1'), [System.Enum]::GetValues('TenGbEOrGreater_WS2019_HCIv1'), [System.Enum]::GetValues('Standard_WS2019_HCIv1') | Foreach-Object { $_ }
+$Premium  = [System.Enum]::GetValues('Base_WS2019_HCIv1'), [System.Enum]::GetValues('TenGbEOrGreater_WS2019_HCIv1'), [System.Enum]::GetValues('Standard_WS2019_HCIv1'), [System.Enum]::GetValues('Premium_WS2019_HCIv1') | Foreach-Object { $_ }
+
+
 Class WS2019_HCIv1 {
     $Base            = [System.Enum]::GetValues('Base_WS2019_HCIv1')
     $TenGbEOrGreater = [System.Enum]::GetValues('Base_WS2019_HCIv1'), [System.Enum]::GetValues('TenGbEOrGreater_WS2019_HCIv1')
@@ -837,12 +843,16 @@ Class WS2019_HCIv1 {
     $Premium  = [System.Enum]::GetValues('Base_WS2019_HCIv1'), [System.Enum]::GetValues('TenGbEOrGreater_WS2019_HCIv1'), [System.Enum]::GetValues('Standard_WS2019_HCIv1'), [System.Enum]::GetValues('Premium_WS2019_HCIv1')
 }
 
-Class WS2022_HCIv2 {
-    $Base            = [System.Enum]::GetValues('Base_WS2022_HCIv2')
-    $TenGbEOrGreater = [System.Enum]::GetValues('Base_WS2022_HCIv2'), [System.Enum]::GetValues('TenGbEOrGreater_WS2022_HCIv2')
+$Base = [System.Enum]::GetValues('Base_WS2022_HCIv2') | Foreach-Object { $_ }
+$TenGbEOrGreater = [System.Enum]::GetValues('Base_WS2022_HCIv2'), [System.Enum]::GetValues('TenGbEOrGreater_WS2022_HCIv2') | Foreach-Object { $_ }
+$Standard = [System.Enum]::GetValues('Base_WS2022_HCIv2'), [System.Enum]::GetValues('TenGbEOrGreater_WS2022_HCIv2'), [System.Enum]::GetValues('Standard_WS2022_HCIv2') | Foreach-Object { $_ }
+$Premium  = [System.Enum]::GetValues('Base_WS2022_HCIv2'), [System.Enum]::GetValues('TenGbEOrGreater_WS2022_HCIv2'), [System.Enum]::GetValues('Standard_WS2022_HCIv2'), [System.Enum]::GetValues('Premium_WS2022_HCIv2') | Foreach-Object { $_ }
 
-    $Standard = [System.Enum]::GetValues('Base_WS2022_HCIv2'), [System.Enum]::GetValues('TenGbEOrGreater_WS2022_HCIv2'), [System.Enum]::GetValues('Standard_WS2022_HCIv2')
-    $Premium  = [System.Enum]::GetValues('Base_WS2022_HCIv2'), [System.Enum]::GetValues('TenGbEOrGreater_WS2022_HCIv2'), [System.Enum]::GetValues('Standard_WS2022_HCIv2'), [System.Enum]::GetValues('Premium_WS2022_HCIv2')
+Class WS2022_HCIv2 {
+    $Base            = $Base
+    $TenGbEOrGreater = $TenGbEOrGreater
+    $Standard = $Standard
+    $Premium  = $Premium
 }
 
 Class Requirements {
