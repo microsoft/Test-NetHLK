@@ -44,12 +44,12 @@ Class Buffers {
 #region EncapOverhead
 Class EncapOverhead {
     [string]   $RegistryKeyword      = '*EncapOverhead'
-    [int]      $DisplayParameterType = '1' # 4 byte unsigned integer
-    [int]      $RegistryDefaultValue = 0
+    [int]      $DisplayParameterType = '1' # 1 byte unsigned integer
+    [int]      $DefaultRegistryValue = 0
 
     [int]      $NumericParameterBaseValue = 10  # Must be this value
-    [int]      $NumericParameterMaxValue = 480  # Must be <= 480 and >= 160
-    [int]      $NumericParameterMinValue = 0    # Must be this value
+    [int]      $NumericParameterMaxValue  = 480  # Must be <= 480 and >= 160
+    [int]      $NumericParameterMinValue  = 0    # Must be this value
     [int]      $NumericParameterStepValue = 32  # Must be this value
 
     EncapOverhead () {}
@@ -64,7 +64,7 @@ Class EncapsulatedPacketTaskOffloadNvgre {
     [string]   $RegistryKeyword      = '*EncapsulatedPacketTaskOffloadNvgre'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [enum]::GetValues([EnableDisable])
 
@@ -77,7 +77,7 @@ Class EncapsulatedPacketTaskOffloadVxlan {
     [string]   $RegistryKeyword      = '*EncapsulatedPacketTaskOffloadVxlan'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
@@ -98,7 +98,7 @@ Class FlowControl {
     [string]   $RegistryKeyword      = '*FlowControl'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [FlowControlVal]::TxRxDisabled.Value__
+    [string]   $DefaultRegistryValue = [FlowControlVal]::TxRxDisabled.Value__
     [string]   $DisplayDefaultValue  = [FlowControlVal]::TxRxDisabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('FlowControlVal').Value__
 
@@ -111,7 +111,7 @@ Class InterruptModeration {
     [string]   $RegistryKeyword      = '*InterruptModeration'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
@@ -123,7 +123,7 @@ Class InterruptModeration {
 Class JumboPacket {
     [string]   $RegistryKeyword      = '*JumboPacket'
     [int]      $DisplayParameterType = '4' # 4 byte unsigned integer
-    [int]      $RegistryDefaultValue = 1514
+    [int]      $DefaultRegistryValue = 1514
 
     [int]      $NumericParameterBaseValue = 10   # Must be this value
     [int]      $NumericParameterMaxValue = 9174  # Must be >= this value 9014 + EncapOverhead (160)
@@ -139,7 +139,7 @@ Class LSOIPv4 {
     [string]   $RegistryKeyword      = '*LSOIPv4'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
@@ -150,7 +150,7 @@ Class LSOIPv6 {
     [string]   $RegistryKeyword      = '*LSOIPv6'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
@@ -177,7 +177,7 @@ Class NetworkDirect {
     [string] $RegistryKeyword      = '*NetworkDirect'
     [int]    $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
@@ -189,7 +189,7 @@ Class NetworkDirectTechnology {
     [int]    $DisplayParameterType = 5
 
     # Vendors will only support what they support; defaults not necessary to test
-    #[string] $RegistryDefaultValue = [NetworkDirectTechnologyVal]::iWARP
+    #[string] $DefaultRegistryValue = [NetworkDirectTechnologyVal]::iWARP
 
     [string[]] $ValidRegistryValues = [System.Enum]::GetValues('NetworkDirectTechnologyVal').Value__
 
@@ -226,7 +226,7 @@ Class PriorityVLANTag {
     [string]   $RegistryKeyword      = '*PriorityVLANTag'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [PriorityVLANTagVal]::PriorityVLANEnabled.Value__
+    [string]   $DefaultRegistryValue = [PriorityVLANTagVal]::PriorityVLANEnabled.Value__
     [string]   $DisplayDefaultValue  = [PriorityVLANTagVal]::PriorityVLANEnabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('PriorityVLANTagVal').Value__
 
@@ -239,7 +239,7 @@ Class PtpHardwareTimestamp {
     [string]   $RegistryKeyword      = '*PtpHardwareTimestamp'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
@@ -252,7 +252,7 @@ Class QOS {
     [string]   $RegistryKeyword      = '*QOS'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
@@ -265,7 +265,7 @@ Class RSCIPv4 {
     [string]   $RegistryKeyword      = '*RSCIPv4'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
@@ -276,7 +276,7 @@ Class RSCIPv6 {
     [string]   $RegistryKeyword      = '*RSCIPv6'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
@@ -304,7 +304,7 @@ Class RSS {
     [string]   $RegistryKeyword      = '*RSS'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
@@ -315,7 +315,7 @@ Class MaxRSSProcessors_MSIXSupport_1Gb {
     [string]   $RegistryKeyword      = '*MaxRssProcessors'
     [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
 
-    [int]      $RegistryDefaultValue = 4
+    [int]      $DefaultRegistryValue = 4
 
     [int]      $NumericParameterBaseValue = 10 # Must be this value
     [int]      $NumericParameterMaxValue  = 4  # Must be >= than this value
@@ -329,7 +329,7 @@ Class MaxRSSProcessors_MSIXSupport_10GbOrGreater {
     [string]   $RegistryKeyword      = '*MaxRssProcessors'
     [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
 
-    [int]      $RegistryDefaultValue = 16
+    [int]      $DefaultRegistryValue = 16
 
     [int]      $NumericParameterBaseValue = 10 # Must be this value
     [int]      $NumericParameterMaxValue  = 16 # Must be >= than this value
@@ -343,7 +343,7 @@ Class MaxRSSProcessors_No_MSIXSupport_1Gb {
     [string]   $RegistryKeyword      = '*MaxRssProcessors'
     [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
 
-    [int]      $RegistryDefaultValue = 2
+    [int]      $DefaultRegistryValue = 2
 
     [int]      $NumericParameterBaseValue = 10 # Must be this value
     [int]      $NumericParameterMaxValue  = 2  # Must be >= than this value
@@ -357,7 +357,7 @@ Class MaxRSSProcessors_No_MSIXSupport_10GbOrGreater {
     [string]   $RegistryKeyword      = '*MaxRssProcessors'
     [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
 
-    [int]      $RegistryDefaultValue = 4
+    [int]      $DefaultRegistryValue = 4
 
     [int]      $NumericParameterBaseValue = 10 # Must be this value
     [int]      $NumericParameterMaxValue  = 4  # Must be >= than this value
@@ -380,7 +380,7 @@ Class NumRSSQueues_MSIXSupport_1Gb {
     [string]   $RegistryKeyword      = '*NumRSSQueues'
     [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
 
-    [int]      $RegistryDefaultValue = 4
+    [int]      $DefaultRegistryValue = 4
 
     [int]      $NumericParameterBaseValue = 10 # Must be this value
     [int]      $NumericParameterMaxValue  = 4  # Must be >= than this value
@@ -394,7 +394,7 @@ Class NumRSSQueues_MSIXSupport_10GbOrGreater {
     [string]   $RegistryKeyword      = '*NumRSSQueues'
     [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
 
-    [int]      $RegistryDefaultValue = 16
+    [int]      $DefaultRegistryValue = 16
 
     [int]      $NumericParameterBaseValue = 10 # Must be this value
     [int]      $NumericParameterMaxValue  = 16 # Must be >= than this value
@@ -408,7 +408,7 @@ Class NumRSSQueues_No_MSIXSupport_1Gb {
     [string]   $RegistryKeyword      = '*NumRSSQueues'
     [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
 
-    [int]      $RegistryDefaultValue = 2
+    [int]      $DefaultRegistryValue = 2
 
     [int]      $NumericParameterBaseValue = 10 # Must be this value
     [int]      $NumericParameterMaxValue  = 2  # Must be >= than this value
@@ -422,7 +422,7 @@ Class NumRSSQueues_No_MSIXSupport_10GbOrGreater {
     [string]   $RegistryKeyword      = '*NumRSSQueues'
     [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
 
-    [int]      $RegistryDefaultValue = 4
+    [int]      $DefaultRegistryValue = 4
 
     [int]      $NumericParameterBaseValue = 10 # Must be this value
     [int]      $NumericParameterMaxValue  = 4  # Must be >= than this value
@@ -446,7 +446,7 @@ Class RSSProfile {
     [string]   $RegistryKeyword      = '*RSSProfile'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [RSSProfileVal]::NUMAScalingStatic.Value__
+    [string]   $DefaultRegistryValue = [RSSProfileVal]::NUMAScalingStatic.Value__
     [string]   $DisplayDefaultValue  = [RSSProfileVal]::NUMAScalingStatic
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('RSSProfileVal').Value__
 
@@ -457,7 +457,7 @@ Class NumaNodeId {
     [string]   $RegistryKeyword      = '*NumaNodeId'
     [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
 
-    [int]      $RegistryDefaultValue = 65535
+    [int]      $DefaultRegistryValue = 65535
 
     [int]      $NumericParameterBaseValue = 10   # Must be this value
     [int]      $NumericParameterMaxValue = 65535 # Must be this value
@@ -471,7 +471,7 @@ Class RssBaseProcGroup {
     [string]   $RegistryKeyword      = '*RssBaseProcGroup'
     [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
 
-    [int]      $RegistryDefaultValue = 0
+    [int]      $DefaultRegistryValue = 0
 
     [int]      $NumericParameterBaseValue = 10   # Must be this value
     #[int]      $NumericParameterMaxValue =      # System specific
@@ -485,7 +485,7 @@ Class RSSMaxProcGroup {
     [string]   $RegistryKeyword      = '*RSSMaxProcGroup'
     [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
 
-    [int]      $RegistryDefaultValue = 0
+    [int]      $DefaultRegistryValue = 0
 
     [int]      $NumericParameterBaseValue = 10   # Must be this value
     #[int]      $NumericParameterMaxValue =      # System specific
@@ -499,7 +499,7 @@ Class RssBaseProcNumber {
     [string]   $RegistryKeyword      = '*RssBaseProcNumber'
     [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
 
-    [int]      $RegistryDefaultValue = 0
+    [int]      $DefaultRegistryValue = 0
 
     [int]      $NumericParameterBaseValue = 10   # Must be this value
     #[int]      $NumericParameterMaxValue =      # System specific
@@ -513,7 +513,7 @@ Class RssMaxProcNumber {
     [string]   $RegistryKeyword      = '*RssMaxProcNumber'
     [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
 
-    [int]      $RegistryDefaultValue = 0
+    [int]      $DefaultRegistryValue = 0
 
     [int]      $NumericParameterBaseValue = 10   # Must be this value
     #[int]      $NumericParameterMaxValue =      # System specific
@@ -547,7 +547,7 @@ Class RSSOnHostVPorts {
     [string]   $RegistryKeyword      = '*RSSOnHostVPorts'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
@@ -560,7 +560,7 @@ Class SRIOV {
     [string]   $RegistryKeyword      = '*SRIOV'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
@@ -573,7 +573,7 @@ Class SRIOV {
         [string]   $RegistryKeyword      = '*USOIPv4'
         [int]      $DisplayParameterType = 5
 
-        [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+        [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
         [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
         [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
@@ -584,7 +584,7 @@ Class SRIOV {
         [string]   $RegistryKeyword      = '*USOIPv6'
         [int]      $DisplayParameterType = 5
 
-        [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+        [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
         [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
         [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
@@ -604,7 +604,7 @@ Class VLANID {
     [string] $RegistryKeyword      = 'VLANID'
     [int]    $DisplayParameterType = 4 # 4 byte unsigned integer
 
-    [string] $RegistryDefaultValue = 0
+    [string] $DefaultRegistryValue = 0
     [int]    $NumericParameterBaseValue = 10  # Must be this value
     [int]    $NumericParameterMaxValue = 4095 # Must be >= this value 9014 + EncapOverhead (160)
     [int]    $NumericParameterMinValue = 0    # Must be < than this value
@@ -619,7 +619,7 @@ Class VMQVlanFiltering {
     [string]   $RegistryKeyword      = '*VMQVlanFiltering'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
@@ -630,7 +630,7 @@ Class RssOrVmqPreference {
     [string]   $RegistryKeyword      = '*RssOrVmqPreference'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [EnableDisable]::Disabled.Value__
+    [string]   $DefaultRegistryValue = [EnableDisable]::Disabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Disabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
@@ -641,7 +641,7 @@ Class VMQ {
     [string]   $RegistryKeyword      = '*VMQ'
     [int]      $DisplayParameterType = 5
 
-    [string]   $RegistryDefaultValue = [EnableDisable]::Enabled.Value__
+    [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
@@ -664,7 +664,7 @@ Class VMQClass {
 Class VxlanUDPPortNumber {
     [string]   $RegistryKeyword      = '*VxlanUDPPortNumber'
     [int]      $DisplayParameterType = '2' # 4 byte unsigned integer
-    [int]      $RegistryDefaultValue = 4789
+    [int]      $DefaultRegistryValue = 4789
 
     [int]      $NumericParameterBaseValue = 10    # Must be this value
     [int]      $NumericParameterMaxValue  = 65535 # Must be < this value
@@ -680,7 +680,7 @@ Class AdapterDefinition {
     # $ChecksumOffload  - Not yet implemented
 
     $EncapOverhead = [EncapOverhead]::new()
-    # $EncapsulatedPacketTaskOffload = [EncapsulatedPacketTaskOffload]::new() - Is this needed
+    # $EncapsulatedPacketTaskOffload = [EncapsulatedPacketTaskOffload]::new() - Is this needed?
     $EncapsulatedPacketTaskOffloadNVGRE = [EncapsulatedPacketTaskOffloadNVGRE]::new()
     $EncapsulatedPacketTaskOffloadVxlan = [EncapsulatedPacketTaskOffloadVxlan]::new()
 

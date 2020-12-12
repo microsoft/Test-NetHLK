@@ -1,3 +1,5 @@
+# This file is deprecated because of WTT logging issues with the script:scope
+
 <# Tests:
 - Existance of required keys per documented requirements
 - Tests the correct type
@@ -22,8 +24,8 @@ $Adapters | ForEach-Object {
     $thisAdapterAdvancedProperties = $AdapterAdvancedProperties | Where-Object Name -eq $thisAdapter.Name
 
     # This is the configuration from the remote pNIC
-    $AdapterConfiguration   = Invoke-Command ${function:Get-AdvancedRegistryKeyInfo} -Session $PSSession -ArgumentList $thisAdapter.Name, $thisAdapterAdvancedProperties
-    $NicSwitchConfiguration = Invoke-Command ${function:Get-NicSwitchInfo} -Session $PSSession -ArgumentList $thisAdapter.Name
+    $AdapterConfiguration   = Get-AdvancedRegistryKeyInfo -InterfaceName $thisAdapter.Name -AdapterAdvancedProperties $thisAdapterAdvancedProperties
+    $NicSwitchConfiguration = Get-NicSwitchInfo -InterfaceName $thisAdapter.Name
 
     # Device.Network.LAN.Base.100MbOrGreater Windows Server Ethernet devices must be able to link at 1Gbps or higher speeds
     if ($thisAdapter.Speed -ge 1000000000) { $PassFail = $pass }
@@ -34,6 +36,94 @@ $Adapters | ForEach-Object {
 
     $RequirementsTested = @()
     Switch -Wildcard ($AdapterConfiguration) {
+
+        { $_.RegistryKeyword -eq '*EncapOverhead' } {
+
+            # *EncapOverhead: RegistryDefaultValue
+            Test-RegistryDefaultValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapOverhead
+
+            # *EncapOverhead: DisplayParameterType
+            Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapOverhead
+
+            # *EncapOverhead: NumericParameterBaseValue
+            Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapOverhead
+
+            # *EncapOverhead: NumericParameterStepValue
+            Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapOverhead
+
+            # *EncapOverhead: NumericParameterMaxValue
+            Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapOverhead -OrGreater
+
+            # *EncapOverhead: NumericParameterMinValue
+            Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapOverhead -OrLess
+
+            $RequirementsTested += $_.RegistryKeyword
+
+        }
+
+        { $_.RegistryKeyword -eq '*EncapsulatedPacketTaskOffloadNvgre' } {
+
+            # *LsoV2IPv4: RegistryDefaultValue
+            Test-RegistryDefaultValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapsulatedPacketTaskOffloadNvgre
+
+            # *LsoV2IPv4: DisplayParameterType
+            Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapsulatedPacketTaskOffloadNvgre
+
+            # *LsoV2IPv4: ValidRegistryValues
+            Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapsulatedPacketTaskOffloadNvgre
+            Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapsulatedPacketTaskOffloadNvgre
+
+            $RequirementsTested += $_.RegistryKeyword
+
+        }
+
+        { $_.RegistryKeyword -eq '*EncapsulatedPacketTaskOffloadVxlan' } {
+
+            # *LsoV2IPv4: RegistryDefaultValue
+            Test-RegistryDefaultValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.LSO.LsoV2IPv4
+
+            # *LsoV2IPv4: DisplayParameterType
+            Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.LSO.LsoV2IPv4
+
+            # *LsoV2IPv4: ValidRegistryValues
+            Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.LSO.LsoV2IPv4
+            Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.LSO.LsoV2IPv4
+
+            $RequirementsTested += $_.RegistryKeyword
+
+        }
+
+        { $_.RegistryKeyword -eq '*FlowControl' } {
+
+            # *LsoV2IPv4: RegistryDefaultValue
+            Test-RegistryDefaultValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.FlowControl
+
+            # *LsoV2IPv4: DisplayParameterType
+            Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.FlowControl
+
+            # *LsoV2IPv4: ValidRegistryValues
+            Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.FlowControl
+            Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.FlowControl
+
+            $RequirementsTested += $_.RegistryKeyword
+
+        }
+
+        { $_.RegistryKeyword -eq '*InterruptModeration' } {
+
+            # *LsoV2IPv4: RegistryDefaultValue
+            Test-RegistryDefaultValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.InterruptModeration
+
+            # *LsoV2IPv4: DisplayParameterType
+            Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.InterruptModeration
+
+            # *LsoV2IPv4: ValidRegistryValues
+            Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.InterruptModeration
+            Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.InterruptModeration
+
+            $RequirementsTested += $_.RegistryKeyword
+
+        }
 
         { $_.RegistryKeyword -eq '*JumboPacket' } {
 
@@ -243,7 +333,7 @@ $Adapters | ForEach-Object {
             Test-RegistryDefaultValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcGroup
 
             # *RSSBaseProcGroup: DisplayParameterType
-            Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcGroup -MaxValue 4
+            Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcGroup
 
             # *RSSBaseProcGroup: NumericParameterBaseValue
             Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcGroup
@@ -274,6 +364,99 @@ $Adapters | ForEach-Object {
 
             # *RSSBaseProcNumber: NumericParameterMinValue
             Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcNumber
+
+            $RequirementsTested += $_.RegistryKeyword
+
+        }
+
+        { $_.RegistryKeyword -eq '*RssMaxProcNumber' } {
+
+            # *RssMaxProcNumber: RegistryDefaultValue
+            Test-RegistryDefaultValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RssMaxProcNumber
+
+            # *RssMaxProcNumber: DisplayParameterType
+            Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RssMaxProcNumber
+
+            # *RssMaxProcNumber: NumericParameterBaseValue
+            Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RssMaxProcNumber
+
+            # *RssMaxProcNumber: NumericParameterStepValue
+            Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RssMaxProcNumber
+
+            # *RssMaxProcNumber: NumericParameterMaxValue
+            Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RssMaxProcNumber
+
+            # *RssMaxProcNumber: NumericParameterMinValue
+            Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RssMaxProcNumber
+
+            $RequirementsTested += $_.RegistryKeyword
+
+        }
+
+        { $_.RegistryKeyword -eq '*RSSMaxProcGroup' } {
+
+            # *RSSMaxProcGroup: RegistryDefaultValue
+            Test-RegistryDefaultValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSMaxProcGroup
+
+            # *RSSMaxProcGroup: DisplayParameterType
+            Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSMaxProcGroup
+
+            # *RSSMaxProcGroup: NumericParameterBaseValue
+            Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSMaxProcGroup
+
+            # *RSSMaxProcGroup: NumericParameterStepValue
+            Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSMaxProcGroup
+
+            # *RSSMaxProcGroup: NumericParameterMinValue
+            Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSMaxProcGroup
+
+            $RequirementsTested += $_.RegistryKeyword
+
+        }
+
+        { $_.RegistryKeyword -eq '*RSSOnHostVPorts' } {
+
+            # *RSS: RegistryDefaultValue
+            Test-RegistryDefaultValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSOnHostVPorts
+
+            # *RSS: DisplayParameterType
+            Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSOnHostVPorts
+
+            # *RSS: ValidRegistryValues
+            Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSOnHostVPorts
+            Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSOnHostVPorts
+
+            $RequirementsTested += $_.RegistryKeyword
+
+        }
+
+        { $_.RegistryKeyword -eq '*RssOrVmqPreference' } {
+
+            # *VMQVlanFiltering: RegistryDefaultValue
+            Test-RegistryDefaultValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.RssOrVmqPreference
+
+            # *VMQVlanFiltering: DisplayParameterType
+            Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.RssOrVmqPreference
+
+            # *VMQVlanFiltering: ValidRegistryValues
+            Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.RssOrVmqPreference
+            Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.RssOrVmqPreference
+
+            $RequirementsTested += $_.RegistryKeyword
+
+        }
+
+        { $_.RegistryKeyword -eq '*RSSProfile' } {
+
+            # *RSSProfile: RegistryDefaultValue
+            Test-RegistryDefaultValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSProfile
+
+            # *RSSProfile: DisplayParameterType
+            Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSProfile
+
+            # *RSSProfile: ValidRegistryValues
+            Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSProfile
+            Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSProfile
 
             $RequirementsTested += $_.RegistryKeyword
 
@@ -331,18 +514,6 @@ $Adapters | ForEach-Object {
 
         }
 
-        { $_.RegistryKeyword -eq '*VMQ' } {
-
-            # *VMQ: RegistryDefaultValue
-            Test-RegistryDefaultValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQ
-
-            # *VMQ: DisplayParameterType
-            Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQ
-
-            $RequirementsTested += $_.RegistryKeyword
-
-        }
-
         { $_.RegistryKeyword -eq 'VLANID' } {
             # Device.Network.LAN.Base.PriorityVLAN - Since all WS devices must be -ge 1Gbps, they must implement
             # Ethernet devices that implement link speeds of gigabit or greater must implement Priority & VLAN tagging according to the IEEE 802.1q specification.
@@ -368,13 +539,66 @@ $Adapters | ForEach-Object {
             $RequirementsTested += $_.RegistryKeyword
 
         }
-    }
 
-    Write-Host ''
+        { $_.RegistryKeyword -eq '*VMQ' } {
+
+            # *VMQ: RegistryDefaultValue
+            Test-RegistryDefaultValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.VMQ
+
+            # *VMQ: DisplayParameterType
+            Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.VMQ
+
+            # *VMQ: ValidRegistryValues
+            Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.VMQ
+            Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.VMQ
+
+            $RequirementsTested += $_.RegistryKeyword
+
+        }
+
+        { $_.RegistryKeyword -eq '*VMQVlanFiltering' } {
+
+            # *VMQVlanFiltering: RegistryDefaultValue
+            Test-RegistryDefaultValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.VMQVlanFiltering
+
+            # *VMQVlanFiltering: DisplayParameterType
+            Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.VMQVlanFiltering
+
+            # *VMQVlanFiltering: ValidRegistryValues
+            Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.VMQVlanFiltering
+            Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.VMQVlanFiltering
+
+            $RequirementsTested += $_.RegistryKeyword
+
+        }
+
+        { $_.RegistryKeyword -eq '*VxlanUDPPortNumber' } {
+
+            # *VxlanUDPPortNumber: RegistryDefaultValue
+            Test-RegistryDefaultValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VxlanUDPPortNumber
+
+            # *VxlanUDPPortNumber: DisplayParameterType
+            Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VxlanUDPPortNumber
+
+            # *VxlanUDPPortNumber: NumericParameterBaseValue
+            Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VxlanUDPPortNumber
+
+            # *VxlanUDPPortNumber: NumericParameterStepValue
+            Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VxlanUDPPortNumber
+
+            # *VxlanUDPPortNumber: NumericParameterMaxValue
+            Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VxlanUDPPortNumber -OrGreater
+
+            # *VxlanUDPPortNumber: NumericParameterMinValue
+            Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VxlanUDPPortNumber -OrLess
+
+            $RequirementsTested += $_.RegistryKeyword
+
+        }
+    }
 
     $RequirementsTested | ForEach-Object {
         $ThisTestedRequirement = $_.TrimStart('*')
-        Write-Host $ThisTestedRequirement
 
         $Requirements.Base = $Requirements.Base | Where-Object { $_ -ne $ThisTestedRequirement }
         $Requirements.TenGbEOrGreater = $Requirements.TenGbEOrGreater | Where-Object { $_ -ne $ThisTestedRequirement }
@@ -382,7 +606,11 @@ $Adapters | ForEach-Object {
         $Requirements.Premium  = $Requirements.Premium | Where-Object { $_ -ne $ThisTestedRequirement }
     }
 
-    Write-Host ''
+    $Certification = 'Fail'
 
-    #[System.Collections.ArrayList] $RemainingRequirements = $Requirements[0..$Requirements.count].ForEach({ $_.foreach({ $_ }) })
+    If     ($Requirements.Premium -eq $Null -and $Requirements.Standard -and
+            $Requirements.TenGbEOrGreater -and $Requirements.Base) { $Certification = 'Premium' }
+    ElseIf ($Requirements.Standard -and $Requirements.TenGbEOrGreater -and $Requirements.Base) { $Certification = 'Standard' }
+    ElseIf ($Requirements.TenGbEOrGreater -and $Requirements.Base) { $Certification = 'TenGbEOrGreater' }
+    ElseIf ($Requirements.Base) { $Certification = 'Base' }
 }

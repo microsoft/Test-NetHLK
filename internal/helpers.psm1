@@ -1,3 +1,5 @@
+using module .\wttlog.psm1
+
 Function Get-AdvancedRegistryKeyInfo {
     param (
         [parameter(Mandatory = $true)]
@@ -53,7 +55,7 @@ Function Get-AdvancedRegistryKeyInfo {
     }
 
     $NetAdapter = Get-NetAdapter -Name $interfaceName -ErrorAction SilentlyContinue
-    If (-not ($NetAdapter)) { return 'Error: Adapter Does Not Exist' }
+    If (-not ($NetAdapter)) { Write-Error 'Error: Adapter Does Not Exist' }
 
     $ReturnKeyInfo = @()
     Get-ChildItem 'HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e972-e325-11ce-bfc1-08002be10318}' -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
@@ -121,7 +123,7 @@ Function Get-NicSwitchInfo {
     }
 
     $NetAdapter = Get-NetAdapter -Name $interfaceName -ErrorAction SilentlyContinue
-    If (-not ($NetAdapter)) { return 'Error: Adapter Does Not Exist' }
+    If (-not ($NetAdapter)) { Write-Error 'Error: Adapter Does Not Exist' }
 
     $ReturnKeyInfo = @()
     Get-ChildItem 'HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e972-e325-11ce-bfc1-08002be10318}' -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
@@ -148,100 +150,6 @@ Function Get-NicSwitchInfo {
     }
 }
 
-Function Test-RegistryDefaultValue {
-    param (
-        $AdvancedRegistryKey ,  # This is what is configured on the adapter
-        $DefinitionPath         # This is what is defined in the datatypes.ps1
-    )
-
-    # *NetworkDirect: RegistryDefaultValue
-    if ($AdvancedRegistryKey.RegistryDefaultValue -eq $DefinitionPath.RegistryDefaultValue) { $PassFail = $pass }
-    Else { $PassFail = $fail; $testsFailed ++ }
-
-    "[$PassFail] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) RegistryDefaultValue is $($DefinitionPath.RegistryDefaultValue)" | Out-File -FilePath $Log -Append
-}
-
-Function Test-DisplayParameterType {
-    param (
-        $AdvancedRegistryKey ,  # This is what is configured on the adapter
-        $DefinitionPath,        # This is what is defined in the datatypes.ps1
-        $MaxValue               # The numerical maximum value. This may not be specified but allows for ints of different sizes
-    )
-
-    if ($MaxValue) {
-        if ($AdvancedRegistryKey.DisplayParameterType -le $DefinitionPath.DisplayParameterType) { $PassFail = $pass }
-        Else { $PassFail = $fail; $testsFailed ++ }
-    }
-    else {
-        if ($AdvancedRegistryKey.DisplayParameterType -eq $DefinitionPath.DisplayParameterType) { $PassFail = $pass }
-        Else { $PassFail = $fail; $testsFailed ++ }
-    }
-
-    "[$PassFail] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is $($DefinitionPath.DisplayParameterType)" | Out-File -FilePath $Log -Append
-}
-
-Function Test-NumericParameterBaseValue {
-    param (
-        $AdvancedRegistryKey ,  # This is what is configured on the adapter
-        $DefinitionPath         # This is what is defined in the datatypes.ps1
-    )
-
-    if ($AdvancedRegistryKey.NumericParameterBaseValue -eq $DefinitionPath.NumericParameterBaseValue) { $PassFail = $pass }
-    Else { $PassFail = $fail; $testsFailed ++ }
-
-    "[$PassFail] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterBaseValue is $($DefinitionPath.NumericParameterBaseValue)" | Out-File -FilePath $Log -Append
-}
-
-Function Test-NumericParameterStepValue {
-    param (
-        $AdvancedRegistryKey ,  # This is what is configured on the adapter
-        $DefinitionPath        # This is what is defined in the datatypes.ps1
-    )
-
-    if ($AdvancedRegistryKey.NumericParameterStepValue -eq $DefinitionPath.NumericParameterStepValue) { $PassFail = $pass }
-    Else { $PassFail = $fail; $testsFailed ++ }
-
-    "[$PassFail] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterStepValue is $($DefinitionPath.NumericParameterStepValue)" | Out-File -FilePath $Log -Append
-}
-
-Function Test-NumericParameterMaxValue {
-    param (
-        $AdvancedRegistryKey ,  # This is what is configured on the adapter
-        $DefinitionPath,        # This is what is defined in the datatypes.ps1
-        [Switch] $OrGreater     # Greater or Equal too the defined value
-    )
-
-    if ($OrGreater) {
-        if ($AdvancedRegistryKey.NumericParameterMaxValue -ge $DefinitionPath.NumericParameterMaxValue) { $PassFail = $pass }
-        Else { $PassFail = $fail; $testsFailed ++ }
-    }
-    else {
-        if ($AdvancedRegistryKey.NumericParameterMaxValue -eq $DefinitionPath.NumericParameterMaxValue) { $PassFail = $pass }
-        Else { $PassFail = $fail; $testsFailed ++ }
-    }
-
-    "[$PassFail] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is $($DefinitionPath.NumericParameterMaxValue)" | Out-File -FilePath $Log -Append
-}
-
-Function Test-NumericParameterMinValue {
-    param (
-        $AdvancedRegistryKey ,  # This is what is configured on the adapter
-        $DefinitionPath,        # This is what is defined in the datatypes.ps1
-        [Switch] $OrLess        # Less than or Equal too the defined value
-    )
-
-    if ($OrLess) {
-        if ($AdvancedRegistryKey.NumericParameterMinValue -le $DefinitionPath.NumericParameterMinValue) { $PassFail = $pass }
-        Else { $PassFail = $fail; $testsFailed ++ }
-    }
-    else {
-        if ($AdvancedRegistryKey.NumericParameterMinValue -eq $DefinitionPath.NumericParameterMinValue) { $PassFail = $pass }
-        Else { $PassFail = $fail; $testsFailed ++ }
-    }
-
-    "[$PassFail] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is $($DefinitionPath.NumericParameterMinValue)" | Out-File -FilePath $Log -Append
-}
-
 Function Test-ContainsAllMSFTRequiredValidRegistryValues {
     param (
         $AdvancedRegistryKey ,  # This is what is configured on the adapter
@@ -253,11 +161,16 @@ Function Test-ContainsAllMSFTRequiredValidRegistryValues {
     $($DefinitionPath.ValidRegistryValues) | ForEach-Object {
         $thisValidRegistryValue = $_
 
-        if ($thisValidRegistryValue -in $AdvancedRegistryKey.ValidRegistryValues) { $PassFail = $pass }
-        Else { $PassFail = $fail; $testsFailed ++ }
+        if ($thisValidRegistryValue -in $AdvancedRegistryKey.ValidRegistryValues) {
+            Write-WTTLogMessage "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) contains the required ValidRegistryValue of $thisValidRegistryValue"
+            "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) contains the required ValidRegistryValue of $thisValidRegistryValue" | Out-File -FilePath $Log -Append
+        }
+        Else {
+            Write-WTTLogMessage "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) contains the required ValidRegistryValue of $thisValidRegistryValue"
+            "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) contains the required ValidRegistryValue of $thisValidRegistryValue" | Out-File -FilePath $Log -Append
 
-        "[$PassFail] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) contains the required ValidRegistryValue of $thisValidRegistryValue" | Out-File -FilePath $Log -Append
-        Remove-Variable PassFail -ErrorAction SilentlyContinue
+            $testsFailed ++
+        }
     }
 }
 
@@ -272,10 +185,244 @@ Function Test-ContainsOnlyMSFTRequiredValidRegistryValues {
     $($AdvancedRegistryKey.ValidRegistryValues) | ForEach-Object {
         $thisValidRegistryValue = $_
 
-        if ($thisValidRegistryValue -in $DefinitionPath.ValidRegistryValues) { $PassFail = $pass }
-        Else { $PassFail = $fail; $testsFailed ++ }
+        if ($thisValidRegistryValue -in $DefinitionPath.ValidRegistryValues) {
+            Write-WTTLogMessage "[$PASS] $thisAdapter defines the ValidRegistryValue of $thisValidRegistryValue allowed for $($AdvancedRegistryKey.RegistryKeyword)"
+            "[$PASS] $thisAdapter defines the ValidRegistryValue of $thisValidRegistryValue allowed for $($AdvancedRegistryKey.RegistryKeyword)" | Out-File -FilePath $Log -Append
+        }
+        Else {
+            Write-WTTLogMessage "[$FAIL] $thisAdapter defines the ValidRegistryValue of $thisValidRegistryValue allowed for $($AdvancedRegistryKey.RegistryKeyword)"
+            "[$FAIL] $thisAdapter defines the ValidRegistryValue of $thisValidRegistryValue allowed for $($AdvancedRegistryKey.RegistryKeyword)" | Out-File -FilePath $Log -Append
 
-        "[$PassFail] $thisAdapter defines the ValidRegistryValue of $thisValidRegistryValue allowed for $($AdvancedRegistryKey.RegistryKeyword)" | Out-File -FilePath $Log -Append
-        Remove-Variable PassFail -ErrorAction SilentlyContinue
+            $testsFailed ++
+        }
+    }
+
+
+    if ($thisValidRegistryValue -in $AdvancedRegistryKey.ValidRegistryValues) {
+        Write-WTTLogMessage "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) contains the required ValidRegistryValue of $thisValidRegistryValue"
+        "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) contains the required ValidRegistryValue of $thisValidRegistryValue" | Out-File -FilePath $Log -Append
+    }
+    Else {
+        Write-WTTLogMessage "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) contains the required ValidRegistryValue of $thisValidRegistryValue"
+        "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) contains the required ValidRegistryValue of $thisValidRegistryValue" | Out-File -FilePath $Log -Append
+
+        $testsFailed ++
+    }
+}
+
+Function Test-DisplayParameterType {
+    param (
+        $AdvancedRegistryKey ,  # This is what is configured on the adapter
+        $DefinitionPath,        # This is what is defined in the datatypes.ps1
+        $MaxValue               # The numerical maximum value. This may not be specified but allows for ints of different sizes
+    )
+
+    if ($MaxValue) {
+        if ($AdvancedRegistryKey.DisplayParameterType -le $DefinitionPath.DisplayParameterType) {
+            Write-WTTLogMessage "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -le $($DefinitionPath.DisplayParameterType)"
+            "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -le $($DefinitionPath.DisplayParameterType)"  | Out-File -FilePath $Log -Append
+        }
+        Else {
+            Write-WTTLogError "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -le $($DefinitionPath.DisplayParameterType)"
+            "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -le $($DefinitionPath.DisplayParameterType)"  | Out-File -FilePath $Log -Append
+
+            $testsFailed ++
+        }
+    }
+    else {
+        if ($AdvancedRegistryKey.DisplayParameterType -eq $DefinitionPath.DisplayParameterType) {
+            Write-WTTLogMessage "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is $($DefinitionPath.DisplayParameterType)"
+            "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is $($DefinitionPath.DisplayParameterType)"  | Out-File -FilePath $Log -Append
+        }
+        Else {
+            Write-WTTLogError "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is $($DefinitionPath.DisplayParameterType)"
+            "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is $($DefinitionPath.DisplayParameterType)"  | Out-File -FilePath $Log -Append
+
+            $testsFailed ++
+        }
+    }
+}
+
+Function Test-NicSwitch {
+    param (
+        $AdvancedRegistryKey ,  # This is what is configured on the adapter
+        $DefinitionPath         # This is what is defined in the datatypes.ps1
+    )
+
+    # For keys of an enum type (DisplayParameterType = 5); tests whether all values in the MSFT definition are available in the adapter
+
+    if ($AdvancedRegistryKey.SwitchName -eq 'Default Switch') {
+        Write-WTTLogMessage "[$PASS] $thisAdapter $($AdvancedRegistryKey.SwitchName) NicSwitch Name is $($DefinitionPath.SwitchName)"
+        "[$PASS] $thisAdapter $($AdvancedRegistryKey.SwitchName) NicSwitch Name is $($DefinitionPath.SwitchName)" | Out-File -FilePath $Log -Append
+    }
+    Else {
+        Write-WTTLogError "[$FAIL] $thisAdapter $($AdvancedRegistryKey.SwitchName) NicSwitch Name is $($DefinitionPath.SwitchName)"
+        "[$FAIL] $thisAdapter $($AdvancedRegistryKey.SwitchName) NicSwitch Name is $($DefinitionPath.SwitchName)" | Out-File -FilePath $Log -Append
+
+        $testsFailed ++
+    }
+
+    if ($AdvancedRegistryKey.Flags -eq 0) {
+        Write-WTTLogMessage "[$PASS] $thisAdapter $($AdvancedRegistryKey.Flags) Flags is $($DefinitionPath.Flags)"
+        "[$PASS] $thisAdapter $($AdvancedRegistryKey.Flags) Flagse is $($DefinitionPath.Flags)" | Out-File -FilePath $Log -Append
+    }
+    Else {
+        Write-WTTLogError "[$FAIL] $thisAdapter $($AdvancedRegistryKey.Flags) Flags is $($DefinitionPath.Flags)"
+        "[$FAIL] $thisAdapter $($AdvancedRegistryKey.Flags) Flags is $($DefinitionPath.Flags)" | Out-File -FilePath $Log -Append
+
+        $testsFailed ++
+    }
+
+    if ($AdvancedRegistryKey.SwitchType -eq 1) {
+        Write-WTTLogMessage "[$PASS] $thisAdapter $($AdvancedRegistryKey.SwitchType) SwitchType is $($DefinitionPath.SwitchType)"
+        "[$PASS] $thisAdapter $($AdvancedRegistryKey.SwitchType) SwitchType is $($DefinitionPath.SwitchType)" | Out-File -FilePath $Log -Append
+    }
+    Else {
+        Write-WTTLogError "[$FAIL] $thisAdapter $($AdvancedRegistryKey.SwitchType) SwitchType is $($DefinitionPath.SwitchType)"
+        "[$FAIL] $thisAdapter $($AdvancedRegistryKey.SwitchType) SwitchType is $($DefinitionPath.SwitchType)" | Out-File -FilePath $Log -Append
+
+        $testsFailed ++
+    }
+
+    if ($AdvancedRegistryKey.SwitchId -eq 0) {
+        Write-WTTLogMessage "[$PASS] $thisAdapter $($AdvancedRegistryKey.SwitchId) SwitchId is $($DefinitionPath.SwitchId)"
+        "[$PASS] $thisAdapter $($AdvancedRegistryKey.SwitchId) SwitchId is $($DefinitionPath.SwitchId)" | Out-File -FilePath $Log -Append
+    }
+    Else {
+        Write-WTTLogError "[$FAIL] $thisAdapter $($AdvancedRegistryKey.SwitchId) SwitchId is $($DefinitionPath.SwitchId)"
+        "[$FAIL] $thisAdapter $($AdvancedRegistryKey.SwitchId) SwitchId is $($DefinitionPath.SwitchId)" | Out-File -FilePath $Log -Append
+
+        $testsFailed ++
+    }
+
+    if ($AdvancedRegistryKey.NumVFs -ge 32) {
+        Write-WTTLogMessage "[$PASS] $thisAdapter $($AdvancedRegistryKey.NumVFs) NumVFs is -ge $($DefinitionPath.NumVFs)"
+        "[$PASS] $thisAdapter $($AdvancedRegistryKey.NumVFs) NumVFs is -ge $($DefinitionPath.NumVFs)" | Out-File -FilePath $Log -Append
+    }
+    Else {
+        Write-WTTLogError "[$FAIL] $thisAdapter $($AdvancedRegistryKey.NumVFs) NumVFs is -ge $($DefinitionPath.NumVFs)"
+        "[$FAIL] $thisAdapter $($AdvancedRegistryKey.NumVFs) NumVFs is -ge $($DefinitionPath.NumVFs)" | Out-File -FilePath $Log -Append
+
+        $testsFailed ++
+    }
+}
+
+Function Test-NumericParameterBaseValue {
+    param (
+        $AdvancedRegistryKey ,  # This is what is configured on the adapter
+        $DefinitionPath         # This is what is defined in the datatypes.ps1
+    )
+
+    if ($AdvancedRegistryKey.NumericParameterBaseValue -eq $DefinitionPath.NumericParameterBaseValue) {
+        Write-WTTLogMessage "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterBaseValue is $($DefinitionPath.NumericParameterBaseValue)"
+        "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterBaseValue is $($DefinitionPath.NumericParameterBaseValue)" | Out-File -FilePath $Log -Append
+    }
+    Else {
+        Write-WTTLogMessage "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterBaseValue is $($DefinitionPath.NumericParameterBaseValue)"
+        "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterBaseValue is $($DefinitionPath.NumericParameterBaseValue)" | Out-File -FilePath $Log -Append
+
+        $testsFailed ++
+    }
+}
+
+Function Test-NumericParameterStepValue {
+    param (
+        $AdvancedRegistryKey ,  # This is what is configured on the adapter
+        $DefinitionPath        # This is what is defined in the datatypes.ps1
+    )
+
+    if ($AdvancedRegistryKey.NumericParameterStepValue -eq $DefinitionPath.NumericParameterStepValue) {
+        Write-WTTLogMessage "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterStepValue is $($DefinitionPath.NumericParameterStepValue)"
+        "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterStepValue is $($DefinitionPath.NumericParameterStepValue)" | Out-File -FilePath $Log -Append
+    }
+    Else {
+        Write-WTTLogMessage "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterStepValue is $($DefinitionPath.NumericParameterStepValue)"
+        "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterStepValue is $($DefinitionPath.NumericParameterStepValue)" | Out-File -FilePath $Log -Append
+
+        $testsFailed ++
+    }
+}
+
+Function Test-NumericParameterMaxValue {
+    param (
+        $AdvancedRegistryKey ,  # This is what is configured on the adapter
+        $DefinitionPath,        # This is what is defined in the datatypes.ps1
+        [Switch] $OrGreater     # Greater or Equal too the defined value
+    )
+
+    if ($OrGreater) {
+        if ($AdvancedRegistryKey.NumericParameterMaxValue -ge $DefinitionPath.NumericParameterMaxValue) {
+            Write-WTTLogMessage "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is -ge $($DefinitionPath.NumericParameterMaxValue)"
+            "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is -ge $($DefinitionPath.NumericParameterMaxValue)" | Out-File -FilePath $Log -Append
+        }
+        Else {
+            Write-WTTLogMessage "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is -ge $($DefinitionPath.NumericParameterMaxValue)"
+            "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is -ge $($DefinitionPath.NumericParameterMaxValue)" | Out-File -FilePath $Log -Append
+
+            $testsFailed ++
+        }
+    }
+    else {
+        if ($AdvancedRegistryKey.NumericParameterMaxValue -eq $DefinitionPath.NumericParameterMaxValue) {
+            Write-WTTLogMessage "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is $($DefinitionPath.NumericParameterMaxValue)"
+            "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is $($DefinitionPath.NumericParameterMaxValue)" | Out-File -FilePath $Log -Append
+        }
+        Else {
+            Write-WTTLogMessage "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is $($DefinitionPath.NumericParameterMaxValue)"
+            "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is $($DefinitionPath.NumericParameterMaxValue)" | Out-File -FilePath $Log -Append
+
+            $testsFailed ++
+        }
+    }
+}
+
+Function Test-NumericParameterMinValue {
+    param (
+        $AdvancedRegistryKey ,  # This is what is configured on the adapter
+        $DefinitionPath,        # This is what is defined in the datatypes.ps1
+        [Switch] $OrLess        # Less than or Equal too the defined value
+    )
+
+    if ($OrLess) {
+        if ($AdvancedRegistryKey.NumericParameterMinValue -le $DefinitionPath.NumericParameterMinValue) {
+            Write-WTTLogMessage "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is -le $($DefinitionPath.NumericParameterMinValue)"
+            "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is $($DefinitionPath.NumericParameterMinValue)" | Out-File -FilePath $Log -Append
+        }
+        Else {
+            Write-WTTLogMessage "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is -le $($DefinitionPath.NumericParameterMinValue)"
+            "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is $($DefinitionPath.NumericParameterMinValue)" | Out-File -FilePath $Log -Append
+
+            $testsFailed ++
+        }
+    }
+    else {
+        if ($AdvancedRegistryKey.NumericParameterMinValue -eq $DefinitionPath.NumericParameterMinValue) {
+            Write-WTTLogMessage "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is -le $($DefinitionPath.NumericParameterMinValue)"
+            "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is $($DefinitionPath.NumericParameterMinValue)" | Out-File -FilePath $Log -Append
+        }
+        Else {
+            Write-WTTLogMessage "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is -le $($DefinitionPath.NumericParameterMinValue)"
+            "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is $($DefinitionPath.NumericParameterMinValue)" | Out-File -FilePath $Log -Append
+
+            $testsFailed ++
+        }
+    }
+}
+
+Function Test-DefaultRegistryValue {
+    param (
+        $AdvancedRegistryKey ,  # This is what is configured on the adapter
+        $DefinitionPath         # This is what is defined in the datatypes.ps1
+    )
+
+    if ($AdvancedRegistryKey.DefaultRegistryValue -eq $DefinitionPath.DefaultRegistryValue) {
+        Write-WTTLogMessage "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)"
+        "[$PASS] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)" | Out-File -FilePath $Log -Append
+    }
+    Else {
+        Write-WTTLogMessage "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)"
+        "[$FAIL] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)" | Out-File -FilePath $Log -Append
+
+        $testsFailed ++
     }
 }
