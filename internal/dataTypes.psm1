@@ -90,7 +90,7 @@ enum FlowControlVal {
     TxRxDisabled    = 0 # Server Default
     TxEnabled       = 1
     RxEnabled       = 2
-    RxTxEnabled     = 3
+    RxTxEnabled     = 3 # Client Default
     AutoNegotiation = 4
 }
 
