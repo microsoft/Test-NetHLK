@@ -47,7 +47,7 @@ function Test-NICProperties {
     $here = Split-Path -Parent (Get-Module -Name Test-NICProperties | Select-Object -First 1).Path
 
     # Keep a separate log for easier diagnostics
-    $global:Log = New-Item -Name 'Results.txt' -Path "$here\Results" -ItemType File -Force
+    $global:Log = New-Item -Name 'Results.log' -Path "$here\Results" -ItemType File -Force
     Start-WTTLog "$here\Results\Results.wtl"
     Start-WTTTest "$here\Results\Results.wtl"
 
@@ -64,8 +64,6 @@ function Test-NICProperties {
         if ($edition.Edition -eq 'ServerAzureStackHCICor' -or $edition.Edition -like '*Server*') { $PassFail = $pass }
         Else { $PassFail = $fail; $testsFailed ++ }
     }
-
-    #$testFile = . "$here\tests\unit\unit.tests.ps1"
 
     <# Tests:
     - Existance of required keys per documented requirements
@@ -113,23 +111,26 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*EncapOverhead' } {
 
+                $thisDefinitionPath = $AdapterDefinition.EncapOverhead
+
                 # *EncapOverhead: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapOverhead
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *EncapOverhead: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapOverhead
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *EncapOverhead: NumericParameterBaseValue
-                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapOverhead
+                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *EncapOverhead: NumericParameterStepValue
-                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapOverhead
+                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
+                #TODO: Fix MaxValue - Should be between 160 and 480
                 # *EncapOverhead: NumericParameterMaxValue
-                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapOverhead -OrGreater
+                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -OrGreater
 
                 # *EncapOverhead: NumericParameterMinValue
-                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapOverhead -OrLess
+                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -OrLess
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -137,15 +138,17 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*EncapsulatedPacketTaskOffloadNvgre' } {
 
+                $thisDefinitionPath = $AdapterDefinition.EncapsulatedPacketTaskOffloadNvgre
+
                 # *EncapsulatedPacketTaskOffloadNvgre: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapsulatedPacketTaskOffloadNvgre
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *EncapsulatedPacketTaskOffloadNvgre: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapsulatedPacketTaskOffloadNvgre
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *EncapsulatedPacketTaskOffloadNvgre: ValidRegistryValues
-                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapsulatedPacketTaskOffloadNvgre
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapsulatedPacketTaskOffloadNvgre
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -153,15 +156,17 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*EncapsulatedPacketTaskOffloadVxlan' } {
 
+                $thisDefinitionPath = $AdapterDefinition.EncapsulatedPacketTaskOffloadVxlan
+
                 # *EncapsulatedPacketTaskOffloadVxlan: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapsulatedPacketTaskOffloadVxlan
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *EncapsulatedPacketTaskOffloadVxlan: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapsulatedPacketTaskOffloadVxlan
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *EncapsulatedPacketTaskOffloadVxlan: ValidRegistryValues
-                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapsulatedPacketTaskOffloadVxlan
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.EncapsulatedPacketTaskOffloadVxlan
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -169,15 +174,17 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*FlowControl' } {
 
+                $thisDefinitionPath = $AdapterDefinition.FlowControl
+
                 # *FlowControl: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.FlowControl
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *FlowControl: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.FlowControl
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *FlowControl: ValidRegistryValues
-                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.FlowControl
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.FlowControl
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -185,15 +192,17 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*InterruptModeration' } {
 
+                $thisDefinitionPath = $AdapterDefinition.InterruptModeration
+
                 # *InterruptModeration: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.InterruptModeration
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *InterruptModeration: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.InterruptModeration
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *InterruptModeration: ValidRegistryValues
-                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.InterruptModeration
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.InterruptModeration
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -201,23 +210,25 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*JumboPacket' } {
 
+                $thisDefinitionPath = $AdapterDefinition.JumboPacket
+
                 # *JumboPacket: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.JumboPacket
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *JumboPacket: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.JumboPacket
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *JumboPacket: NumericParameterBaseValue
-                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.JumboPacket
+                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *JumboPacket: NumericParameterStepValue
-                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.JumboPacket
+                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *JumboPacket: NumericParameterMaxValue
-                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.JumboPacket -OrGreater
+                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -OrGreater
 
                 # *JumboPacket: NumericParameterMinValue
-                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.JumboPacket -OrLess
+                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -OrLess
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -225,15 +236,17 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*LsoV2IPv4' } {
 
+                $thisDefinitionPath = $AdapterDefinition.LSO.LSOv2IPV4
+
                 # *LsoV2IPv4: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.LSO.LsoV2IPv4
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *LsoV2IPv4: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.LSO.LsoV2IPv4
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *LsoV2IPv4: ValidRegistryValues
-                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.LSO.LsoV2IPv4
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.LSO.LsoV2IPv4
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -241,15 +254,62 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*LsoV2IPv6' } {
 
+                $thisDefinitionPath = $AdapterDefinition.LSO.LsoV2IPv4
+
                 # *LsoV2IPv6: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.LSO.LsoV2IPv6
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *LsoV2IPv6: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.LSO.LsoV2IPv6
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *LsoV2IPv6: ValidRegistryValues
-                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.LSO.LsoV2IPv6
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.LSO.LsoV2IPv6
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                $RequirementsTested += $_.RegistryKeyword
+
+            }
+
+            { $_.RegistryKeyword -eq '*MaxRSSProcessors' } {
+
+                $thisNetAdapterRSS = Get-NetAdapterRSS -Name $thisAdapter.Name | Format-Table *MSIX*
+                if ($thisNetAdapterRSS.MsiXEnabled -eq $true -and $thisNetAdapterRSS.MsiXSupported -eq $true) { $MSIXSupport = $true }
+                else { $MSIXSupport = $true }
+
+                if     ($thisAdapter.Speed -ge 10000000000) { $AdapterSpeed = '10Gbps' }
+                elseif ($thisAdapter.Speed -ge 1000000000)  { $AdapterSpeed = '1Gbps' }
+                elseif ($thisAdapter.Speed -ge 100000000)   { $AdapterSpeed = '100Mbps' }
+
+                if ($MSIXSupport -and $AdapterSpeed -eq '10Gbps') {
+                    $thisDefinitionPath = $AdapterDefinition.RSSClass.MaxRSSProcessors.MaxRSSProcessors_MSIXSupport_10GbOrGreater
+                }
+                elseif ($MSIXSupport -and $AdapterSpeed -eq '1Gbps') {
+                    $thisDefinitionPath = $AdapterDefinition.RSSClass.MaxRSSProcessors.MaxRSSProcessors_MSIXSupport_1Gb
+                }
+                elseif (-not($MSIXSupport) -and $AdapterSpeed -eq '10Gbps') {
+                    $thisDefinitionPath = $AdapterDefinition.RSSClass.MaxRSSProcessors.MaxRSSProcessors_No_MSIXSupport_10GbOrGreater
+                }
+                elseif (-not($MSIXSupport) -and $AdapterSpeed -eq '1Gbps') {
+                    $thisDefinitionPath = $AdapterDefinition.RSSClass.MaxRSSProcessors.MaxRSSProcessors_No_MSIXSupport_1Gb
+                }
+
+                # *MaxRSSProcessors: RegistryDefaultValue
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                # *MaxRSSProcessors: DisplayParameterType
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                # *MaxRSSProcessors: NumericParameterBaseValue
+                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                # *MaxRSSProcessors: NumericParameterStepValue
+                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                # *MaxRSSProcessors: NumericParameterMaxValue
+                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                # *MaxRSSProcessors: NumericParameterMinValue
+                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -257,15 +317,17 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*NetworkDirect' } {
 
+                $thisDefinitionPath = $AdapterDefinition.NDKPI.NetworkDirect
+
                 # *NetworkDirect: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.NDKPI.NetworkDirect
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *NetworkDirect: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.NDKPI.NetworkDirect
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *NetworkDirect: ValidRegistryValues
-                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.NDKPI.NetworkDirect
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.NDKPI.NetworkDirect
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -273,16 +335,15 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*NetworkDirectTechnology' } {
 
-                # *NetworkDirectTechnology: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.NDKPI.NetworkDirectTechnology
+                $thisDefinitionPath = $AdapterDefinition.NDKPI.NetworkDirectTechnology
 
                 # *NetworkDirectTechnology: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.NDKPI.NetworkDirectTechnology
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *NetworkDirectTechnology: ValidRegistryValues
                     # As the adapter can choose to support one or more of these types, we will only check that the contained values are within the MSFT defined range
                     # We will not test to ensure that all defined values are found unlike other enums (because an adapter may support both RoCE and RoCEv2 but not iWARP and visa versa)
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.NDKPI.NetworkDirectTechnology
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -290,23 +351,70 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*NumaNodeId' } {
 
+                $thisDefinitionPath = $AdapterDefinition.RSSClass.NumaNodeId
+
                 # *NumaNodeId: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.NumaNodeId
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *NumaNodeId: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.NumaNodeId
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *NumaNodeId: NumericParameterBaseValue
-                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.NumaNodeId
+                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *NumaNodeId: NumericParameterStepValue
-                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.NumaNodeId
+                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *NumaNodeId: NumericParameterMaxValue
-                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.NumaNodeId
+                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *NumaNodeId: NumericParameterMinValue
-                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.NumaNodeId
+                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                $RequirementsTested += $_.RegistryKeyword
+
+            }
+
+            { $_.RegistryKeyword -eq '*NumRSSQueues' } {
+
+                $thisNetAdapterRSS = Get-NetAdapterRSS -Name $thisAdapter.Name | Format-Table *MSIX*
+                if ($thisNetAdapterRSS.MsiXEnabled -eq $true -and $thisNetAdapterRSS.MsiXSupported -eq $true) { $MSIXSupport = $true }
+                else { $MSIXSupport = $true }
+
+                if     ($thisAdapter.Speed -ge 10000000000) { $AdapterSpeed = '10Gbps' }
+                elseif ($thisAdapter.Speed -ge 1000000000)  { $AdapterSpeed = '1Gbps' }
+                elseif ($thisAdapter.Speed -ge 100000000)   { $AdapterSpeed = '100Mbps' }
+
+                if ($MSIXSupport -and $AdapterSpeed -eq '10Gbps') {
+                    $thisDefinitionPath = $AdapterDefinition.RSSClass.NumRSSQueues.NumRSSQueues_MSIXSupport_10GbOrGreater
+                }
+                elseif ($MSIXSupport -and $AdapterSpeed -eq '1Gbps') {
+                    $thisDefinitionPath = $AdapterDefinition.RSSClass.NumRSSQueues.NumRSSQueues_MSIXSupport_1Gb
+                }
+                elseif (-not($MSIXSupport) -and $AdapterSpeed -eq '10Gbps') {
+                    $thisDefinitionPath = $AdapterDefinition.RSSClass.NumRSSQueues.NumRSSQueues_No_MSIXSupport_10GbOrGreater
+                }
+                elseif (-not($MSIXSupport) -and $AdapterSpeed -eq '1Gbps') {
+                    $thisDefinitionPath = $AdapterDefinition.RSSClass.NumRSSQueues.NumRSSQueues_No_MSIXSupport_1Gb
+                }
+
+                # *NumRSSQueues: RegistryDefaultValue
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                # *NumRSSQueues: DisplayParameterType
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                # *NumRSSQueues: NumericParameterBaseValue
+                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                # *NumRSSQueues: NumericParameterStepValue
+                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                # *NumRSSQueues: NumericParameterMaxValue
+                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                # *NumRSSQueues: NumericParameterMinValue
+                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -314,15 +422,35 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*PriorityVLANTag' } {
 
+                $thisDefinitionPath = $AdapterDefinition.PriorityVLANTag
+
                 # *PriorityVLANTag: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.PriorityVLANTag
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *PriorityVLANTag: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.PriorityVLANTag
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *PriorityVLANTag: ValidRegistryValues
-                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.PriorityVLANTag
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.PriorityVLANTag
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                $RequirementsTested += $_.RegistryKeyword
+
+            }
+
+            { $_.RegistryKeyword -eq '*PtpHardwareTimestamp' } {
+
+                $thisDefinitionPath = $AdapterDefinition.PtpHardwareTimestamp
+
+                # *PtpHardwareTimestamp: RegistryDefaultValue
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                # *PtpHardwareTimestamp: DisplayParameterType
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                # *PtpHardwareTimestamp: ValidRegistryValues
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -330,15 +458,17 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*QOS' } {
 
+                $thisDefinitionPath = $AdapterDefinition.QOS
+
                 # *QOS: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.QOS
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *QOS: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.QOS
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *QOS: ValidRegistryValues
-                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.QOS
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.QOS
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -346,8 +476,10 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*ReceiveBuffers' } {
 
+                $thisDefinitionPath = $AdapterDefinition.Buffers.ReceiveBuffers
+
                 # *ReceiveBuffers: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.Buffers.ReceiveBuffers
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -355,15 +487,17 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*RSCIPv4' } {
 
+                $thisDefinitionPath = $AdapterDefinition.RSC.RSCIPv4
+
                 # *RSCIPv4: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSC.RSCIPv4
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSCIPv4: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSC.RSCIPv4
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSCIPv4: ValidRegistryValues
-                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSC.RSCIPv4
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSC.RSCIPv4
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -371,15 +505,17 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*RSCIPv6' } {
 
+                $thisDefinitionPath = $AdapterDefinition.RSC.RSCIPv6
+
                 # *RSCIPv6: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSC.RSCIPv6
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSCIPv6: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSC.RSCIPv6
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSCIPv6: ValidRegistryValues
-                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSC.RSCIPv6
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSC.RSCIPv6
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -387,15 +523,19 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*RSS' } {
 
+                # Device.Network.LAN.RSS.RSS - Make sure the requirements from here are checked
+
+                $thisDefinitionPath = $AdapterDefinition.RSSClass.RSS
+
                 # *RSS: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSS
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSS: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSS
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSS: ValidRegistryValues
-                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSS
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSS
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -403,20 +543,22 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*RSSBaseProcGroup' } {
 
+                $thisDefinitionPath = $AdapterDefinition.RSSClass.RSSBaseProcGroup
+
                 # *RSSBaseProcGroup: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcGroup
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSSBaseProcGroup: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcGroup
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSSBaseProcGroup: NumericParameterBaseValue
-                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcGroup
+                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSSBaseProcGroup: NumericParameterStepValue
-                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcGroup
+                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSSBaseProcGroup: NumericParameterMinValue
-                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcGroup
+                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -424,20 +566,22 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*RSSBaseProcNumber' } {
 
+                $thisDefinitionPath = $AdapterDefinition.RSSClass.RSSBaseProcNumber
+
                 # *RSSBaseProcNumber: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcNumber
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSSBaseProcNumber: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcNumber -MaxValue 4
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -MaxValue 4
 
                 # *RSSBaseProcNumber: NumericParameterBaseValue
-                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcNumber
+                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSSBaseProcNumber: NumericParameterStepValue
-                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcNumber
+                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSSBaseProcNumber: NumericParameterMinValue
-                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSBaseProcNumber
+                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -445,23 +589,25 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*RssMaxProcNumber' } {
 
+                $thisDefinitionPath = $AdapterDefinition.RSSClass.RssMaxProcNumber
+
                 # *RssMaxProcNumber: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RssMaxProcNumber
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RssMaxProcNumber: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RssMaxProcNumber
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RssMaxProcNumber: NumericParameterBaseValue
-                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RssMaxProcNumber
+                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RssMaxProcNumber: NumericParameterStepValue
-                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RssMaxProcNumber
+                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RssMaxProcNumber: NumericParameterMaxValue
-                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RssMaxProcNumber
+                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RssMaxProcNumber: NumericParameterMinValue
-                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RssMaxProcNumber
+                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -469,20 +615,22 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*RSSMaxProcGroup' } {
 
+                $thisDefinitionPath = $AdapterDefinition.RSSClass.RSSMaxProcGroup
+
                 # *RSSMaxProcGroup: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSMaxProcGroup
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSSMaxProcGroup: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSMaxProcGroup
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSSMaxProcGroup: NumericParameterBaseValue
-                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSMaxProcGroup
+                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSSMaxProcGroup: NumericParameterStepValue
-                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSMaxProcGroup
+                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSSMaxProcGroup: NumericParameterMinValue
-                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSMaxProcGroup
+                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -490,15 +638,17 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*RSSOnHostVPorts' } {
 
+                $thisDefinitionPath = $AdapterDefinition.RSSOnHostVPorts
+
                 # *RSSOnHostVPorts: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSOnHostVPorts
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSSOnHostVPorts: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSOnHostVPorts
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSSOnHostVPorts: ValidRegistryValues
-                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSOnHostVPorts
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSOnHostVPorts
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -506,15 +656,17 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*RssOrVmqPreference' } {
 
+                $thisDefinitionPath = $AdapterDefinition.VMQClass.RssOrVmqPreference
+
                 # *RssOrVmqPreference: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.RssOrVmqPreference
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RssOrVmqPreference: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.RssOrVmqPreference
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RssOrVmqPreference: ValidRegistryValues
-                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.RssOrVmqPreference
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.RssOrVmqPreference
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -522,15 +674,17 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*RSSProfile' } {
 
+                $thisDefinitionPath = $AdapterDefinition.RSSClass.RSSProfile
+
                 # *RSSProfile: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSProfile
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSSProfile: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSProfile
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSSProfile: ValidRegistryValues
-                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSProfile
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.RSSClass.RSSProfile
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -538,15 +692,17 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*SRIOV' } {
 
+                $thisDefinitionPath = $AdapterDefinition.SRIOV
+
                 # *SRIOV: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.SRIOV
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *SRIOV: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.SRIOV
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *SRIOV: ValidRegistryValues
-                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.SRIOV
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.SRIOV
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # Test NICSwitch Defaults
                 Test-NicSwitch -AdvancedRegistryKey $NicSwitchConfiguration -DefinitionPath $AdapterDefinition.NicSwitch
@@ -557,8 +713,10 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*TransmitBuffers' } {
 
+                $thisDefinitionPath = $AdapterDefinition.Buffers.TransmitBuffers
+
                 # *TransmitBuffers: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.Buffers.TransmitBuffers
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -566,11 +724,13 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*UsoIPv4' } {
 
+                $thisDefinitionPath = $AdapterDefinition.USO.UsoIPv4
+
                 # *UsoIPv4: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.USO.UsoIPv4
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *UsoIPv4: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.USO.UsoIPv4
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -578,11 +738,13 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*UsoIPv6' } {
 
+                $thisDefinitionPath = $AdapterDefinition.USO.UsoIPv6
+
                 # *UsoIPv6: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.USO.UsoIPv6
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *UsoIPv6: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.USO.UsoIPv6
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -592,23 +754,25 @@ function Test-NICProperties {
                 # Device.Network.LAN.Base.PriorityVLAN - Since all WS devices must be -ge 1Gbps, they must implement
                 # Ethernet devices that implement link speeds of gigabit or greater must implement Priority & VLAN tagging according to the IEEE 802.1q specification.
 
+                $thisDefinitionPath = $AdapterDefinition.VLANID
+
                 # VLANID: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VLANID
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # VLANID: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VLANID
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # VLANID: NumericParameterBaseValue
-                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VLANID
+                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # VLANID: NumericParameterStepValue
-                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VLANID
+                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # VLANID: NumericParameterMaxValue
-                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VLANID
+                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # VLANID: NumericParameterMinValue
-                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VLANID
+                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -616,15 +780,17 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*VMQ' } {
 
+                $thisDefinitionPath = $AdapterDefinition.VMQClass.VMQ
+
                 # *VMQ: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.VMQ
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *VMQ: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.VMQ
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *VMQ: ValidRegistryValues
-                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.VMQ
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.VMQ
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -632,15 +798,17 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*VMQVlanFiltering' } {
 
+                $thisDefinitionPath = $AdapterDefinition.VMQClass.VMQVlanFiltering
+
                 # *VMQVlanFiltering: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.VMQVlanFiltering
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *VMQVlanFiltering: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.VMQVlanFiltering
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *VMQVlanFiltering: ValidRegistryValues
-                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.VMQVlanFiltering
-                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VMQClass.VMQVlanFiltering
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -648,29 +816,31 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*VxlanUDPPortNumber' } {
 
+                $thisDefinitionPath = $AdapterDefinition.VxlanUDPPortNumber
+
                 # *VxlanUDPPortNumber: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VxlanUDPPortNumber
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *VxlanUDPPortNumber: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VxlanUDPPortNumber
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *VxlanUDPPortNumber: NumericParameterBaseValue
-                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VxlanUDPPortNumber
+                Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *VxlanUDPPortNumber: NumericParameterStepValue
-                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VxlanUDPPortNumber
+                Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *VxlanUDPPortNumber: NumericParameterMaxValue
-                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VxlanUDPPortNumber -OrGreater
+                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -OrGreater
 
                 # *VxlanUDPPortNumber: NumericParameterMinValue
-                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $AdapterDefinition.VxlanUDPPortNumber -OrLess
+                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -OrLess
 
                 $RequirementsTested += $_.RegistryKeyword
 
             }
         }
-
+    <#
         $RequirementsTested | ForEach-Object {
             $ThisTestedRequirement = $_.TrimStart('*')
 
@@ -682,11 +852,12 @@ function Test-NICProperties {
 
         $Certification = 'Fail'
 
-        If     ($Requirements.Premium -eq $Null -and $Requirements.Standard -and
-                $Requirements.TenGbEOrGreater -and $Requirements.Base) { $Certification = 'Premium' }
-        ElseIf ($Requirements.Standard -and $Requirements.TenGbEOrGreater -and $Requirements.Base) { $Certification = 'Standard' }
-        ElseIf ($Requirements.TenGbEOrGreater -and $Requirements.Base) { $Certification = 'TenGbEOrGreater' }
-        ElseIf ($Requirements.Base) { $Certification = 'Base' }
+        If     (($Requirements.Premium -eq $Null) -and ($Requirements.Standard -eq $Null)  -and
+                ($Requirements.TenGbEOrGreater -eq $Null) -and ($Requirements.Base -eq $Null)) { $Certification = 'Premium' }
+        ElseIf (($Requirements.Standard -eq $Null) -and ($Requirements.TenGbEOrGreater -eq $Null) -and ($Requirements.Base -eq $Null)) { $Certification = 'Standard' }
+        ElseIf (($Requirements.TenGbEOrGreater -eq $Null) -and ($Requirements.Base -eq $Null)) { $Certification = 'TenGbEOrGreater' }
+        ElseIf  ($Requirements.Base -eq $null) { $Certification = 'Base' }
+    #>
     }
 
     Stop-WTTTest

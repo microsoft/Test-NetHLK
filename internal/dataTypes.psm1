@@ -135,31 +135,31 @@ Class JumboPacket {
 #endregion JumboPacket
 
 #region LSO - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/using-registry-values-to-enable-and-disable-task-offloading
-Class LSOIPv4 {
-    [string]   $RegistryKeyword      = '*LSOIPv4'
+Class LSOv2IPV4 {
+    [string]   $RegistryKeyword      = '*LSOv2IPV4'
     [int]      $DisplayParameterType = 5
 
     [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
-    LSOIPv4 () {}
+    LSOv2IPV4 () {}
 }
 
-Class LSOIPv6 {
-    [string]   $RegistryKeyword      = '*LSOIPv6'
+Class LSOv2IPV6 {
+    [string]   $RegistryKeyword      = '*LSOv2IPV6'
     [int]      $DisplayParameterType = 5
 
     [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
-    LSOIPv6 () {}
+    LSOv2IPV6 () {}
 }
 
 Class LSO {
-    $LSOIPv4 = [LSOIPv4]::new()
-    $LSOIPv6 = [LSOIPv6]::new()
+    $LSOv2IPV4 = [LSOv2IPV4]::new()
+    $LSOv2IPV6 = [LSOv2IPV6]::new()
 
     LSO () {}
 }
@@ -187,9 +187,6 @@ Class NetworkDirect {
 Class NetworkDirectTechnology {
     [string] $RegistryKeyword = '*NetworkDirectTechnology'
     [int]    $DisplayParameterType = 5
-
-    # Vendors will only support what they support; defaults not necessary to test
-    #[string] $DefaultRegistryValue = [NetworkDirectTechnologyVal]::iWARP
 
     [string[]] $ValidRegistryValues = [System.Enum]::GetValues('NetworkDirectTechnologyVal').Value__
 
@@ -725,8 +722,8 @@ enum TenGbEOrGreater_WS2019_HCIv1 {
     RSCIPv4         # Done
     RSCIPv6         # Done
     VLANID          # Done - We should move this to BASE for Server
-    LSOIPv4         # Done
-    LSOIPv6         # Done
+    LSOv2IPV4         # Done
+    LSOv2IPV6         # Done
 
     RSS
     MaxRSSProcessors
@@ -780,8 +777,8 @@ enum TenGbEOrGreater_WS2022_HCIv2 {
     RSCIPv4         # Done
     RSCIPv6         # Done
     VLANID          # Done - We should move this to BASE for Server
-    LSOIPv4         # Done
-    LSOIPv6         # Done
+    LSOv2IPV4         # Done
+    LSOv2IPV6         # Done
 
     RSS
     MaxRSSProcessors
@@ -878,8 +875,8 @@ Class Requirements {
     InterruptModeration
     JumboPacket
 
-    LSOIPv4
-    LSOIPv6
+    LSOv2IPV4
+    LSOv2IPV6
 
     NetworkDirect
     NetworkDirectTechnology
