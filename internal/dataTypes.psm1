@@ -94,13 +94,31 @@ enum FlowControlVal {
     AutoNegotiation = 4
 }
 
-Class FlowControl {
+Class FlowControl_Server {
     [string]   $RegistryKeyword      = '*FlowControl'
     [int]      $DisplayParameterType = 5
 
     [string]   $DefaultRegistryValue = [FlowControlVal]::TxRxDisabled.Value__
     [string]   $DisplayDefaultValue  = [FlowControlVal]::TxRxDisabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('FlowControlVal').Value__
+
+    FlowControl_Server () {}
+}
+
+Class FlowControl_Client {
+    [string]   $RegistryKeyword      = '*FlowControl'
+    [int]      $DisplayParameterType = 5
+
+    [string]   $DefaultRegistryValue = [FlowControlVal]::RxTxEnabled.Value__
+    [string]   $DisplayDefaultValue  = [FlowControlVal]::RxTxEnabled
+    [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('FlowControlVal').Value__
+
+    FlowControl_Client () {}
+}
+
+Class FlowControl {
+    $FlowControl_Server = [FlowControl_Server]::new()
+    $FlowControl_Client = [FlowControl_Client]::new()
 
     FlowControl () {}
 }

@@ -5,10 +5,27 @@ using module .\internal\WttLog.psm1
 function Test-NICProperties {
     <#
     .SYNOPSIS
+    This module performs strict parameter validation of advanced registry keys.
 
     .DESCRIPTION
+    Advanced registry keys are administrator controls for NIC properties. This module validates that those advanced properties
+    follow the defined specification by Microsoft, validating that each key is of an appropriate type and accepts valid values.
+
+    This module is intended to be run through the automated Hardware Lab Kit (HLK) device tests for NICs
+
+    The following tests are performed:
+    - Tests the keys are the correct type (enum or int of 1-byte, 2-bytes, 3-bytes, or 4-bytes)
+    - Tests the keys have the correct default values
+    - Tests that enums contains all the right values
+    - Tests that enums do not contain extra (unauthorized values)
+    - Tests that ints have the correct Base
+    - Tests that ints have the correct Max
+    - Tests that ints have the correct Min
+    - Tests that ints have the correct Step
+    - Not Implemented Yet: Existance of required keys per documented requirements
 
     .EXAMPLE
+    Test-NicProperties -InterfaceName 'pNIC01'
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'Default')]
@@ -51,31 +68,21 @@ function Test-NICProperties {
     Start-WTTLog "$here\Results\Results.wtl"
     Start-WTTTest "$here\Results\Results.wtl"
 
-    #TODO: Check that the adapter exists
     $Adapters = Get-NetAdapter -Name $InterfaceName -Physical | Where-Object MediaType -eq '802.3'
     $AdapterAdvancedProperties = Get-NetAdapterAdvancedProperty -Name $InterfaceName -AllProperties
     $NodeOS = Get-CimInstance -ClassName 'Win32_OperatingSystem'
 
-    ### Verify the TestHost is sufficient version
+    # ID the system as client or server to enable the tests to pivot expected values 
     if (($NodeOS.Caption -like '*Windows Server 2019*') -or
         ($NodeOS.Caption -like '*Windows Server 2022*') -or
-        ($NodeOS.Caption -like '*Azure Stack HCI*')) {
-
-        if ($edition.Edition -eq 'ServerAzureStackHCICor' -or $edition.Edition -like '*Server*') { $PassFail = $pass }
-        Else { $PassFail = $fail; $testsFailed ++ }
+        ($NodeOS.Caption -like '*Azure Stack HCI*')) { $SUTType = 'Server'
     }
-
-    <# Tests:
-    - Existance of required keys per documented requirements
-    - Tests the keys are the correct type
-    - Tests the keys have the correct default values
-    - Tests that enums contains all the right values
-    - Tests that enums do not contain extra (unauthorized values)
-    - Tests that ints have the correct Base
-    - Tests that ints have the correct Max
-    - Tests that ints have the correct Min
-    - Tests that ints have the correct Step
-    #>
+    elseif ($NodeOS.Caption -like '*Windows 10*') {$SUTType = 'Client'}
+    else {
+        Write-WTTLogMessage "The system type (Client or Server) could not be determined. Ensure the machine is either WS2019, WS2022, Azure Stack HCI, or Windows 10. Caption detected: $($NodeOS.Caption)"
+        "The system type (Client or Server) could not be determined. Ensure the machine is either WS2019, WS2022, Azure Stack HCI, or Windows 10. Caption detected: $($NodeOS.Caption)" | Out-File -FilePath $Log -Append
+        throw
+    }
 
     # This is the MSFT definition
     $AdapterDefinition = [AdapterDefinition]::new()
@@ -91,20 +98,6 @@ function Test-NICProperties {
         # This is the configuration from the remote pNIC
         $AdapterConfiguration   = Get-AdvancedRegistryKeyInfo -InterfaceName $thisAdapter.Name -AdapterAdvancedProperties $thisAdapterAdvancedProperties
         $NicSwitchConfiguration = Get-NicSwitchInfo -InterfaceName $thisAdapter.Name
-
-        <#
-        # Device.Network.LAN.Base.100MbOrGreater Windows Server Ethernet devices must be able to link at 1Gbps or higher speeds
-        if ($thisAdapter.Speed -ge 1000000000) {
-          Write-WTTLogMessage "[$Pass] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) RegistryDefaultValue is $($AdapterDefinition.RegistryDefaultValue)"
-          "[$Pass] $($thisAdapter.Name) is 1Gbps or higher" | Out-File -FilePath $Log -Append
-        }
-        else {
-          Write-WTTLogError   "[$Fail] $thisAdapter $($AdvancedRegistryKey.RegistryKeyword) RegistryDefaultValue is $($AdapterDefinition.RegistryDefaultValue)"
-          "[$Fail] $($thisAdapter.Name) is 1Gbps or higher" | Out-File -FilePath $Log -Append
-
-          $testsFailed ++
-        }
-        #>
 
         $RequirementsTested = @()
         Switch -Wildcard ($AdapterConfiguration) {
@@ -174,7 +167,8 @@ function Test-NICProperties {
 
             { $_.RegistryKeyword -eq '*FlowControl' } {
 
-                $thisDefinitionPath = $AdapterDefinition.FlowControl
+                if     ($SUTType -eq 'Server') { $thisDefinitionPath = $AdapterDefinition.FlowControl.FlowControl_Server }
+                elseif ($SUTType -eq 'Client') { $thisDefinitionPath = $AdapterDefinition.FlowControl.FlowControl_Client }
 
                 # *FlowControl: RegistryDefaultValue
                 Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
@@ -865,4 +859,3 @@ function Test-NICProperties {
 }
 
 #TODO: Calculate which capabilities are there and whether they have enough for Standard/Premium
-#TODO: Add MSIX RSS Stuff
