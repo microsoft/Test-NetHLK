@@ -8,7 +8,9 @@ Class ReceiveBuffers {
     [string]   $RegistryKeyword      = '*ReceiveBuffers'
     [int]      $DisplayParameterType = '4' # 4 byte unsigned integer
 
+    # What should base, max, min, step be for this? 
     # There is some variability in this right now; for example Intel has steps of 8 while mellanox steps by 1, etc.
+
     #[int]      $NumericParameterBaseValue = 10   # Must be this value
     #[int]      $NumericParameterMaxValue =   # Must be >= this value 9014 + EncapOverhead (160)
     #[int]      $NumericParameterMinValue =    # Must be < than this value
@@ -20,6 +22,9 @@ Class ReceiveBuffers {
 Class TransmitBuffers {
     [string]   $RegistryKeyword      = '*TransmitBuffers'
     [int]      $DisplayParameterType = '4' # 4 byte unsigned integer
+
+    # What should base, max, min, step be for this? 
+    # There is some variability in this right now; for example Intel has steps of 8 while mellanox steps by 1, etc.
 
     TransmitBuffers () {}
 }
@@ -66,7 +71,7 @@ Class EncapsulatedPacketTaskOffloadNvgre {
 
     [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
     [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
-    [string[]] $ValidRegistryValues  = [enum]::GetValues([EnableDisable])
+    [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
     EncapsulatedPacketTaskOffloadNvgre () {}
 }
