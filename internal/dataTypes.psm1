@@ -575,6 +575,15 @@ Class RSSOnHostVPorts {
 }
 #endregion RSSOnHostVPorts
 
+#region SpeedDuplex - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/enumeration-keywords
+Class SpeedDuplex {
+    [string]   $RegistryKeyword      = '*SpeedDuplex'
+    [int]      $DisplayParameterType = 5
+
+    SpeedDuplex () {}
+}
+#endregion SRIOV
+
 #region SRIOV - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/standardized-inf-keywords-for-sr-iov
 Class SRIOV {
     [string]   $RegistryKeyword      = '*SRIOV'
@@ -722,6 +731,7 @@ Class AdapterDefinition {
     $RSSClass = [RSSClass]::new()
 
     $RSSOnHostVPorts = [RSSOnHostVPorts]::new()
+    $SpeedDuplex     = [SpeedDuplex]::new()
 
     $SRIOV    = [SRIOV]::new()
     $USO      = [USO]::new()
