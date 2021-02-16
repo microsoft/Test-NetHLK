@@ -35,7 +35,7 @@ Describe "$($env:APPVEYOR_BUILD_FOLDER)-Manifest" {
         $requiredModule = Find-Module DataCenterBridging -ErrorAction SilentlyContinue
         It "Should list required modules (DataCenterBridging) on the PowerShell Gallery" {
             if ($requiredModule) { $true | Should be $true }
-            $else { $false | Should be $true }
+            else { $false | Should be $true }
             
         }
     }
