@@ -51,7 +51,9 @@ Description = 'Validate-NIC is a module that compares a NICs driver details agai
 # ProcessorArchitecture = ''
 
 # Modules that must be imported into the global environment prior to importing this module
-RequiredModules = @()
+RequiredModules = @(
+    @{ModuleName = 'DataCenterBridging'; ModuleVersion = '2021.2.16.31'}
+)
 
 # Assemblies that must be loaded prior to importing this module
 # RequiredAssemblies = @()
