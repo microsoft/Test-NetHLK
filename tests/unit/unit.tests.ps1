@@ -33,7 +33,7 @@ Describe "$($env:APPVEYOR_BUILD_FOLDER)-Manifest" {
         }
 
         It "Should list required modules (DataCenterBridging) on the PowerShell Gallery" {
-            Find-Module DataCenterBridging | Shoudl Exist
+            Find-Module DataCenterBridging | Should Exist
         }
     }
 }
