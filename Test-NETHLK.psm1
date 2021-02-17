@@ -37,13 +37,7 @@ function Test-NICAdvancedProperties {
     param (
         [Parameter(Mandatory=$false, HelpMessage="Enter one or more Network Adapter names as returned by Get-NetAdapter 'Name' Property")]
         [ValidateScript({Get-NetAdapter -Name $_})]
-        [string[]] $InterfaceName = '*',
-
-        [Parameter(Mandatory=$false)]
-        [string] $ReportPath,
-
-        [Parameter(Mandatory=$false)]
-        [PSCredential] $Credential
+        [string[]] $InterfaceName = '*'
     )
 
     Clear-Host
@@ -907,11 +901,8 @@ function Test-SwitchCapability {
         [Parameter(Mandatory=$false, HelpMessage="Perform HCI Switch Validation")]
         [Switch] $Switch = $false ,
 
-        [Parameter(Mandatory=$false)]
-        [string] $ReportPath,
-
-        [Parameter(Mandatory=$false)]
-        [PSCredential] $Credential
+        [Parameter(Mandatory=$false, HelpMessage="Performs all Switch Tests regardless of HCI version")]
+        [Switch] $AllTests = $false 
     )
 
     Clear-Host
@@ -928,19 +919,17 @@ function Test-SwitchCapability {
 
     # Keep a separate log for easier diagnostics
     $global:Log = New-Item -Name 'Results.log' -Path "$here\Results" -ItemType File -Force
-    Start-WTTLog "$here\Results\Results.wtl"
-    Start-WTTTest "$here\Results\Results.wtl"
+    #Start-WTTLog "$here\Results\Results.wtl"
+    #Start-WTTTest "$here\Results\Results.wtl"
 
+    # Since these tests only apply to Azure Stack HCI SKUs, we will check for an appropriate SKU first, then narrow down tests by version
     $NodeOS = Get-CimInstance -ClassName 'Win32_OperatingSystem'
+    $OSDisplayVersion = (Get-ComputerInfo -Property OSDisplayVersion).OSDisplayVersion
 
     # ID the system as client or server to enable the tests to pivot expected values 
-    if (($NodeOS.Caption -like '*Windows Server 2019*') -or
-        ($NodeOS.Caption -like '*Windows Server 2022*') -or
-        ($NodeOS.Caption -like '*Azure Stack HCI*')) { $SUTType = 'Server' }
-    elseif ($NodeOS.Caption -like '*Windows 10*') {$SUTType = 'Client'}
-    else {
-        Write-WTTLogError "The system type (Client or Server) could not be determined. Ensure the machine is either WS2019, WS2022, Azure Stack HCI, or Windows 10. Caption detected: $($NodeOS.Caption)"
-        "The system type (Client or Server) could not be determined. Ensure the machine is either WS2019, WS2022, Azure Stack HCI, or Windows 10. Caption detected: $($NodeOS.Caption)" | Out-File -FilePath $Log -Append
+    if (-not($NodeOS.Caption -like '*Azure Stack HCI*')) {
+        #Write-WTTLogError "The OS SKU was incorrect or could not be determined. Ensure the machine is running the Azure Stack HCI SKU. Caption detected: $($NodeOS.Caption)"
+        "The OS SKU was incorrect or could not be determined. Ensure the machine is running the Azure Stack HCI SKU. Caption detected: $($NodeOS.Caption)" | Out-File -FilePath $Log -Append
         
         throw
     }
@@ -958,109 +947,120 @@ function Test-SwitchCapability {
     $FabricInfo = Get-FabricInfo -InterfaceNames $InterfaceName
 
     if (-not ($FabricInfo)) {
-        Write-WTTLogError "The switch did not send an LLDP frame to the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
+        #Write-WTTLogError "The switch did not send an LLDP frame to the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
         "[$FAIL] The switch did not send an LLDP frame to the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again." | Out-File -FilePath $Log -Append
     }
     else {
-        Write-WTTLogMessage "[$PASS] The switch sent an LLDP frame to the interface named: $InterfaceName"
+        #Write-WTTLogMessage "[$PASS] The switch sent an LLDP frame to the interface named: $InterfaceName"
         "[$PASS] The switch sent an LLDP frame to the interface named: $InterfaceName" | Out-File -FilePath $Log -Append
         
         #TODO: ChassisID - Validate that a valid MAC address is set
-    
-        #region VLAN Name 802.1 Subtype 1
-        if ($FabricInfo.$InterfaceName.Fabric.NativeVLAN -ne 'Information Not Provided By Switch') {
-            if ($FabricInfo.$InterfaceName.Fabric.NativeVLAN.Count -eq 1) {
-                #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                "[$Pass] [Test: 802.1AB - 802.1 Subtype 1] The switch must send exactly 1 VLAN" | Out-File -FilePath $Log -Append
-    
-                if ($thisVLAN -gt 0 -and $thisVLAN -lt 4096) {
-                    #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                    "[$Pass] [Test: 802.1AB - 802.1 Subtype 1] The switch sent a valid Native VLAN" | Out-File -FilePath $Log -Append
-                }
-                Else {
-                    #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                    "[$FAIL] [Test: 802.1AB - 802.1 Subtype 1] The switch sent an invalid VLANID of $($FabricInfo.$InterfaceName.Fabric.NativeVLAN)" | Out-File -FilePath $Log -Append
-                }
-            }
-            Else {
-                #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                "[$Fail] [Test: 802.1AB - 802.1 Subtype 1] The switch must send exactly 1 VLAN" | Out-File -FilePath $Log -Append
-            }
-        }
-        Else {
-            #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-            "[$Fail] [Test: 802.1AB - 802.1 Subtype 1] The switch must indicate the Native VLAN" | Out-File -FilePath $Log -Append
-        }
-        #endregion VLAN Name 802.1 Subtype 1
-    
-        #region VLAN Name 802.1 Subtype 3
-        if ($FabricInfo.$InterfaceName.Fabric.VLANID -ne 'Information Not Provided By Switch') {
-            if ($FabricInfo.$InterfaceName.Fabric.VLANID.Count -lt 10) {
-                #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                "[$Pass] [Test: 802.1AB - 802.1 Subtype 3] The switch must send at least 10 VLANs" | Out-File -FilePath $Log -Append
-    
-                $FabricInfo.$InterfaceName.Fabric.VLANID | Foreach-Object {
-                    $thisVLAN = $_
-    
-                    if ($thisVLAN -gt 0 -and $thisVLAN -lt 4096) {
+
+        Switch ($OSDisplayVersion.Substring(0,$OSDisplayVersion.Length-2)) {
+            {$_ -ge '20' -or $AllTests} { 
+                #region VLAN Name 802.1 Subtype 3
+                if ($FabricInfo.$InterfaceName.Fabric.VLANID -ne 'Information Not Provided By Switch') {
+                    if ($FabricInfo.$InterfaceName.Fabric.VLANID.Count -lt 10) {
                         #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                        "[$Pass] [Test: 802.1AB - 802.1 Subtype 3] The switch sent a valid Named VLAN: $thisVLAN" | Out-File -FilePath $Log -Append
+                        "[$Pass] [Test: 802.1AB - 802.1 Subtype 3] The switch must send at least 10 VLANs" | Out-File -FilePath $Log -Append
+            
+                        $FabricInfo.$InterfaceName.Fabric.VLANID | Foreach-Object {
+                            $thisVLAN = $_
+            
+                            if ($thisVLAN -gt 0 -and $thisVLAN -lt 4096) {
+                                #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
+                                "[$Pass] [Test: 802.1AB - 802.1 Subtype 3] The switch sent a valid Named VLAN: $thisVLAN" | Out-File -FilePath $Log -Append
+                            }
+                            Else {
+                                #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
+                                "[$FAIL] [Test: 802.1AB - 802.1 Subtype 3] The switch sent a valid Named VLAN: $thisVLAN" | Out-File -FilePath $Log -Append
+                            }
+                        }
                     }
                     Else {
                         #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                        "[$FAIL] [Test: 802.1AB - 802.1 Subtype 3] The switch sent a valid Named VLAN: $thisVLAN" | Out-File -FilePath $Log -Append
+                        "[$Fail] [Test: 802.1AB - 802.1 Subtype 3] The switch must send at least 10 VLANs" | Out-File -FilePath $Log -Append
                     }
                 }
-            }
-            Else {
-                #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                "[$Fail] [Test: 802.1AB - 802.1 Subtype 3] The switch must send at least 10 VLANs" | Out-File -FilePath $Log -Append
-            }
-        }
-        Else {
-            #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-            "[$Fail] [Test: 802.1AB - 802.1 Subtype 3] The switch must indicate the named VLANs" | Out-File -FilePath $Log -Append
-        }
-        #endregion VLAN Name 802.1 Subtype 3
-    
-        #region VLAN Name 802.3 Subtype 4
-        if ($FabricInfo.$InterfaceName.Fabric.FrameSize -ne 'Information Not Provided By Switch') {
-            if ($FabricInfo.$InterfaceName.Fabric.FrameSize -gt 9200) {
-                #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                "[$Pass] [Test: 802.1AB - 802.3 Subtype 4] The switch must support a frame size of at least 9200" | Out-File -FilePath $Log -Append
-            }
-        }
-        Else {
-            #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-            "[$Fail] [Test: 802.1AB - 802.3 Subtype 4] The switch must indicate the MTU" | Out-File -FilePath $Log -Append
-        }
-        #endregion VLAN Name 802.3 Subtype 4
-    
-        #region VLAN Name 802.1 Subtype 11
-        if ($FabricInfo.$InterfaceName.Fabric.PFC -ne 'Information Not Provided By Switch') {
-            $FabricInfo.$InterfaceName.Fabric.PFC | ForEach-Object {
-                $thisPriority = $_
-    
-                if ($thisPriority -ne 'Priority0' -or $thisPriority -ne 'Priority1' -or $thisPriority -ne 'Priority2' -or $thisPriority -ne 'Priority3' -or
-                    $thisPriority -ne 'Priority4' -or $thisPriority -ne 'Priority5' -or $thisPriority -ne 'Priority6' -or $thisPriority -ne 'Priority7') {
+                Else {
                     #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                    "[$Pass] [Test: 802.1AB - 802.1 Subtype 11] The switch must support valid PFC: $thisPriority" | Out-File -FilePath $Log -Append
+                    "[$Fail] [Test: 802.1AB - 802.1 Subtype 3] The switch must indicate the named VLANs" | Out-File -FilePath $Log -Append
                 }
-                else {
+                #endregion VLAN Name 802.1 Subtype 3
+            
+                #region VLAN Name 802.3 Subtype 4
+                if ($FabricInfo.$InterfaceName.Fabric.FrameSize -ne 'Information Not Provided By Switch') {
+                    if ($FabricInfo.$InterfaceName.Fabric.FrameSize -gt 9200) {
+                        #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
+                        "[$Pass] [Test: 802.1AB - 802.3 Subtype 4] The switch must support a frame size of at least 9200" | Out-File -FilePath $Log -Append
+                    }
+                }
+                Else {
                     #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                    "[$Fail] [Test: 802.1AB - 802.1 Subtype 11] The switch supports an invalid PFC class: $thisPriority" | Out-File -FilePath $Log -Append
+                    "[$Fail] [Test: 802.1AB - 802.3 Subtype 4] The switch must indicate the MTU" | Out-File -FilePath $Log -Append
                 }
+                #endregion VLAN Name 802.3 Subtype 4
+            }
+
+            {$_ -ge '21' -or $AllTests} {
+                #region VLAN Name 802.1 Subtype 1
+                if ($FabricInfo.$InterfaceName.Fabric.NativeVLAN -ne 'Information Not Provided By Switch') {
+                    if ($FabricInfo.$InterfaceName.Fabric.NativeVLAN.Count -eq 1) {
+                        #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
+                        "[$Pass] [Test: 802.1AB - 802.1 Subtype 1] The switch must send exactly 1 VLAN" | Out-File -FilePath $Log -Append
+
+                        if ($thisVLAN -gt 0 -and $thisVLAN -lt 4096) {
+                            #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
+                            "[$Pass] [Test: 802.1AB - 802.1 Subtype 1] The switch sent a valid Native VLAN" | Out-File -FilePath $Log -Append
+                        }
+                        Else {
+                            #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
+                            "[$FAIL] [Test: 802.1AB - 802.1 Subtype 1] The switch sent an invalid VLANID of $($FabricInfo.$InterfaceName.Fabric.NativeVLAN)" | Out-File -FilePath $Log -Append
+                        }
+                    }
+                    Else {
+                        #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
+                        "[$Fail] [Test: 802.1AB - 802.1 Subtype 1] The switch must send exactly 1 VLAN" | Out-File -FilePath $Log -Append
+                    }
+                }
+                Else {
+                    #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
+                    "[$Fail] [Test: 802.1AB - 802.1 Subtype 1] The switch must indicate the Native VLAN" | Out-File -FilePath $Log -Append
+                }
+                #endregion VLAN Name 802.1 Subtype 1
+
+                #region VLAN Name 802.1 Subtype 11
+                if ($FabricInfo.$InterfaceName.Fabric.PFC -ne 'Information Not Provided By Switch') {
+                    $FabricInfo.$InterfaceName.Fabric.PFC | ForEach-Object {
+                        $thisPriority = $_
+
+                        if ($thisPriority -ne 'Priority0' -or $thisPriority -ne 'Priority1' -or $thisPriority -ne 'Priority2' -or $thisPriority -ne 'Priority3' -or
+                            $thisPriority -ne 'Priority4' -or $thisPriority -ne 'Priority5' -or $thisPriority -ne 'Priority6' -or $thisPriority -ne 'Priority7') {
+                            #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
+                            "[$Pass] [Test: 802.1AB - 802.1 Subtype 11] The switch must support valid PFC: $thisPriority" | Out-File -FilePath $Log -Append
+                        }
+                        else {
+                            #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
+                            "[$Fail] [Test: 802.1AB - 802.1 Subtype 11] The switch supports an invalid PFC class: $thisPriority" | Out-File -FilePath $Log -Append
+                        }
+                    }
+                }
+                Else {
+                    #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
+                    "[$Fail] [Test: 802.1AB - 802.1 Subtype 11] The switch must have at least 1 priority enable with PFC" | Out-File -FilePath $Log -Append
+                }
+                #endregion VLAN Name 802.1 Subtype 11
+            }
+
+            default { 
+                #Write-WTTLogError "The OSDisplayVersion was not properly detected by the test. Detected version: $OSDisplayVersion"
+                "[$FAIL] The OSDisplayVersion was not properly detected by the test. Detected version: $OSDisplayVersion" | Out-File -FilePath $Log -Append
             }
         }
-        Else {
-            #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-            "[$Fail] [Test: 802.1AB - 802.1 Subtype 11] The switch must have at least 1 priority enable with PFC" | Out-File -FilePath $Log -Append
-        }
-        #endregion VLAN Name 802.1 Subtype 11
     }
     
-    Stop-WTTTest
-    Stop-WTTLog
+    #Stop-WTTTest
+    #Stop-WTTLog
 }
 
 #TODO: Calculate which capabilities are there and whether they have enough for Standard/Premium
