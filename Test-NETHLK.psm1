@@ -1063,7 +1063,7 @@ function Test-SwitchCapability {
     #Stop-WTTLog
 }
 
-#TODO: Calculate which capabilities are there and whether they have enough for Standard/Premium
-
+<#TODO: Calculate which capabilities are there and whether they have enough for Standard/Premium
+#>
 # Support for Legacy command
 New-Alias -Name 'Test-NICProperties' -Value 'Test-NICAdvancedProperties'
