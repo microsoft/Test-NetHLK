@@ -84,7 +84,6 @@ else
         $env:Path += ";$env:ProgramFiles\Git\cmd"
         Import-Module posh-git -ErrorAction Stop
         git checkout main -q
-        git rm --cached DscResource.Tests
         git add --all
         git status
         git commit -s -m "Update version to $newVersion"

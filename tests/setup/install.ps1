@@ -3,6 +3,8 @@ git.exe clone -q https://github.com/PowerShell/DscResource.Tests
 Import-Module -Name "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
 Invoke-AppveyorInstallTask
 
+Remove-Item .\DscResource.Tests\ -Force -Confirm:$false -Recurse
+
 [string[]]$PowerShellModules = @("Pester", 'posh-git', 'PSScriptAnalyzer')
 
 $ModuleManifest = Test-ModuleManifest .\$($env:RepoName).psd1 -ErrorAction SilentlyContinue
