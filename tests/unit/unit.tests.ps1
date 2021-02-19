@@ -3,6 +3,12 @@ $TestModule = Test-ModuleManifest       .\$($env:repoName).psd1 -ErrorAction Sil
 
 Describe "$($env:APPVEYOR_BUILD_FOLDER)-Manifest" {
     Context Validation {
+        It "[Manifest] - $($env:repoName).psd1 exists" { Test-Path "$($env:repoName).psd1" | Should Be True }
+
+        It "[Test-Path] - $($env:repoName).psm1 exists" { Test-Path "$($env:repoName).psm1" | Should Be True }
+
+        It "[Manifest Property] - $($env:repoName).psm1 exists" { $DataFile.RootModule | Should Be "$($env:repoName).psm1" }
+
         It "[Import-PowerShellDataFile] - $($env:repoName).psd1 is a valid PowerShell Data File" {
             $DataFile | Should Not BeNullOrEmpty
         }

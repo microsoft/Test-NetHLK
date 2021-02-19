@@ -10,9 +10,9 @@ git config --global core.safecrlf false
 # Line break for readability in AppVeyor console
 Write-Host -Object ''
 
-# Make sure we're using the Master branch and that it's not a pull request
+# Make sure we're using the main branch and that it's not a pull request
 # Environmental Variables Guide: https://www.appveyor.com/docs/environment-variables/
-if ($env:APPVEYOR_REPO_BRANCH -ne 'master')
+if ($env:APPVEYOR_REPO_BRANCH -ne 'main')
 {
     Write-Warning -Message "Skipping version increment and publish for branch $env:APPVEYOR_REPO_BRANCH"
 }
@@ -22,7 +22,7 @@ elseif ($env:APPVEYOR_PULL_REQUEST_NUMBER -gt 0)
 }
 else
 {
-    # We're going to add 1 to the revision value since a new commit has been merged to Master
+    # We're going to add 1 to the revision value since a new commit has been merged to main
     # This means that the major / minor / build values will be consistent across GitHub and the Gallery
     Try
     {
@@ -76,18 +76,19 @@ else
         throw $_
     }
 
-    # Publish the new version back to Master on GitHub 
+    # Publish the new version back to main on GitHub 
     Try
     {
         # Set up a path to the git.exe cmd, import posh-git to give us control over git, and then push changes to GitHub
         # Note that "update version" is included in the appveyor.yml file's "skip a build" regex to avoid a loop
         $env:Path += ";$env:ProgramFiles\Git\cmd"
         Import-Module posh-git -ErrorAction Stop
-        git checkout master -q
+        git checkout main -q
+        git rm --cached DscResource.Tests
         git add --all
         git status
         git commit -s -m "Update version to $newVersion"
-        git push origin master -q
+        git push origin main -q
         Write-Host "$($env:RepoName) PowerShell Module version $newVersion published to GitHub." -ForegroundColor Cyan
     }
     Catch
