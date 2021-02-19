@@ -12,6 +12,7 @@ Write-Host -Object ''
 
 # Make sure we're using the main branch and that it's not a pull request
 # Environmental Variables Guide: https://www.appveyor.com/docs/environment-variables/
+
 if ($env:APPVEYOR_REPO_BRANCH -ne 'main')
 {
     Write-Warning -Message "Skipping version increment and publish for branch $env:APPVEYOR_REPO_BRANCH"
@@ -87,6 +88,7 @@ else
         git add --all
         git status
         git commit -s -m "Update version to $newVersion"
+        git branch -u origin/main
         git push origin main -q
         Write-Host "$($env:RepoName) PowerShell Module version $newVersion published to GitHub." -ForegroundColor Cyan
     }
