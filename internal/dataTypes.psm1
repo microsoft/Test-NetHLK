@@ -280,6 +280,19 @@ Class QOS {
 }
 #endregion QOS
 
+#region HWQOS - or QoSOffload
+Class QOSOffload {
+    [string]   $RegistryKeyword      = '*QOSOffload'
+    [int]      $DisplayParameterType = 5
+
+    [string]   $DefaultRegistryValue = [EnableDisable]::Disabled.Value__
+    [string]   $DisplayDefaultValue  = [EnableDisable]::Disabled
+    [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
+
+    QoSOffload () {}
+}
+#endregion QOS
+
 #region RSC - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/standardized-inf-keywords-for-rsc
 Class RSCIPv4 {
     [string]   $RegistryKeyword      = '*RSCIPv4'
@@ -725,9 +738,11 @@ Class AdapterDefinition {
     $PriorityVLANTag      = [PriorityVLANTag]::new()
     $PtpHardwareTimestamp = [PtpHardwareTimestamp]::new()
 
-    $QOS   = [QOS]::new()
-    $RSC   = [RSC]::new()
-
+    $QOS        = [QOS]::new()
+    $QOSOffload = [QOSOffload]::new()
+    
+    $RSC = [RSC]::new()
+    
     $RSSClass = [RSSClass]::new()
 
     $RSSOnHostVPorts = [RSSOnHostVPorts]::new()
@@ -857,6 +872,8 @@ enum Premium_WS2022_HCIv2 {
 
     USOIPv4
     USOIPv6
+
+    QosOffload
 }
 
 $Base = [System.Enum]::GetValues('Base_WS2019_HCIv1') | Foreach-Object { $_ }
@@ -919,6 +936,7 @@ Class Requirements {
     PriorityVLANTag
     PtpHardwareTimestamp
     QOS
+    QosOffload - HW Qos
 
     RSCIPv4
     RSCIPv6

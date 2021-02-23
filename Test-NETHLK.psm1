@@ -195,7 +195,7 @@ function Test-NICAdvancedProperties {
             { $_.RegistryKeyword -eq '*JumboPacket' } {
 
                 $thisDefinitionPath = $AdapterDefinition.JumboPacket
-<# Commented out till this is worked out with the team
+                
                 # *JumboPacket: RegistryDefaultValue
                 Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
@@ -213,7 +213,7 @@ function Test-NICAdvancedProperties {
 
                 # *JumboPacket: NumericParameterMinValue
                 Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -OrLess
-#>
+
                 $RequirementsTested += $_.RegistryKeyword
 
             }
@@ -457,6 +457,24 @@ function Test-NICAdvancedProperties {
                 $RequirementsTested += $_.RegistryKeyword
 
             }
+
+            { $_.RegistryKeyword -eq '*QosOffload' } {
+
+                $thisDefinitionPath = $AdapterDefinition.QosOffload
+
+                # *QosOffload: RegistryDefaultValue
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                # *QosOffload: DisplayParameterType
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                # *QosOffload: ValidRegistryValues
+                Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                $RequirementsTested += $_.RegistryKeyword
+
+            }            
 
             { $_.RegistryKeyword -eq '*ReceiveBuffers' } {
 
