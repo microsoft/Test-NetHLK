@@ -28,6 +28,13 @@ function Test-NICAdvancedProperties {
     - Tests that ints have the correct Step
     - Not Implemented Yet: Existance of required keys per documented requirements
 
+    The following NicSwitch tests are performed
+    - Tests the Name, Flags, SwitchType, SwitchId
+    - Tests the min number of VFs
+
+    The following NDIS tests are performed:
+    - Tests that the minimum NDIS version is used for that OS and adapter
+
     .EXAMPLE Test NIC Advanced Properties on pNIC01
     Test-NICAdvancedProperties -InterfaceName 'pNIC01'
 
@@ -54,32 +61,41 @@ function Test-NICAdvancedProperties {
 
     # Keep a separate log for easier diagnostics
     $global:Log = New-Item -Name 'Results.log' -Path "$here\Results" -ItemType File -Force
-    Start-WTTLog "$here\Results\Results.wtl"
+    Start-WTTLog  "$here\Results\Results.wtl"
     Start-WTTTest "$here\Results\Results.wtl"
 
     $NodeOS = Get-CimInstance -ClassName 'Win32_OperatingSystem'
+    $OSDisplayVersion = (Get-ComputerInfo -Property OSDisplayVersion).OSDisplayVersion
 
-    # ID the system as client or server to enable the tests to pivot expected values 
     if (($NodeOS.Caption -like '*Windows Server 2019*') -or
         ($NodeOS.Caption -like '*Windows Server 2022*') -or
         ($NodeOS.Caption -like '*Azure Stack HCI*')) { $SUTType = 'Server' }
     elseif ($NodeOS.Caption -like '*Windows 10*') {$SUTType = 'Client'}
     else {
+        # Test version of the system being tested. Fail and do not move on if this could not be determined.
         Write-WTTLogError "The system type (Client or Server) could not be determined. Ensure the machine is either WS2019, WS2022, Azure Stack HCI, or Windows 10. Caption detected: $($NodeOS.Caption)"
         "The system type (Client or Server) could not be determined. Ensure the machine is either WS2019, WS2022, Azure Stack HCI, or Windows 10. Caption detected: $($NodeOS.Caption)" | Out-File -FilePath $Log -Append
         
         throw
     }
 
-    $Adapters = Get-NetAdapter -Name $InterfaceName -Physical | Where-Object MediaType -eq '802.3'
+    $Adapters = (Get-NetAdapter -Name $InterfaceName -Physical | Where-Object MediaType -eq '802.3').Name
     $AdapterAdvancedProperties = Get-NetAdapterAdvancedProperty -Name $InterfaceName -AllProperties
     
     # This is the MSFT definition
     $AdapterDefinition = [AdapterDefinition]::new()
+    
+    # Test NDIS Version to ensure it meets the minumum required
+    if     ($NodeOS.BuildNumber -eq '17763') { $NDISDefinition = $AdapterDefinition.NDIS.WS2019  }
+    elseif ($OSDisplayVersion -ge '21287'  ) { $NDISDefinition = $AdapterDefinition.NDIS.WS2022  }
+    elseif ($OSDisplayVersion -eq '20H2'   ) { $NDISDefinition = $AdapterDefinition.NDIS.HCI20H2 }
+    elseif ($OSDisplayVersion -eq '21H2'   ) { $NDISDefinition = $AdapterDefinition.NDIS.HCI21H2 }
 
+    <# Not Implemented
     $Requirements = ([Requirements]::new())
     if     (($OSVersion -eq '2019') -or ($OSVersion -eq 'HCIv1')) { $Requirements = ([Requirements]::new()).WS2019_HCIv1 }
     elseif (($OSVersion -eq '2022') -or ($OSVersion -eq 'HCIv2')) { $Requirements = ([Requirements]::new()).WS2022_HCIv2 }
+    #>
 
     $Adapters | ForEach-Object {
         $thisAdapter = $_
@@ -88,6 +104,25 @@ function Test-NICAdvancedProperties {
         # This is the configuration from the remote pNIC
         $AdapterConfiguration   = Get-AdvancedRegistryKeyInfo -InterfaceName $thisAdapter.Name -AdapterAdvancedProperties $thisAdapterAdvancedProperties
         $NicSwitchConfiguration = Get-NicSwitchInfo -InterfaceName $thisAdapter.Name
+
+        # Test Minimum Required NDIS Version
+        $NDISInfo = Get-NetAdapter -Name $thisAdapter | Select-Object NDISVersion
+        [Bool] $TestedOSVersion = Test-OSVersion -DefinitionPath $NDISDefinition -ConfigurationData $NDISInfo -OrGreater
+
+        if ($TestedOSVersion) {
+            Write-WTTLogMessage "[$PASS] The in use NDIS version for adapter $thisAdapter was greater than or equal to the version required for this OS (Required Version: $NDISDefinition)"
+            "[$PASS] The in use NDIS version for adapter $thisAdapter was greater than or equal to the version required for this OS (Required Version: $NDISDefinition)" | Out-File -FilePath $Log -Append
+            
+            $testsFailed ++
+        }
+        else {
+            Write-WTTLogError "[$FAIL] The in use NDIS version for adapter $thisAdapter was below the required versionfor this OS (Required: $NDISDefinition; Actual: $NDISInfo)"
+            "[$FAIL] The in use NDIS version for adapter $thisAdapter was below the required versionfor this OS (Required: $NDISDefinition; Actual: $NDISInfo)" | Out-File -FilePath $Log -Append
+            
+            $testsFailed ++
+        }
+
+        Remove-Variable NDISDefinition -ErrorAction SilentlyContinue
 
         $RequirementsTested = @()
         Switch -Wildcard ($AdapterConfiguration) {

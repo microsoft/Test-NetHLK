@@ -222,6 +222,19 @@ Class NDKPI {
 }
 #endregion NDKPI
 
+#region NDIS
+Class NDIS {
+    [string] $WS2016  = '6.60'
+    [string] $WS2019  = '6.82'
+    [string] $HCI20H2 = '6.82' #TODO: Update once released
+
+    [string] $WS2022  = '6.85' #TODO: Update once released
+    [string] $HCI21H2 = '6.85' #TODO: Update once released
+
+    NDIS () {}
+}
+#endregion NDIS
+
 #region NicSwitch
 Class NicSwitch {
     $SwitchName = 'Default Switch'  # Must be this value
@@ -732,6 +745,8 @@ Class AdapterDefinition {
 
     $LSO   = [LSO]::new()
     $NDKPI = [NDKPI]::new()
+
+    $NDIS  = [NDIS]::new()
 
     $NicSwitch = [NicSwitch]::new()
 

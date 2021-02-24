@@ -150,6 +150,106 @@ Function Get-NicSwitchInfo {
     }
 }
 
+Function Test-NicSwitch {
+    param (
+        $AdvancedRegistryKey ,  # This is what is configured on the adapter
+        $DefinitionPath         # This is what is defined in the datatypes.ps1
+    )
+
+    if ($AdvancedRegistryKey.SwitchName -eq 'Default Switch') {
+        Write-WTTLogMessage "[$PASS] NicSwitch on name is $($DefinitionPath.SwitchName)"
+        "[$PASS] NicSwitch on name is $($DefinitionPath.SwitchName)" | Out-File -FilePath $Log -Append
+    }
+    Else {
+        Write-WTTLogError "[$FAIL] NicSwitch on name is $($DefinitionPath.SwitchName)"
+        "[$FAIL] NicSwitch on name is $($DefinitionPath.SwitchName)" | Out-File -FilePath $Log -Append
+
+        $testsFailed ++
+    }
+
+    if ($AdvancedRegistryKey.Flags -eq 0) {
+        Write-WTTLogMessage "[$PASS] NicSwitch flags name is $($DefinitionPath.Flags)"
+        "[$PASS] NicSwitch flags on name is $($DefinitionPath.Flags)" | Out-File -FilePath $Log -Append
+    }
+    Else {
+        Write-WTTLogError "[$FAIL] NicSwitch flags name is $($DefinitionPath.Flags)"
+        "[$FAIL] NicSwitch flags on name is $($DefinitionPath.Flags)" | Out-File -FilePath $Log -Append
+
+        $testsFailed ++
+    }
+
+    if ($AdvancedRegistryKey.SwitchType -eq 1) {
+        Write-WTTLogMessage "[$PASS] NicSwitch SwitchType is $($DefinitionPath.SwitchType)"
+        "[$PASS] NicSwitch SwitchType on is $($DefinitionPath.SwitchType)" | Out-File -FilePath $Log -Append
+    }
+    Else {
+        Write-WTTLogError "[$FAIL] NicSwitch SwitchType is $($DefinitionPath.SwitchType)"
+        "[$FAIL] NicSwitch SwitchType on is $($DefinitionPath.SwitchType)" | Out-File -FilePath $Log -Append
+
+        $testsFailed ++
+    }
+
+    if ($AdvancedRegistryKey.SwitchId -eq 0) {
+        Write-WTTLogMessage "[$PASS] NicSwitch SwitchID is $($DefinitionPath.SwitchId)"
+        "[$PASS] NicSwitch SwitchID on is $($DefinitionPath.SwitchId)" | Out-File -FilePath $Log -Append
+    }
+    Else {
+        Write-WTTLogError "[$FAIL] NicSwitch SwitchID is $($DefinitionPath.SwitchId)"
+        "[$FAIL] NicSwitch SwitchID on is $($DefinitionPath.SwitchId)" | Out-File -FilePath $Log -Append
+
+        $testsFailed ++
+    }
+
+    if ($AdvancedRegistryKey.NumVFs -ge 32) {
+        Write-WTTLogMessage "[$PASS] The NicSwitch NumVFs is -ge $($DefinitionPath.NumVFs)"
+        "[$PASS] The NicSwitch NumVFs on is -ge $($DefinitionPath.NumVFs)" | Out-File -FilePath $Log -Append
+    }
+    Else {
+        Write-WTTLogError "[$FAIL] The NicSwitch NumVFs is -ge $($DefinitionPath.NumVFs)"
+        "[$FAIL] The NicSwitch NumVFs on is -ge $($DefinitionPath.NumVFs)" | Out-File -FilePath $Log -Append
+
+        $testsFailed ++
+    }
+}
+
+Function Test-OSVersion {
+        <#
+    .SYNOPSIS
+    This is a generic function that compares the input value from the DefinitionPath to the Value from Configuration Data.
+
+    This function accepts only single entries. To call multiple times, loop from the caller and make multiple calls
+
+    .EXAMPLE Compare version data with the defined version
+    Test-OSVersion -DefinitionPath $thisDefinition -ConfigurationData $thisConfiguration
+
+    .EXAMPLE Compare version data greater than or equal to the defined version
+    Test-OSVersion -DefinitionPath $thisDefinition -ConfigurationData $thisConfiguration -OrGreater
+
+    .EXAMPLE Compare version data less than or equal to the defined version
+    Test-OSVersion -DefinitionPath $thisDefinition -ConfigurationData $thisConfiguration -OrLess
+
+    #>
+    param (
+        $ConfigurationData ,  # This is what is configured on the adapter
+        $DefinitionPath    ,  # This is what is defined in the datatypes.ps1
+        [Switch] $OrGreater,  # Greater or Equal too the defined value
+        [Switch] $OrLess      # Less than or Equal too the defined value
+    )
+    
+    if ( $OrGreater ) {
+        if   ($ConfigurationData -ge $DefinitionPath) { return $true }
+        else { return $false }
+    }
+    elseif   ( $OrLess ) {
+        if   ( $ConfigurationData -le $DefinitionPath) { return $true }
+        else { return $false }
+    }
+    else {
+        if   ($ConfigurationData -eq $DefinitionPath) { return $true }
+        else { return $false }
+    }
+}
+
 Function Test-ContainsAllMSFTRequiredValidRegistryValues {
     param (
         $AdvancedRegistryKey ,  # This is what is configured on the adapter
@@ -240,68 +340,6 @@ Function Test-DisplayParameterType {
 
             $testsFailed ++
         }
-    }
-}
-
-Function Test-NicSwitch {
-    param (
-        $AdvancedRegistryKey ,  # This is what is configured on the adapter
-        $DefinitionPath         # This is what is defined in the datatypes.ps1
-    )
-
-    if ($AdvancedRegistryKey.SwitchName -eq 'Default Switch') {
-        Write-WTTLogMessage "[$PASS] NicSwitch on name is $($DefinitionPath.SwitchName)"
-        "[$PASS] NicSwitch on name is $($DefinitionPath.SwitchName)" | Out-File -FilePath $Log -Append
-    }
-    Else {
-        Write-WTTLogError "[$FAIL] NicSwitch on name is $($DefinitionPath.SwitchName)"
-        "[$FAIL] NicSwitch on name is $($DefinitionPath.SwitchName)" | Out-File -FilePath $Log -Append
-
-        $testsFailed ++
-    }
-
-    if ($AdvancedRegistryKey.Flags -eq 0) {
-        Write-WTTLogMessage "[$PASS] NicSwitch flags name is $($DefinitionPath.Flags)"
-        "[$PASS] NicSwitch flags on name is $($DefinitionPath.Flags)" | Out-File -FilePath $Log -Append
-    }
-    Else {
-        Write-WTTLogError "[$FAIL] NicSwitch flags name is $($DefinitionPath.Flags)"
-        "[$FAIL] NicSwitch flags on name is $($DefinitionPath.Flags)" | Out-File -FilePath $Log -Append
-
-        $testsFailed ++
-    }
-
-    if ($AdvancedRegistryKey.SwitchType -eq 1) {
-        Write-WTTLogMessage "[$PASS] NicSwitch SwitchType is $($DefinitionPath.SwitchType)"
-        "[$PASS] NicSwitch SwitchType on is $($DefinitionPath.SwitchType)" | Out-File -FilePath $Log -Append
-    }
-    Else {
-        Write-WTTLogError "[$FAIL] NicSwitch SwitchType is $($DefinitionPath.SwitchType)"
-        "[$FAIL] NicSwitch SwitchType on is $($DefinitionPath.SwitchType)" | Out-File -FilePath $Log -Append
-
-        $testsFailed ++
-    }
-
-    if ($AdvancedRegistryKey.SwitchId -eq 0) {
-        Write-WTTLogMessage "[$PASS] NicSwitch SwitchID is $($DefinitionPath.SwitchId)"
-        "[$PASS] NicSwitch SwitchID on is $($DefinitionPath.SwitchId)" | Out-File -FilePath $Log -Append
-    }
-    Else {
-        Write-WTTLogError "[$FAIL] NicSwitch SwitchID is $($DefinitionPath.SwitchId)"
-        "[$FAIL] NicSwitch SwitchID on is $($DefinitionPath.SwitchId)" | Out-File -FilePath $Log -Append
-
-        $testsFailed ++
-    }
-
-    if ($AdvancedRegistryKey.NumVFs -ge 32) {
-        Write-WTTLogMessage "[$PASS] The NicSwitch NumVFs is -ge $($DefinitionPath.NumVFs)"
-        "[$PASS] The NicSwitch NumVFs on is -ge $($DefinitionPath.NumVFs)" | Out-File -FilePath $Log -Append
-    }
-    Else {
-        Write-WTTLogError "[$FAIL] The NicSwitch NumVFs is -ge $($DefinitionPath.NumVFs)"
-        "[$FAIL] The NicSwitch NumVFs on is -ge $($DefinitionPath.NumVFs)" | Out-File -FilePath $Log -Append
-
-        $testsFailed ++
     }
 }
 
