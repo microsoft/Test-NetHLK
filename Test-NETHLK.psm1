@@ -1,5 +1,6 @@
 using module .\internal\helpers.psm1
 using module .\internal\datatypes.psm1
+using assembly .\internal\Microsoft.WTT.Log.dll
 using module .\internal\WttLog.psm1
 using module DataCenterBridging
 
@@ -97,15 +98,15 @@ function Test-NICAdvancedProperties {
 
     $Adapters | ForEach-Object {
         $thisAdapter = $_
-        $thisAdapterAdvancedProperties = $AdapterAdvancedProperties | Where-Object Name -eq $thisAdapter.Name
+        $thisAdapterAdvancedProperties = $AdapterAdvancedProperties | Where-Object Name -eq $thisAdapter
 
         # This is the configuration from the remote pNIC
-        $AdapterConfiguration   = Get-AdvancedRegistryKeyInfo -InterfaceName $thisAdapter.Name -AdapterAdvancedProperties $thisAdapterAdvancedProperties
-        $NicSwitchConfiguration = Get-NicSwitchInfo -InterfaceName $thisAdapter.Name
+        $AdapterConfiguration   = Get-AdvancedRegistryKeyInfo -InterfaceName $thisAdapter -AdapterAdvancedProperties $thisAdapterAdvancedProperties
+        $NicSwitchConfiguration = Get-NicSwitchInfo -InterfaceName $thisAdapter -ErrorAction SilentlyContinue
 
         # Test Minimum Required NDIS Version
         $NDISInfo = Get-NetAdapter -Name $thisAdapter | Select-Object NDISVersion
-        [Bool] $TestedOSVersion = Test-OSVersion -DefinitionPath $NDISDefinition -ConfigurationData $NDISInfo -OrGreater
+        [Bool] $TestedOSVersion = Test-OSVersion -DefinitionPath $NDISDefinition -ConfigurationData $NDISInfo.NDISVersion -OrGreater
 
         if ($TestedOSVersion) {
             Write-WTTLogMessage "[$PASS] The in use NDIS version for adapter $thisAdapter was greater than or equal to the version required for this OS (Required Version: $NDISDefinition)"
@@ -289,7 +290,7 @@ function Test-NICAdvancedProperties {
 
             { $_.RegistryKeyword -eq '*MaxRSSProcessors' } {
 
-                $thisNetAdapterRSS = Get-NetAdapterRSS -Name $thisAdapter.Name | Format-Table *MSIX*
+                $thisNetAdapterRSS = Get-NetAdapterRSS -Name $thisAdapter | Format-Table *MSIX*
                 if ($thisNetAdapterRSS.MsiXEnabled -eq $true -and $thisNetAdapterRSS.MsiXSupported -eq $true) { $MSIXSupport = $true }
                 else { $MSIXSupport = $true }
 
@@ -394,7 +395,7 @@ function Test-NICAdvancedProperties {
 
             { $_.RegistryKeyword -eq '*NumRSSQueues' } {
 
-                $thisNetAdapterRSS = Get-NetAdapterRSS -Name $thisAdapter.Name | Format-Table *MSIX*
+                $thisNetAdapterRSS = Get-NetAdapterRSS -Name $thisAdapter | Format-Table *MSIX*
                 if ($thisNetAdapterRSS.MsiXEnabled -eq $true -and $thisNetAdapterRSS.MsiXSupported -eq $true) { $MSIXSupport = $true }
                 else { $MSIXSupport = $true }
 
@@ -906,7 +907,6 @@ function Test-NICAdvancedProperties {
     #>
     }
     
-
     Stop-WTTTest
     Stop-WTTLog
 }
@@ -1103,8 +1103,8 @@ function Test-SwitchCapability {
         }
     }
     
-    #Stop-WTTTest
-    #Stop-WTTLog
+    Stop-WTTTest
+    Stop-WTTLog
 }
 
 New-Alias -Name 'Test-NICProperties' -Value 'Test-NICAdvancedProperties'
