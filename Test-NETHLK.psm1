@@ -53,11 +53,9 @@ function Test-NICAdvancedProperties {
     $global:fail = 'FAIL'
     $global:testsFailed = 0
 
-    Get-Command Get-FabricInfo
-
     # Once in the Program Files path, use this:
-    # $here = Split-Path -Parent (Get-Module -Name Test-NICProperties -ListAvailable | Select-Object -First 1).Path
-    $here = Split-Path -Parent (Get-Module -Name Test-NICProperties | Select-Object -First 1).Path
+    # $here = Split-Path -Parent (Get-Module -Name Test-NETHLK -ListAvailable | Select-Object -First 1).Path
+    $here = Split-Path -Parent (Get-Module -Name Test-NETHLK | Select-Object -First 1).Path
 
     # Keep a separate log for easier diagnostics
     $global:Log = New-Item -Name 'Results.log' -Path "$here\Results" -ItemType File -Force
