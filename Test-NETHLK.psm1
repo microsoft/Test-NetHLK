@@ -945,12 +945,9 @@ function Test-SwitchCapability {
 
     [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
-        [Parameter(Mandatory=$false, HelpMessage="Enter one or more Network Adapter names as returned by Get-NetAdapter 'Name' Property")]
+        [Parameter(Mandatory=$true, HelpMessage="Enter the name of a Network Adapter as returned by Get-NetAdapter 'Name' Property")]
         [ValidateScript({Get-NetAdapter -Name $_})]
-        [string[]] $InterfaceName = '*',
-
-        [Parameter(Mandatory=$false, HelpMessage="Perform HCI Switch Validation")]
-        [Switch] $Switch = $false ,
+        [string] $InterfaceName ,
 
         [Parameter(Mandatory=$false, HelpMessage="Performs all Switch Tests regardless of HCI version")]
         [Switch] $AllTests = $false 
@@ -962,16 +959,12 @@ function Test-SwitchCapability {
     $global:fail = 'FAIL'
     $global:testsFailed = 0
 
-    Get-Command Get-FabricInfo
-
-    # Once in the Program Files path, use this:
-    # $here = Split-Path -Parent (Get-Module -Name Test-NICProperties -ListAvailable | Select-Object -First 1).Path
-    $here = Split-Path -Parent (Get-Module -Name Test-NICProperties | Select-Object -First 1).Path
+    $here = Split-Path -Parent (Get-Module -Name Test-NetHLK -ListAvailable | Select-Object -First 1).Path
 
     # Keep a separate log for easier diagnostics
     $global:Log = New-Item -Name 'Results.log' -Path "$here\Results" -ItemType File -Force
-    #Start-WTTLog "$here\Results\Results.wtl"
-    #Start-WTTTest "$here\Results\Results.wtl"
+    Start-WTTLog "$here\Results\Results.wtl"
+    Start-WTTTest "$here\Results\Results.wtl"
 
     # Since these tests only apply to Azure Stack HCI SKUs, we will check for an appropriate SKU first, then narrow down tests by version
     $NodeOS = Get-CimInstance -ClassName 'Win32_OperatingSystem'
@@ -985,13 +978,13 @@ function Test-SwitchCapability {
         throw
     }
 
-    if ($InterfaceName.Count -gt 1) { Write-WTTLogMessage "Testing will occur only on the first adapter $($InterfaceName | Select-Object -First 1)." }
+    if ($InterfaceName.Count -gt 1) { <#Write-WTTLogMessage "Testing will occur only on the first adapter $($InterfaceName | Select-Object -First 1)."#> }
     $InterfaceName = ($InterfaceName | Select-Object -First 1)
 
-    Write-WTTLogMessage "Enabling LLDP on interfaces: $InterfaceName."
+    #Write-WTTLogMessage "Enabling LLDP on interfaces: $InterfaceName."
     Enable-FabricInfo -InterfaceNames $InterfaceName
 
-    Write-WTTLogMessage "Sleep for 35 seconds to ensure an LLDP packet is captured"
+    #Write-WTTLogMessage "Sleep for 35 seconds to ensure an LLDP packet is captured"
     Start-Sleep -Seconds 35
 
     Remove-Variable FabricInfo -ErrorAction SilentlyContinue
