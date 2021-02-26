@@ -51,7 +51,7 @@ Description = 'Test-NetHLK is a module that compares a NICs driver configuration
 # ProcessorArchitecture = ''
 
 # Modules that must be imported into the global environment prior to importing this module
-RequiredModules = @(@{ModuleName = 'DataCenterBridging'; ModuleVersion = '2021.2.16.31'; })
+RequiredModules = @(@{ModuleName = 'DataCenterBridging'; ModuleVersion = '2021.2.16.33'; })
 
 # Assemblies that must be loaded prior to importing this module
 # RequiredAssemblies = @()
