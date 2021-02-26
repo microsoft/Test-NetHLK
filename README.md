@@ -29,6 +29,10 @@ Example Use:
 
 This cmdlet is used to verify that a network switch supports the [documented requirements](https://docs.microsoft.com/en-us/azure-stack/hci/concepts/physical-network-requirements) for Azure Stack HCI.
 
+# Property Definitions
+
+Coming Soon
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
