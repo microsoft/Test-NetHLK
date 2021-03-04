@@ -105,7 +105,7 @@ function Test-NICAdvancedProperties {
         $NicSwitchConfiguration = Get-NicSwitchInfo -InterfaceName $thisAdapter.Name -ErrorAction SilentlyContinue
 
         # Test Minimum Required NDIS Version
-        $NDISInfo = Get-NetAdapter -Name $thisAdapter.Name | Select-Object NDISVersion
+        $NDISInfo = (Get-NetAdapter -Name $thisAdapter.Name).NDISVersion
         [Bool] $TestedOSVersion = Test-OSVersion -DefinitionPath $NDISDefinition -ConfigurationData $NDISInfo.NDISVersion -OrGreater
 
         if ($TestedOSVersion) {
