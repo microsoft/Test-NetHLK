@@ -53,7 +53,7 @@ Class EncapOverhead {
     [int]      $DefaultRegistryValue = 0
 
     [int]      $NumericParameterBaseValue = 10  # Must be this value
-    [int]      $NumericParameterMaxValue  = 480  # Must be <= 480 and >= 160
+    [int]      $NumericParameterMaxValue  = 160  # Must be >= 160
     [int]      $NumericParameterMinValue  = 0    # Must be this value
     [int]      $NumericParameterStepValue = 32  # Must be this value
 
