@@ -12,7 +12,7 @@
 RootModule = 'Test-NETHLK.psm1'
 
 # Version number of this module.
-ModuleVersion = '2021.3.4.34'
+ModuleVersion = '2021.3.4.35'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
