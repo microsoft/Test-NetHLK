@@ -78,7 +78,7 @@ function Test-NICAdvancedProperties {
         throw
     }
 
-    $Adapters = (Get-NetAdapter -Name $InterfaceName -Physical | Where-Object MediaType -eq '802.3').Name
+    $Adapters = Get-NetAdapter -Name $InterfaceName -Physical | Where-Object MediaType -eq '802.3'
     $AdapterAdvancedProperties = Get-NetAdapterAdvancedProperty -Name $InterfaceName -AllProperties
     
     # This is the MSFT definition
@@ -98,25 +98,25 @@ function Test-NICAdvancedProperties {
 
     $Adapters | ForEach-Object {
         $thisAdapter = $_
-        $thisAdapterAdvancedProperties = $AdapterAdvancedProperties | Where-Object Name -eq $thisAdapter
+        $thisAdapterAdvancedProperties = $AdapterAdvancedProperties | Where-Object Name -eq $thisAdapter.Name
 
         # This is the configuration from the remote pNIC
-        $AdapterConfiguration   = Get-AdvancedRegistryKeyInfo -InterfaceName $thisAdapter -AdapterAdvancedProperties $thisAdapterAdvancedProperties
-        $NicSwitchConfiguration = Get-NicSwitchInfo -InterfaceName $thisAdapter -ErrorAction SilentlyContinue
+        $AdapterConfiguration   = Get-AdvancedRegistryKeyInfo -InterfaceName $thisAdapter.Name -AdapterAdvancedProperties $thisAdapterAdvancedProperties
+        $NicSwitchConfiguration = Get-NicSwitchInfo -InterfaceName $thisAdapter.Name -ErrorAction SilentlyContinue
 
         # Test Minimum Required NDIS Version
-        $NDISInfo = Get-NetAdapter -Name $thisAdapter | Select-Object NDISVersion
+        $NDISInfo = Get-NetAdapter -Name $thisAdapter.Name | Select-Object NDISVersion
         [Bool] $TestedOSVersion = Test-OSVersion -DefinitionPath $NDISDefinition -ConfigurationData $NDISInfo.NDISVersion -OrGreater
 
         if ($TestedOSVersion) {
-            Write-WTTLogMessage "[$PASS] The in use NDIS version for adapter $thisAdapter was greater than or equal to the version required for this OS (Required Version: $NDISDefinition)"
-            "[$PASS] The in use NDIS version for adapter $thisAdapter was greater than or equal to the version required for this OS (Required Version: $NDISDefinition)" | Out-File -FilePath $Log -Append
+            Write-WTTLogMessage "[$PASS] The in use NDIS version for adapter $($thisAdapter.Name) was greater than or equal to the version required for this OS (Required Version: $NDISDefinition)"
+            "[$PASS] The in use NDIS version for adapter $($thisAdapter.Name) was greater than or equal to the version required for this OS (Required Version: $NDISDefinition)" | Out-File -FilePath $Log -Append
             
             $testsFailed ++
         }
         else {
-            Write-WTTLogError "[$FAIL] The in use NDIS version for adapter $thisAdapter was below the required versionfor this OS (Required: $NDISDefinition; Actual: $NDISInfo)"
-            "[$FAIL] The in use NDIS version for adapter $thisAdapter was below the required versionfor this OS (Required: $NDISDefinition; Actual: $NDISInfo)" | Out-File -FilePath $Log -Append
+            Write-WTTLogError "[$FAIL] The in use NDIS version for adapter $($thisAdapter.Name) was below the required versionfor this OS (Required: $NDISDefinition; Actual: $NDISInfo)"
+            "[$FAIL] The in use NDIS version for adapter $($thisAdapter.Name) was below the required versionfor this OS (Required: $NDISDefinition; Actual: $NDISInfo)" | Out-File -FilePath $Log -Append
             
             $testsFailed ++
         }
@@ -289,7 +289,7 @@ function Test-NICAdvancedProperties {
 
             { $_.RegistryKeyword -eq '*MaxRSSProcessors' } {
 
-                $thisNetAdapterRSS = Get-NetAdapterRSS -Name $thisAdapter | Format-Table *MSIX*
+                $thisNetAdapterRSS = Get-NetAdapterRSS -Name $thisAdapter.Name | Format-Table *MSIX*
                 if ($thisNetAdapterRSS.MsiXEnabled -eq $true -and $thisNetAdapterRSS.MsiXSupported -eq $true) { $MSIXSupport = $true }
                 else { $MSIXSupport = $true }
 
@@ -394,7 +394,7 @@ function Test-NICAdvancedProperties {
 
             { $_.RegistryKeyword -eq '*NumRSSQueues' } {
 
-                $thisNetAdapterRSS = Get-NetAdapterRSS -Name $thisAdapter | Format-Table *MSIX*
+                $thisNetAdapterRSS = Get-NetAdapterRSS -Name $thisAdapter.Name | Format-Table *MSIX*
                 if ($thisNetAdapterRSS.MsiXEnabled -eq $true -and $thisNetAdapterRSS.MsiXSupported -eq $true) { $MSIXSupport = $true }
                 else { $MSIXSupport = $true }
 
