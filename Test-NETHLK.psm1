@@ -142,12 +142,11 @@ function Test-NICAdvancedProperties {
                 # *EncapOverhead: NumericParameterStepValue
                 Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
-                #TODO: Fix MaxValue - Should be between 160 and 480
                 # *EncapOverhead: NumericParameterMaxValue
                 Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -OrGreater
 
                 # *EncapOverhead: NumericParameterMinValue
-                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -OrLess
+                Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
