@@ -237,15 +237,15 @@ Function Test-OSVersion {
     )
     
     if ( $OrGreater ) {
-        if   ($ConfigurationData -ge $DefinitionPath) { return $true }
+        if   ( $DefinitionPath -ge $ConfigurationData ) { return $true }
         else { return $false }
     }
     elseif   ( $OrLess ) {
-        if   ( $ConfigurationData -le $DefinitionPath) { return $true }
+        if   ( $DefinitionPath -le $ConfigurationData ) { return $true }
         else { return $false }
     }
     else {
-        if   ($ConfigurationData -eq $DefinitionPath) { return $true }
+        if   ( $DefinitionPath -eq $ConfigurationData ) { return $true }
         else { return $false }
     }
 }
