@@ -124,7 +124,7 @@ function Test-NICAdvancedProperties {
         Remove-Variable NDISDefinition -ErrorAction SilentlyContinue
 
         $RequirementsTested = @()
-        Switch -Wildcard ($AdapterConfiguration) {
+        Switch -Wildcard ($AdapterConfiguration | Sort RegistryKeyword) {
 
             { $_.RegistryKeyword -eq '*EncapOverhead' } {
 
