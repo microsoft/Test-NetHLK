@@ -86,7 +86,7 @@ function Test-NICAdvancedProperties {
     
     # Test NDIS Version to ensure it meets the minumum required
     if     ($NodeOS.BuildNumber -eq '17763') { $NDISDefinition = $AdapterDefinition.NDIS.WS2019  }
-    elseif ($OSDisplayVersion -ge '21287'  ) { $NDISDefinition = $AdapterDefinition.NDIS.WS2022  }
+    elseif ($NodeOS.BuildNumber -ge '21287') { $NDISDefinition = $AdapterDefinition.NDIS.WS2022  }
     elseif ($OSDisplayVersion -eq '20H2'   ) { $NDISDefinition = $AdapterDefinition.NDIS.HCI20H2 }
     elseif ($OSDisplayVersion -eq '21H2'   ) { $NDISDefinition = $AdapterDefinition.NDIS.HCI21H2 }
 
