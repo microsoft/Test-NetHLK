@@ -43,9 +43,12 @@ function Test-NICAdvancedProperties {
 
     [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
-        [Parameter(Mandatory=$false, HelpMessage="Enter one or more Network Adapter names as returned by Get-NetAdapter 'Name' Property")]
+        [Parameter(Mandatory=$false, ParameterSetName='Default', HelpMessage="Enter one or more Network Adapter names as returned by Get-NetAdapter 'Name' Property")]
         [ValidateScript({Get-NetAdapter -Name $_})]
-        [string[]] $InterfaceName = '*'
+        [string[]] $InterfaceName = '*',
+
+        [Parameter(Mandatory=$false, ParameterSetName='HLK')]
+        [string[]] $HLKNetworkAdapterName
     )
 
     Clear-Host
@@ -75,10 +78,39 @@ function Test-NICAdvancedProperties {
         Write-WTTLogError "The system type (Client or Server) could not be determined. Ensure the machine is either WS2019, WS2022, Azure Stack HCI, or Windows 10. Caption detected: $($NodeOS.Caption)"
         "The system type (Client or Server) could not be determined. Ensure the machine is either WS2019, WS2022, Azure Stack HCI, or Windows 10. Caption detected: $($NodeOS.Caption)" | Out-File -FilePath $Log -Append
         
+        Stop-WTTTest
+        Stop-WTTLog
+
         throw
     }
 
-    $Adapters = Get-NetAdapter -Name $InterfaceName -Physical | Where-Object MediaType -eq '802.3'
+    if ($HLKNetworkAdapterName) {
+        $Adapters = Get-NetAdapter -Physical | Where-Object { $_.MediaType -eq '802.3' -and $_.DeviceID -like "*$HLKNetworkAdapterName*" }
+
+        if (-not($Adapters)) {
+            Write-WTTLogError "The system could not find the adapter with DeviceID: $HLKNetworkAdapterName"
+            "The system could not find the adapter with DeviceID: $HLKNetworkAdapterName" | Out-File -FilePath $Log -Append
+            
+            Stop-WTTTest
+            Stop-WTTLog
+    
+            throw
+        }
+    }
+    else {
+        $Adapters = Get-NetAdapter -Name $InterfaceName -Physical | Where-Object MediaType -eq '802.3'
+
+        if (-not($Adapters)) {
+            Write-WTTLogError "The system could not find the adapter named: $InterfaceName"
+            "The system could not find the adapter named: $InterfaceName" | Out-File -FilePath $Log -Append
+            
+            Stop-WTTTest
+            Stop-WTTLog
+    
+            throw
+        }        
+    }
+
     $AdapterAdvancedProperties = Get-NetAdapterAdvancedProperty -Name $InterfaceName -AllProperties
     
     # This is the MSFT definition
