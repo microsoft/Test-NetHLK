@@ -6,7 +6,7 @@ enum EnableDisable {
 #region Buffers - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/keywords-that-can-be-edited
 Class ReceiveBuffers {
     [string]   $RegistryKeyword      = '*ReceiveBuffers'
-    [int]      $DisplayParameterType = '1' # 4 byte unsigned integer
+    [int]      $DisplayParameterType = '1' # 1 byte unsigned integer
 
     # What should base, max, min, step be for this? 
     # There is some variability in this right now; for example Intel has steps of 8 while mellanox steps by 1, etc.
@@ -21,7 +21,7 @@ Class ReceiveBuffers {
 
 Class TransmitBuffers {
     [string]   $RegistryKeyword      = '*TransmitBuffers'
-    [int]      $DisplayParameterType = '1' # 4 byte unsigned integer
+    [int]      $DisplayParameterType = '1' # 1 byte unsigned integer
 
     # What should base, max, min, step be for this? 
     # There is some variability in this right now; for example Intel has steps of 8 while mellanox steps by 1, etc.
@@ -145,7 +145,7 @@ Class InterruptModeration {
 #region JumboPacket - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/keywords-that-can-be-edited
 Class JumboPacket {
     [string]   $RegistryKeyword      = '*JumboPacket'
-    [int]      $DisplayParameterType = '4' # 4 byte unsigned integer
+    [int]      $DisplayParameterType = '2' # 2 byte unsigned integer
     [int]      $DefaultRegistryValue = 1514
 
     [int]      $NumericParameterBaseValue = 10   # Must be this value
@@ -359,7 +359,7 @@ Class RSS {
 
 Class MaxRSSProcessors_MSIXSupport_1Gb {
     [string]   $RegistryKeyword      = '*MaxRssProcessors'
-    [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
+    [int]      $DisplayParameterType = 1  # 1 byte unsigned integer
 
     [int]      $DefaultRegistryValue = 4
 
@@ -373,7 +373,7 @@ Class MaxRSSProcessors_MSIXSupport_1Gb {
 
 Class MaxRSSProcessors_MSIXSupport_10GbOrGreater {
     [string]   $RegistryKeyword      = '*MaxRssProcessors'
-    [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
+    [int]      $DisplayParameterType = 1  # 1 byte unsigned integer
 
     [int]      $DefaultRegistryValue = 16
 
@@ -387,7 +387,7 @@ Class MaxRSSProcessors_MSIXSupport_10GbOrGreater {
 
 Class MaxRSSProcessors_No_MSIXSupport_1Gb {
     [string]   $RegistryKeyword      = '*MaxRssProcessors'
-    [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
+    [int]      $DisplayParameterType = 1  # 1 byte unsigned integer
 
     [int]      $DefaultRegistryValue = 2
 
@@ -401,7 +401,7 @@ Class MaxRSSProcessors_No_MSIXSupport_1Gb {
 
 Class MaxRSSProcessors_No_MSIXSupport_10GbOrGreater {
     [string]   $RegistryKeyword      = '*MaxRssProcessors'
-    [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
+    [int]      $DisplayParameterType = 1  # 1 byte unsigned integer
 
     [int]      $DefaultRegistryValue = 4
 
@@ -424,7 +424,7 @@ Class MaxRSSProcessors {
 
 Class NumRSSQueues_MSIXSupport_1Gb {
     [string]   $RegistryKeyword      = '*NumRSSQueues'
-    [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
+    [int]      $DisplayParameterType = 1  # 4 byte unsigned integer
 
     [int]      $DefaultRegistryValue = 4
 
@@ -438,7 +438,7 @@ Class NumRSSQueues_MSIXSupport_1Gb {
 
 Class NumRSSQueues_MSIXSupport_10GbOrGreater {
     [string]   $RegistryKeyword      = '*NumRSSQueues'
-    [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
+    [int]      $DisplayParameterType = 1  # 1 byte unsigned integer
 
     [int]      $DefaultRegistryValue = 16
 
@@ -452,7 +452,7 @@ Class NumRSSQueues_MSIXSupport_10GbOrGreater {
 
 Class NumRSSQueues_No_MSIXSupport_1Gb {
     [string]   $RegistryKeyword      = '*NumRSSQueues'
-    [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
+    [int]      $DisplayParameterType = 1  # 1 byte unsigned integer
 
     [int]      $DefaultRegistryValue = 2
 
@@ -466,7 +466,7 @@ Class NumRSSQueues_No_MSIXSupport_1Gb {
 
 Class NumRSSQueues_No_MSIXSupport_10GbOrGreater {
     [string]   $RegistryKeyword      = '*NumRSSQueues'
-    [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
+    [int]      $DisplayParameterType = 1  # 1 byte unsigned integer
 
     [int]      $DefaultRegistryValue = 4
 
@@ -501,7 +501,7 @@ Class RSSProfile {
 
 Class NumaNodeId {
     [string]   $RegistryKeyword      = '*NumaNodeId'
-    [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
+    [int]      $DisplayParameterType = 1  # 1 byte unsigned integer
 
     [int]      $DefaultRegistryValue = 65535
 
@@ -515,7 +515,7 @@ Class NumaNodeId {
 
 Class RssBaseProcGroup {
     [string]   $RegistryKeyword      = '*RssBaseProcGroup'
-    [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
+    [int]      $DisplayParameterType = 1  # 1 byte unsigned integer
 
     [int]      $DefaultRegistryValue = 0
 
@@ -529,7 +529,7 @@ Class RssBaseProcGroup {
 
 Class RSSMaxProcGroup {
     [string]   $RegistryKeyword      = '*RSSMaxProcGroup'
-    [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
+    [int]      $DisplayParameterType = 1  # 1 byte unsigned integer
 
     [int]      $DefaultRegistryValue = 0
 
@@ -543,7 +543,7 @@ Class RSSMaxProcGroup {
 
 Class RssBaseProcNumber {
     [string]   $RegistryKeyword      = '*RssBaseProcNumber'
-    [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
+    [int]      $DisplayParameterType = 1  # 1 byte unsigned integer
 
     [int]      $DefaultRegistryValue = 0
 
@@ -557,9 +557,9 @@ Class RssBaseProcNumber {
 
 Class RssMaxProcNumber {
     [string]   $RegistryKeyword      = '*RssMaxProcNumber'
-    [int]      $DisplayParameterType = 4  # 4 byte unsigned integer
+    [int]      $DisplayParameterType = 1  # 1 byte unsigned integer
 
-    [int]      $DefaultRegistryValue = 0
+    [int]      $DefaultRegistryValue = 63
 
     [int]      $NumericParameterBaseValue = 10   # Must be this value
     #[int]      $NumericParameterMaxValue =      # System specific
@@ -657,7 +657,7 @@ Class SRIOV {
 #region VLANID
 Class VLANID {
     [string] $RegistryKeyword      = 'VLANID'
-    [int]    $DisplayParameterType = 4 # 4 byte unsigned integer
+    [int]    $DisplayParameterType = 2 # 2 byte unsigned integer
 
     [string] $DefaultRegistryValue = 0
     [int]    $NumericParameterBaseValue = 10  # Must be this value
@@ -718,7 +718,7 @@ Class VMQClass {
 #region VxlanUDPPortNumber
 Class VxlanUDPPortNumber {
     [string]   $RegistryKeyword      = '*VxlanUDPPortNumber'
-    [int]      $DisplayParameterType = '2' # 4 byte unsigned integer
+    [int]      $DisplayParameterType = '2' # 2 byte unsigned integer or greater
     [int]      $DefaultRegistryValue = 4789
 
     [int]      $NumericParameterBaseValue = 10    # Must be this value

@@ -314,7 +314,8 @@ Function Test-DisplayParameterType {
     param (
         $AdvancedRegistryKey ,  # This is what is configured on the adapter
         $DefinitionPath,        # This is what is defined in the datatypes.ps1
-        $MaxValue               # The numerical maximum value. This may not be specified but allows for ints of different sizes
+        [Switch] $MaxValue,     # The numerical maximum value. This is optional, but allows for ints of lower sizes
+        [Switch] $MinValue      # The numerical minimum value. This is optional, but allows for ints of greater sizes
     )
 
     if ($MaxValue) {
@@ -329,6 +330,18 @@ Function Test-DisplayParameterType {
             $testsFailed ++
         }
     }
+    if ($MinValue) {
+        if ($AdvancedRegistryKey.DisplayParameterType -ge $DefinitionPath.DisplayParameterType -and $AdvancedRegistryKey.DisplayParameterType -ne 5) {
+            Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -ge $($DefinitionPath.DisplayParameterType)"
+            "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -ge $($DefinitionPath.DisplayParameterType)"  | Out-File -FilePath $Log -Append
+        }
+        Else {
+            Write-WTTLogError "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -ge $($DefinitionPath.DisplayParameterType) and -lt 5"
+            "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -ge $($DefinitionPath.DisplayParameterType) and -lt 5"  | Out-File -FilePath $Log -Append
+
+            $testsFailed ++
+        }
+    }    
     else {
         if ($AdvancedRegistryKey.DisplayParameterType -eq $DefinitionPath.DisplayParameterType) {
             Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is $($DefinitionPath.DisplayParameterType)"

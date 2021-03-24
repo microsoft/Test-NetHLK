@@ -156,7 +156,7 @@ function Test-NICAdvancedProperties {
         Remove-Variable NDISDefinition -ErrorAction SilentlyContinue
 
         $RequirementsTested = @()
-        Switch -Wildcard ($AdapterConfiguration | Sort RegistryKeyword) {
+        Switch -Wildcard ($AdapterConfiguration | Sort-Object RegistryKeyword) {
 
             { $_.RegistryKeyword -eq '*EncapOverhead' } {
 
@@ -265,7 +265,7 @@ function Test-NICAdvancedProperties {
                 Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *JumboPacket: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -MinValue
 
                 # *JumboPacket: NumericParameterBaseValue
                 Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
@@ -346,7 +346,7 @@ function Test-NICAdvancedProperties {
                 Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *MaxRSSProcessors: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -MinValue
 
                 # *MaxRSSProcessors: NumericParameterBaseValue
                 Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
@@ -406,7 +406,7 @@ function Test-NICAdvancedProperties {
                 Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *NumaNodeId: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -MinValue
 
                 # *NumaNodeId: NumericParameterBaseValue
                 Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
@@ -451,7 +451,7 @@ function Test-NICAdvancedProperties {
                 Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *NumRSSQueues: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -MinValue
 
                 # *NumRSSQueues: NumericParameterBaseValue
                 Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
@@ -546,7 +546,7 @@ function Test-NICAdvancedProperties {
                 $thisDefinitionPath = $AdapterDefinition.Buffers.ReceiveBuffers
 
                 # *ReceiveBuffers: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -MinValue
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -616,7 +616,7 @@ function Test-NICAdvancedProperties {
                 Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSSBaseProcGroup: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -MinValue
 
                 # *RSSBaseProcGroup: NumericParameterBaseValue
                 Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
@@ -639,7 +639,7 @@ function Test-NICAdvancedProperties {
                 Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSSBaseProcNumber: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -MaxValue 4
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -MinValue
 
                 # *RSSBaseProcNumber: NumericParameterBaseValue
                 Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
@@ -659,10 +659,10 @@ function Test-NICAdvancedProperties {
                 $thisDefinitionPath = $AdapterDefinition.RSSClass.RssMaxProcNumber
 
                 # *RssMaxProcNumber: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                # Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RssMaxProcNumber: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -MinValue
 
                 # *RssMaxProcNumber: NumericParameterBaseValue
                 Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
@@ -671,7 +671,7 @@ function Test-NICAdvancedProperties {
                 Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RssMaxProcNumber: NumericParameterMaxValue
-                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                # Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RssMaxProcNumber: NumericParameterMinValue
                 Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
@@ -688,7 +688,7 @@ function Test-NICAdvancedProperties {
                 Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *RSSMaxProcGroup: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -MinValue
 
                 # *RSSMaxProcGroup: NumericParameterBaseValue
                 Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
@@ -794,7 +794,7 @@ function Test-NICAdvancedProperties {
                 $thisDefinitionPath = $AdapterDefinition.Buffers.TransmitBuffers
 
                 # *TransmitBuffers: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -MinValue
 
                 $RequirementsTested += $_.RegistryKeyword
 
@@ -838,7 +838,7 @@ function Test-NICAdvancedProperties {
                 Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # VLANID: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -MinValue
 
                 # VLANID: NumericParameterBaseValue
                 Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
@@ -900,7 +900,7 @@ function Test-NICAdvancedProperties {
                 Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *VxlanUDPPortNumber: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -MinValue
 
                 # *VxlanUDPPortNumber: NumericParameterBaseValue
                 Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
