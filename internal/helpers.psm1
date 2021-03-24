@@ -156,7 +156,7 @@ Function Test-NicSwitch {
         $DefinitionPath         # This is what is defined in the datatypes.ps1
     )
 
-    if ($AdvancedRegistryKey.SwitchName -eq 'Default Switch') {
+    if ($AdvancedRegistryKey.SwitchName -eq $($DefinitionPath.SwitchName)) {
         Write-WTTLogMessage "[$PASS] NicSwitch on name is $($DefinitionPath.SwitchName)"
         "[$PASS] NicSwitch on name is $($DefinitionPath.SwitchName)" | Out-File -FilePath $Log -Append
     }
@@ -167,7 +167,7 @@ Function Test-NicSwitch {
         $testsFailed ++
     }
 
-    if ($AdvancedRegistryKey.Flags -eq 0) {
+    if ($AdvancedRegistryKey.Flags -eq $($DefinitionPath.Flags)) {
         Write-WTTLogMessage "[$PASS] NicSwitch flags name is $($DefinitionPath.Flags)"
         "[$PASS] NicSwitch flags on name is $($DefinitionPath.Flags)" | Out-File -FilePath $Log -Append
     }
@@ -178,7 +178,7 @@ Function Test-NicSwitch {
         $testsFailed ++
     }
 
-    if ($AdvancedRegistryKey.SwitchType -eq 1) {
+    if ($AdvancedRegistryKey.SwitchType -eq $($DefinitionPath.SwitchType)) {
         Write-WTTLogMessage "[$PASS] NicSwitch SwitchType is $($DefinitionPath.SwitchType)"
         "[$PASS] NicSwitch SwitchType on is $($DefinitionPath.SwitchType)" | Out-File -FilePath $Log -Append
     }
@@ -189,7 +189,7 @@ Function Test-NicSwitch {
         $testsFailed ++
     }
 
-    if ($AdvancedRegistryKey.SwitchId -eq 0) {
+    if ($AdvancedRegistryKey.SwitchId -eq $($DefinitionPath.SwitchId)) {
         Write-WTTLogMessage "[$PASS] NicSwitch SwitchID is $($DefinitionPath.SwitchId)"
         "[$PASS] NicSwitch SwitchID on is $($DefinitionPath.SwitchId)" | Out-File -FilePath $Log -Append
     }
@@ -200,7 +200,7 @@ Function Test-NicSwitch {
         $testsFailed ++
     }
 
-    if ($AdvancedRegistryKey.NumVFs -ge 32) {
+    if ($AdvancedRegistryKey.NumVFs -ge $($DefinitionPath.NumVFs)) {
         Write-WTTLogMessage "[$PASS] The NicSwitch NumVFs is -ge $($DefinitionPath.NumVFs)"
         "[$PASS] The NicSwitch NumVFs on is -ge $($DefinitionPath.NumVFs)" | Out-File -FilePath $Log -Append
     }

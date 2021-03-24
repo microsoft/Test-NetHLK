@@ -236,12 +236,29 @@ Class NDIS {
 #endregion NDIS
 
 #region NicSwitch
-Class NicSwitch {
+Class NicSwitch_1GbOrGreater {
     $SwitchName = 'Default Switch'  # Must be this value
     $Flags      = 0  # Must be this value
     $SwitchType = 1  # Must be this value
     $SwitchId   = 0  # Must be this value
-    $NumVFs     = 32 # Not sure if this is accurate but should be only for 10GbE or higher
+    $NumVFs     = 4  # For 1GbE or Higher
+
+    NicSwitch_1GbOrGreater () {}
+}
+
+Class NicSwitch_10GbOrGreater {
+    $SwitchName = 'Default Switch'  # Must be this value
+    $Flags      = 0  # Must be this value
+    $SwitchType = 1  # Must be this value
+    $SwitchId   = 0  # Must be this value
+    $NumVFs     = 32 # For 10GbE or higher
+
+    NicSwitch_10GbOrGreater () {}
+}
+
+Class NicSwitch {
+    $NicSwitch_1GbOrGreater  = [NicSwitch_1GbOrGreater]::new()
+    $NicSwitch_10GbOrGreater = [NicSwitch_10GbOrGreater]::new()
 
     NicSwitch () {}
 }

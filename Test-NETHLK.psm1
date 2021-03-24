@@ -155,6 +155,10 @@ function Test-NICAdvancedProperties {
 
         Remove-Variable NDISDefinition -ErrorAction SilentlyContinue
 
+        if     ($thisAdapter.Speed -ge 10000000000) { $AdapterSpeed = '10Gbps' }
+        elseif ($thisAdapter.Speed -ge 1000000000)  { $AdapterSpeed = '1Gbps' }
+        elseif ($thisAdapter.Speed -ge 100000000)   { $AdapterSpeed = '100Mbps' }
+
         $RequirementsTested = @()
         Switch -Wildcard ($AdapterConfiguration | Sort-Object RegistryKeyword) {
 
@@ -325,10 +329,6 @@ function Test-NICAdvancedProperties {
                 if ($thisNetAdapterRSS.MsiXEnabled -eq $true -and $thisNetAdapterRSS.MsiXSupported -eq $true) { $MSIXSupport = $true }
                 else { $MSIXSupport = $true }
 
-                if     ($thisAdapter.Speed -ge 10000000000) { $AdapterSpeed = '10Gbps' }
-                elseif ($thisAdapter.Speed -ge 1000000000)  { $AdapterSpeed = '1Gbps' }
-                elseif ($thisAdapter.Speed -ge 100000000)   { $AdapterSpeed = '100Mbps' }
-
                 if ($MSIXSupport -and $AdapterSpeed -eq '10Gbps') {
                     $thisDefinitionPath = $AdapterDefinition.RSSClass.MaxRSSProcessors.MaxRSSProcessors_MSIXSupport_10GbOrGreater
                 }
@@ -429,10 +429,6 @@ function Test-NICAdvancedProperties {
                 $thisNetAdapterRSS = Get-NetAdapterRSS -Name $thisAdapter.Name | Format-Table *MSIX*
                 if ($thisNetAdapterRSS.MsiXEnabled -eq $true -and $thisNetAdapterRSS.MsiXSupported -eq $true) { $MSIXSupport = $true }
                 else { $MSIXSupport = $true }
-
-                if     ($thisAdapter.Speed -ge 10000000000) { $AdapterSpeed = '10Gbps' }
-                elseif ($thisAdapter.Speed -ge 1000000000)  { $AdapterSpeed = '1Gbps' }
-                elseif ($thisAdapter.Speed -ge 100000000)   { $AdapterSpeed = '100Mbps' }
 
                 if ($MSIXSupport -and $AdapterSpeed -eq '10Gbps') {
                     $thisDefinitionPath = $AdapterDefinition.RSSClass.NumRSSQueues.NumRSSQueues_MSIXSupport_10GbOrGreater
@@ -782,8 +778,15 @@ function Test-NICAdvancedProperties {
                 Test-ContainsAllMSFTRequiredValidRegistryValues  -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
                 Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
+                if ($AdapterSpeed -eq '1Gbps') {
+                    $thisDefinitionPath = $AdapterDefinition.NicSwitch.NicSwitch_1GbOrGreater
+                }
+                elseif ($AdapterSpeed -eq '10Gbps') {
+                    $thisDefinitionPath = $AdapterDefinition.NicSwitch.NicSwitch_10GbOrGreater
+                }
+
                 # Test NICSwitch Defaults
-                Test-NicSwitch -AdvancedRegistryKey $NicSwitchConfiguration -DefinitionPath $AdapterDefinition.NicSwitch
+                Test-NicSwitch -AdvancedRegistryKey $NicSwitchConfiguration -DefinitionPath $thisDefinitionPath
 
                 $RequirementsTested += $_.RegistryKeyword
 
