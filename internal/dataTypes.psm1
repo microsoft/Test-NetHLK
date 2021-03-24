@@ -6,7 +6,7 @@ enum EnableDisable {
 #region Buffers - https://docs.microsoft.com/en-us/windows-hardware/drivers/network/keywords-that-can-be-edited
 Class ReceiveBuffers {
     [string]   $RegistryKeyword      = '*ReceiveBuffers'
-    [int]      $DisplayParameterType = '4' # 4 byte unsigned integer
+    [int]      $DisplayParameterType = '1' # 4 byte unsigned integer
 
     # What should base, max, min, step be for this? 
     # There is some variability in this right now; for example Intel has steps of 8 while mellanox steps by 1, etc.
@@ -21,7 +21,7 @@ Class ReceiveBuffers {
 
 Class TransmitBuffers {
     [string]   $RegistryKeyword      = '*TransmitBuffers'
-    [int]      $DisplayParameterType = '4' # 4 byte unsigned integer
+    [int]      $DisplayParameterType = '1' # 4 byte unsigned integer
 
     # What should base, max, min, step be for this? 
     # There is some variability in this right now; for example Intel has steps of 8 while mellanox steps by 1, etc.
