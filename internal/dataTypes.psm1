@@ -272,8 +272,8 @@ Class PtpHardwareTimestamp {
     [string]   $RegistryKeyword      = '*PtpHardwareTimestamp'
     [int]      $DisplayParameterType = 5
 
-    [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
-    [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
+    [string]   $DefaultRegistryValue = [EnableDisable]::Disabled.Value__
+    [string]   $DisplayDefaultValue  = [EnableDisable]::Disabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
     PtpHardwareTimestamp () {}
