@@ -678,8 +678,8 @@ Class VLANID {
 
     [string] $DefaultRegistryValue = 0
     [int]    $NumericParameterBaseValue = 10  # Must be this value
-    [int]    $NumericParameterMaxValue = 4095 # Must be >= this value 9014 + EncapOverhead (160)
-    [int]    $NumericParameterMinValue = 0    # Must be < than this value
+    [int]    $NumericParameterMaxValue = 4094 # Must be this value
+    [int]    $NumericParameterMinValue = 0    # Must be this value
     [int]    $NumericParameterStepValue = 1   # Must be this value
 
     VLANID () {}
