@@ -49,7 +49,7 @@ Class Buffers {
 #region EncapOverhead
 Class EncapOverhead {
     [string]   $RegistryKeyword      = '*EncapOverhead'
-    [int]      $DisplayParameterType = '1' # 1 byte unsigned integer
+    [int]      $DisplayParameterType = '4' # 1 byte unsigned integer is preferred but 4 or less is acceptable
     [int]      $DefaultRegistryValue = 0
 
     [int]      $NumericParameterBaseValue = 10  # Must be this value
