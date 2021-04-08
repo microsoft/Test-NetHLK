@@ -170,7 +170,7 @@ function Test-NICAdvancedProperties {
                 Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *EncapOverhead: DisplayParameterType
-                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -MaxValue
 
                 # *EncapOverhead: NumericParameterBaseValue
                 Test-NumericParameterBaseValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
