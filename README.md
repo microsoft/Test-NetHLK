@@ -18,6 +18,17 @@ For a disconnected system, please use:
 Then move the module to the disconnected system in the PowerShell module path. For example:
 ```C:\Program Files\WindowsPowerShell\Modules\Test-NetHLK\...```
 
+## Updating the module
+
+We recommend the following process for ensuring you're running the latest version of the module.
+
+First uninstall the old module:
+```Uninstall-Module Test-NetHLK -AllVersions```
+
+Next, install the latest version of the module:
+```Install-Module Test-NetHLK -Force```
+
+
 ## Test-NICAdvancedProperties
 
 This cmdlet tests the properties returned from Get-NetAdapterAdvancedProperty. For syntatical help, please use the PowerShell help with the following command ```help Test-NICAdvancedProperties```
