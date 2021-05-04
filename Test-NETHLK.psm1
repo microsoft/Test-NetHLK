@@ -355,7 +355,7 @@ function Test-NICAdvancedProperties {
                 Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *MaxRSSProcessors: NumericParameterMaxValue
-                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -OrGreater
 
                 # *MaxRSSProcessors: NumericParameterMinValue
                 Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
@@ -912,7 +912,7 @@ function Test-NICAdvancedProperties {
                 Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *VxlanUDPPortNumber: NumericParameterMaxValue
-                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -OrGreater
+                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *VxlanUDPPortNumber: NumericParameterMinValue
                 Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -OrLess
