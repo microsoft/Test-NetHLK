@@ -149,8 +149,8 @@ Class JumboPacket {
     [int]      $DefaultRegistryValue = 1514
 
     [int]      $NumericParameterBaseValue = 10   # Must be this value
-    [int]      $NumericParameterMaxValue = 9174  # Must be >= this value 9014 + EncapOverhead (160)
-    [int]      $NumericParameterMinValue = 800   # Must be <= than this value
+    [int]      $NumericParameterMaxValue = 9014  # Must be >= this value 9014 + EncapOverhead (160)
+    [int]      $NumericParameterMinValue = 1514   # Must be <= than this value
     [int]      $NumericParameterStepValue = 1    # Must be this value
 
     JumboPacket () {}
