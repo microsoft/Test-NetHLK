@@ -433,7 +433,7 @@ Function Test-NumericParameterMinValue {
     )
 
     if ($OrLess) {
-        if ($AdvancedRegistryKey.NumericParameterMinValue -le $DefinitionPath.NumericParameterMinValue) {
+        if ([int] $AdvancedRegistryKey.NumericParameterMinValue -le [int] $DefinitionPath.NumericParameterMinValue) {
             Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is -le $($DefinitionPath.NumericParameterMinValue)"
             "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is $($DefinitionPath.NumericParameterMinValue)" | Out-File -FilePath $Log -Append
         }
@@ -445,7 +445,7 @@ Function Test-NumericParameterMinValue {
         }
     }
     else {
-        if ($AdvancedRegistryKey.NumericParameterMinValue -eq $DefinitionPath.NumericParameterMinValue) {
+        if ([int] $AdvancedRegistryKey.NumericParameterMinValue -eq [int] $DefinitionPath.NumericParameterMinValue) {
             Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is -le $($DefinitionPath.NumericParameterMinValue)"
             "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is $($DefinitionPath.NumericParameterMinValue)" | Out-File -FilePath $Log -Append
         }
