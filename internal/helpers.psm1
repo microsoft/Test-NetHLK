@@ -167,7 +167,7 @@ Function Test-NicSwitch {
         $testsFailed ++
     }
 
-    if ($AdvancedRegistryKey.Flags -eq $($DefinitionPath.Flags)) {
+    if ([int] $AdvancedRegistryKey.Flags -eq [int] $DefinitionPath.Flags) {
         Write-WTTLogMessage "[$PASS] NicSwitch flags name is $($DefinitionPath.Flags)"
         "[$PASS] NicSwitch flags on name is $($DefinitionPath.Flags)" | Out-File -FilePath $Log -Append
     }
@@ -178,7 +178,7 @@ Function Test-NicSwitch {
         $testsFailed ++
     }
 
-    if ($AdvancedRegistryKey.SwitchType -eq $($DefinitionPath.SwitchType)) {
+    if ([int] $AdvancedRegistryKey.SwitchType -eq [int] $DefinitionPath.SwitchType) {
         Write-WTTLogMessage "[$PASS] NicSwitch SwitchType is $($DefinitionPath.SwitchType)"
         "[$PASS] NicSwitch SwitchType on is $($DefinitionPath.SwitchType)" | Out-File -FilePath $Log -Append
     }
@@ -189,7 +189,7 @@ Function Test-NicSwitch {
         $testsFailed ++
     }
 
-    if ($AdvancedRegistryKey.SwitchId -eq $($DefinitionPath.SwitchId)) {
+    if ([int] $AdvancedRegistryKey.SwitchId -eq [int] $DefinitionPath.SwitchId) {
         Write-WTTLogMessage "[$PASS] NicSwitch SwitchID is $($DefinitionPath.SwitchId)"
         "[$PASS] NicSwitch SwitchID on is $($DefinitionPath.SwitchId)" | Out-File -FilePath $Log -Append
     }
