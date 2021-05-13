@@ -200,7 +200,7 @@ Function Test-NicSwitch {
         $testsFailed ++
     }
 
-    if ($AdvancedRegistryKey.NumVFs -ge $($DefinitionPath.NumVFs)) {
+    if ([int] $AdvancedRegistryKey.NumVFs -ge [int] $DefinitionPath.NumVFs) {
         Write-WTTLogMessage "[$PASS] The NicSwitch NumVFs is -ge $($DefinitionPath.NumVFs)"
         "[$PASS] The NicSwitch NumVFs on is -ge $($DefinitionPath.NumVFs)" | Out-File -FilePath $Log -Append
     }
