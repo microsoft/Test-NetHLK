@@ -456,7 +456,7 @@ function Test-NICAdvancedProperties {
                 Test-NumericParameterStepValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *NumRSSQueues: NumericParameterMaxValue
-                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-NumericParameterMaxValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -OrGreater
 
                 # *NumRSSQueues: NumericParameterMinValue
                 Test-NumericParameterMinValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
