@@ -323,36 +323,36 @@ Function Test-DisplayParameterType {
 
     if ($MaxValue) {
         if ($adapValue -le $defValue) {
-            Write-WTTLogMessage "[$PASS] $regKeyword DisplayParameterType is -le $($defValue)"
-            "[$PASS] $regKeyword DisplayParameterType is -le $($defValue)"  | Out-File -FilePath $Log -Append
+            Write-WTTLogMessage "[$PASS] $regKeyword DisplayParameterType '$adapValue' is -le $($defValue)"
+            "[$PASS] $regKeyword DisplayParameterType '$adapValue' is -le $($defValue)"  | Out-File -FilePath $Log -Append
         }
         Else {
-            Write-WTTLogError "[$FAIL] $regKeyword DisplayParameterType is -le $($defValue)"
-            "[$FAIL] $regKeyword DisplayParameterType is -le $($defValue)"  | Out-File -FilePath $Log -Append
+            Write-WTTLogError "[$FAIL] $regKeyword DisplayParameterType '$adapValue' is not -le $($defValue)"
+            "[$FAIL] $regKeyword DisplayParameterType '$adapValue' is not -le $($defValue)"  | Out-File -FilePath $Log -Append
 
             $testsFailed ++
         }
     }
     if ($MinValue) {
         if ($adapValue -ge $defValue) {
-            Write-WTTLogMessage "[$PASS] $regKeyword DisplayParameterType is -ge $($defValue)"
-            "[$PASS] $regKeyword DisplayParameterType is -ge $($defValue)"  | Out-File -FilePath $Log -Append
+            Write-WTTLogMessage "[$PASS] $regKeyword DisplayParameterType '$adapValue' is -ge $($defValue)"
+            "[$PASS] $regKeyword DisplayParameterType '$adapValue' is -ge $($defValue)"  | Out-File -FilePath $Log -Append
         }
         Else {
-            Write-WTTLogError "[$FAIL] $regKeyword DisplayParameterType is -ge $($defValue)"
-            "[$FAIL] $regKeyword DisplayParameterType is -ge $($defValue)"  | Out-File -FilePath $Log -Append
+            Write-WTTLogError "[$FAIL] $regKeyword DisplayParameterType '$adapValue' is not -ge $($defValue)"
+            "[$FAIL] $regKeyword DisplayParameterType '$adapValue' is not -ge $($defValue)"  | Out-File -FilePath $Log -Append
 
             $testsFailed ++
         }
     }    
     if (-not($MaxValue) -and -not($MinValue)) {
         if ($adapValue -eq $defValue) {
-            Write-WTTLogMessage "[$PASS] $regKeyword DisplayParameterType is $($defValue)"
-            "[$PASS] $regKeyword DisplayParameterType is $($defValue)"  | Out-File -FilePath $Log -Append
+            Write-WTTLogMessage "[$PASS] $regKeyword DisplayParameterType '$adapValue' is $($defValue)"
+            "[$PASS] $regKeyword DisplayParameterType '$adapValue' is $($defValue)"  | Out-File -FilePath $Log -Append
         }
         Else {
-            Write-WTTLogError "[$FAIL] $regKeyword DisplayParameterType $($adapValue) is not $($defValue)"
-            "[$FAIL] $regKeyword DisplayParameterType is $($defValue)"  | Out-File -FilePath $Log -Append
+            Write-WTTLogError "[$FAIL] $regKeyword DisplayParameterType '$adapValue' is not $($defValue)"
+            "[$FAIL] $regKeyword DisplayParameterType '$adapValue' is not $($defValue)"  | Out-File -FilePath $Log -Append
 
             $testsFailed ++
         }
