@@ -342,13 +342,13 @@ Function Test-DisplayParameterType {
             $testsFailed ++
         }
     }    
-    else {
+    if (-not($MaxValue) -and -not($MinValue)) {
         if ($AdvancedRegistryKey.DisplayParameterType -eq $DefinitionPath.DisplayParameterType) {
             Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is $($DefinitionPath.DisplayParameterType)"
             "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is $($DefinitionPath.DisplayParameterType)"  | Out-File -FilePath $Log -Append
         }
         Else {
-            Write-WTTLogError "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is $($DefinitionPath.DisplayParameterType)"
+            Write-WTTLogError "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType $($AdvancedRegistryKey.DisplayParameterType) is not $($DefinitionPath.DisplayParameterType)"
             "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is $($DefinitionPath.DisplayParameterType)"  | Out-File -FilePath $Log -Append
 
             $testsFailed ++
