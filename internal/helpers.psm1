@@ -331,13 +331,13 @@ Function Test-DisplayParameterType {
         }
     }
     if ($MinValue) {
-        if ($AdvancedRegistryKey.DisplayParameterType -ge $DefinitionPath.DisplayParameterType -and $AdvancedRegistryKey.DisplayParameterType -ne 5) {
+        if ($AdvancedRegistryKey.DisplayParameterType -ge $DefinitionPath.DisplayParameterType) {
             Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -ge $($DefinitionPath.DisplayParameterType)"
             "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -ge $($DefinitionPath.DisplayParameterType)"  | Out-File -FilePath $Log -Append
         }
         Else {
-            Write-WTTLogError "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -ge $($DefinitionPath.DisplayParameterType) and -lt 5"
-            "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -ge $($DefinitionPath.DisplayParameterType) and -lt 5"  | Out-File -FilePath $Log -Append
+            Write-WTTLogError "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -ge $($DefinitionPath.DisplayParameterType)"
+            "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -ge $($DefinitionPath.DisplayParameterType)"  | Out-File -FilePath $Log -Append
 
             $testsFailed ++
         }
