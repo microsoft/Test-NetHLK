@@ -317,39 +317,42 @@ Function Test-DisplayParameterType {
         [Switch] $MaxValue,     # The numerical maximum value. This is optional, but allows for ints of lower sizes
         [Switch] $MinValue      # The numerical minimum value. This is optional, but allows for ints of greater sizes
     )
+    $regKeyword = $($AdvancedRegistryKey.RegistryKeyword)
+    $adapValue = $AdvancedRegistryKey.DisplayParameterType
+    $defValue = $DefinitionPath.DisplayParameterType
 
     if ($MaxValue) {
-        if ($AdvancedRegistryKey.DisplayParameterType -le $DefinitionPath.DisplayParameterType) {
-            Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -le $($DefinitionPath.DisplayParameterType)"
-            "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -le $($DefinitionPath.DisplayParameterType)"  | Out-File -FilePath $Log -Append
+        if ($adapValue -le $defValue) {
+            Write-WTTLogMessage "[$PASS] $regKeyword DisplayParameterType is -le $($defValue)"
+            "[$PASS] $regKeyword DisplayParameterType is -le $($defValue)"  | Out-File -FilePath $Log -Append
         }
         Else {
-            Write-WTTLogError "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -le $($DefinitionPath.DisplayParameterType)"
-            "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -le $($DefinitionPath.DisplayParameterType)"  | Out-File -FilePath $Log -Append
+            Write-WTTLogError "[$FAIL] $regKeyword DisplayParameterType is -le $($defValue)"
+            "[$FAIL] $regKeyword DisplayParameterType is -le $($defValue)"  | Out-File -FilePath $Log -Append
 
             $testsFailed ++
         }
     }
     if ($MinValue) {
-        if ($AdvancedRegistryKey.DisplayParameterType -ge $DefinitionPath.DisplayParameterType) {
-            Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -ge $($DefinitionPath.DisplayParameterType)"
-            "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -ge $($DefinitionPath.DisplayParameterType)"  | Out-File -FilePath $Log -Append
+        if ($adapValue -ge $defValue) {
+            Write-WTTLogMessage "[$PASS] $regKeyword DisplayParameterType is -ge $($defValue)"
+            "[$PASS] $regKeyword DisplayParameterType is -ge $($defValue)"  | Out-File -FilePath $Log -Append
         }
         Else {
-            Write-WTTLogError "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -ge $($DefinitionPath.DisplayParameterType)"
-            "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -ge $($DefinitionPath.DisplayParameterType)"  | Out-File -FilePath $Log -Append
+            Write-WTTLogError "[$FAIL] $regKeyword DisplayParameterType is -ge $($defValue)"
+            "[$FAIL] $regKeyword DisplayParameterType is -ge $($defValue)"  | Out-File -FilePath $Log -Append
 
             $testsFailed ++
         }
     }    
     if (-not($MaxValue) -and -not($MinValue)) {
-        if ($AdvancedRegistryKey.DisplayParameterType -eq $DefinitionPath.DisplayParameterType) {
-            Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is $($DefinitionPath.DisplayParameterType)"
-            "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is $($DefinitionPath.DisplayParameterType)"  | Out-File -FilePath $Log -Append
+        if ($adapValue -eq $defValue) {
+            Write-WTTLogMessage "[$PASS] $regKeyword DisplayParameterType is $($defValue)"
+            "[$PASS] $regKeyword DisplayParameterType is $($defValue)"  | Out-File -FilePath $Log -Append
         }
         Else {
-            Write-WTTLogError "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType $($AdvancedRegistryKey.DisplayParameterType) is not $($DefinitionPath.DisplayParameterType)"
-            "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is $($DefinitionPath.DisplayParameterType)"  | Out-File -FilePath $Log -Append
+            Write-WTTLogError "[$FAIL] $regKeyword DisplayParameterType $($adapValue) is not $($defValue)"
+            "[$FAIL] $regKeyword DisplayParameterType is $($defValue)"  | Out-File -FilePath $Log -Append
 
             $testsFailed ++
         }
