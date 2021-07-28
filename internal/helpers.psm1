@@ -330,6 +330,7 @@ Function Test-DisplayParameterType {
             $testsFailed ++
         }
     }
+    
     if ($MinValue) {
         if ($AdvancedRegistryKey.DisplayParameterType -ge $DefinitionPath.DisplayParameterType -and $AdvancedRegistryKey.DisplayParameterType -ne 5) {
             Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -ge $($DefinitionPath.DisplayParameterType)"
@@ -341,8 +342,9 @@ Function Test-DisplayParameterType {
 
             $testsFailed ++
         }
-    }    
-    else {
+    }
+    
+    if (-not($MaxValue) -and -not($MinValue)) {
         if ($AdvancedRegistryKey.DisplayParameterType -eq $DefinitionPath.DisplayParameterType) {
             Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is $($DefinitionPath.DisplayParameterType)"
             "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is $($DefinitionPath.DisplayParameterType)"  | Out-File -FilePath $Log -Append
@@ -366,7 +368,7 @@ Function Test-NumericParameterBaseValue {
         Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterBaseValue is $($DefinitionPath.NumericParameterBaseValue)"
         "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterBaseValue is $($DefinitionPath.NumericParameterBaseValue)" | Out-File -FilePath $Log -Append
     }
-    Else {
+    else {
         Write-WTTLogError "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterBaseValue is $($DefinitionPath.NumericParameterBaseValue)"
         "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterBaseValue is $($DefinitionPath.NumericParameterBaseValue)" | Out-File -FilePath $Log -Append
 
@@ -384,7 +386,7 @@ Function Test-NumericParameterStepValue {
         Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterStepValue is $($DefinitionPath.NumericParameterStepValue)"
         "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterStepValue is $($DefinitionPath.NumericParameterStepValue)" | Out-File -FilePath $Log -Append
     }
-    Else {
+    else {
         Write-WTTLogError "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterStepValue is $($DefinitionPath.NumericParameterStepValue)"
         "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterStepValue is $($DefinitionPath.NumericParameterStepValue)" | Out-File -FilePath $Log -Append
 
@@ -404,7 +406,7 @@ Function Test-NumericParameterMaxValue {
             Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is -ge $($DefinitionPath.NumericParameterMaxValue)"
             "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is -ge $($DefinitionPath.NumericParameterMaxValue)" | Out-File -FilePath $Log -Append
         }
-        Else {
+        else {
             Write-WTTLogError "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is -ge $($DefinitionPath.NumericParameterMaxValue)"
             "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is -ge $($DefinitionPath.NumericParameterMaxValue)" | Out-File -FilePath $Log -Append
 
@@ -416,7 +418,7 @@ Function Test-NumericParameterMaxValue {
             Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is $($DefinitionPath.NumericParameterMaxValue)"
             "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is $($DefinitionPath.NumericParameterMaxValue)" | Out-File -FilePath $Log -Append
         }
-        Else {
+        else {
             Write-WTTLogError "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is $($DefinitionPath.NumericParameterMaxValue)"
             "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is $($DefinitionPath.NumericParameterMaxValue)" | Out-File -FilePath $Log -Append
 
@@ -437,7 +439,7 @@ Function Test-NumericParameterMinValue {
             Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is -le $($DefinitionPath.NumericParameterMinValue)"
             "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is $($DefinitionPath.NumericParameterMinValue)" | Out-File -FilePath $Log -Append
         }
-        Else {
+        else {
             Write-WTTLogError "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is -le $($DefinitionPath.NumericParameterMinValue)"
             "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is $($DefinitionPath.NumericParameterMinValue)" | Out-File -FilePath $Log -Append
 
@@ -449,7 +451,7 @@ Function Test-NumericParameterMinValue {
             Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is -le $($DefinitionPath.NumericParameterMinValue)"
             "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is $($DefinitionPath.NumericParameterMinValue)" | Out-File -FilePath $Log -Append
         }
-        Else {
+        else {
             Write-WTTLogError "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is -le $($DefinitionPath.NumericParameterMinValue)"
             "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMinValue is $($DefinitionPath.NumericParameterMinValue)" | Out-File -FilePath $Log -Append
 
@@ -468,7 +470,7 @@ Function Test-DefaultRegistryValue {
         Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)"
         "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)" | Out-File -FilePath $Log -Append
     }
-    Else {
+    else {
         Write-WTTLogError "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)"
         "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)" | Out-File -FilePath $Log -Append
 
