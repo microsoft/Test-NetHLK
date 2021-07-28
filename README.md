@@ -56,6 +56,14 @@ Description: The advanced registry key type (enum, int)
 - 2: 2-byte int
 - 1: 1-byte int
 
+|Value|Type|Min|Max|
+|----|----|----|----|
+|1|int|-32768|32767|
+|2|long|-2147483648|2147483647|
+|3|word|0|65535|
+|4|dword|0|4294967295|
+|5|enum|N/A|N/A|
+
 ## Test-SwitchCapability
 
 Coming Soon
