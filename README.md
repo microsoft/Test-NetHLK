@@ -18,6 +18,17 @@ For a disconnected system, please use:
 Then move the module to the disconnected system in the PowerShell module path. For example:
 ```C:\Program Files\WindowsPowerShell\Modules\Test-NetHLK\...```
 
+## Updating the module
+
+We recommend the following process for ensuring you're running the latest version of the module.
+
+First uninstall the old module:
+```Uninstall-Module Test-NetHLK -AllVersions```
+
+Next, install the latest version of the module:
+```Install-Module Test-NetHLK -Force```
+
+
 ## Test-NICAdvancedProperties
 
 This cmdlet tests the properties returned from Get-NetAdapterAdvancedProperty. For syntatical help, please use the PowerShell help with the following command ```help Test-NICAdvancedProperties```
@@ -37,13 +48,15 @@ Test-NICAdvancedProperties validate various aspects of the advanced registry key
 
 ### DisplayParameterType
 
-Description: The advanced registry key type (enum, int)
+Description: The advanced registry key type
 
-- 5: Enum
-- 4: 4-byte int
-- 3: 3-byte int
-- 2: 2-byte int
-- 1: 1-byte int
+|Value|Type|Min|Max|
+|----|----|----|----|
+|1|int|-32768|32767|
+|2|long|-2147483648|2147483647|
+|3|word|0|65535|
+|4|dword|0|4294967295|
+|5|enum|N/A|N/A|
 
 ## Test-SwitchCapability
 
