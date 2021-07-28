@@ -48,13 +48,7 @@ Test-NICAdvancedProperties validate various aspects of the advanced registry key
 
 ### DisplayParameterType
 
-Description: The advanced registry key type (enum, int)
-
-- 5: Enum
-- 4: 4-byte int
-- 3: 3-byte int
-- 2: 2-byte int
-- 1: 1-byte int
+Description: The advanced registry key type
 
 |Value|Type|Min|Max|
 |----|----|----|----|
