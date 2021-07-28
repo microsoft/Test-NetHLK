@@ -400,7 +400,7 @@ Function Test-NumericParameterMaxValue {
     )
 
     if ($OrGreater) {
-        if ($AdvancedRegistryKey.NumericParameterMaxValue -ge $DefinitionPath.NumericParameterMaxValue) {
+        if ([int] $AdvancedRegistryKey.NumericParameterMaxValue -ge [int] $DefinitionPath.NumericParameterMaxValue) {
             Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is -ge $($DefinitionPath.NumericParameterMaxValue)"
             "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is -ge $($DefinitionPath.NumericParameterMaxValue)" | Out-File -FilePath $Log -Append
         }
@@ -412,7 +412,7 @@ Function Test-NumericParameterMaxValue {
         }
     }
     else {
-        if ($AdvancedRegistryKey.NumericParameterMaxValue -eq $DefinitionPath.NumericParameterMaxValue) {
+        if ([int] $AdvancedRegistryKey.NumericParameterMaxValue -eq [int] $DefinitionPath.NumericParameterMaxValue) {
             Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is $($DefinitionPath.NumericParameterMaxValue)"
             "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) NumericParameterMaxValue is $($DefinitionPath.NumericParameterMaxValue)" | Out-File -FilePath $Log -Append
         }
