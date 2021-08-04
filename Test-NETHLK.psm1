@@ -138,7 +138,7 @@ function Test-NICAdvancedProperties {
 
         # Test Minimum Required NDIS Version
         $NDISInfo = (Get-NetAdapter -Name $thisAdapter.Name).NDISVersion
-        [Bool] $TestedOSVersion = Test-OSVersion -DefinitionPath $NDISDefinition -ConfigurationData $NDISInfo.NDISVersion -OrGreater
+        [Bool] $TestedOSVersion = Test-OSVersion -DefinitionPath $NDISDefinition -ConfigurationData $NDISInfo -OrGreater
 
         if ($TestedOSVersion) {
             Write-WTTLogMessage "[$PASS] The in use NDIS version for adapter $($thisAdapter.Name) was greater than or equal to the version required for this OS (Required Version: $NDISDefinition)"
