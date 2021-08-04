@@ -77,7 +77,7 @@ function Test-NICAdvancedProperties {
         # Test version of the system being tested. Fail and do not move on if this could not be determined.
         Write-WTTLogError "The system type (Client or Server) could not be determined. Ensure the machine is either WS2019, WS2022, Azure Stack HCI, or Windows 10. Caption detected: $($NodeOS.Caption)"
         "The system type (Client or Server) could not be determined. Ensure the machine is either WS2019, WS2022, Azure Stack HCI, or Windows 10. Caption detected: $($NodeOS.Caption)" | Out-File -FilePath $Log -Append
-        
+
         Stop-WTTTest
         Stop-WTTLog
 
@@ -90,10 +90,10 @@ function Test-NICAdvancedProperties {
         if (-not($Adapters)) {
             Write-WTTLogError "The system could not find the adapter with DeviceID: $HLKNetworkAdapterName"
             "The system could not find the adapter with DeviceID: $HLKNetworkAdapterName" | Out-File -FilePath $Log -Append
-            
+
             Stop-WTTTest
             Stop-WTTLog
-    
+
             throw
         }
     }
@@ -103,19 +103,19 @@ function Test-NICAdvancedProperties {
         if (-not($Adapters)) {
             Write-WTTLogError "The system could not find the adapter named: $InterfaceName"
             "The system could not find the adapter named: $InterfaceName" | Out-File -FilePath $Log -Append
-            
+
             Stop-WTTTest
             Stop-WTTLog
-    
+
             throw
-        }        
+        }
     }
 
     $AdapterAdvancedProperties = Get-NetAdapterAdvancedProperty -Name $InterfaceName -AllProperties
-    
+
     # This is the MSFT definition
     $AdapterDefinition = [AdapterDefinition]::new()
-    
+
     # Test NDIS Version to ensure it meets the minumum required
     if     ($NodeOS.BuildNumber -eq '17763') { $NDISDefinition = $AdapterDefinition.NDIS.WS2019  }
     elseif ($NodeOS.BuildNumber -ge '21287') { $NDISDefinition = $AdapterDefinition.NDIS.WS2022  }
@@ -143,13 +143,13 @@ function Test-NICAdvancedProperties {
         if ($TestedOSVersion) {
             Write-WTTLogMessage "[$PASS] The in use NDIS version for adapter $($thisAdapter.Name) was greater than or equal to the version required for this OS (Required Version: $NDISDefinition)"
             "[$PASS] The in use NDIS version for adapter $($thisAdapter.Name) was greater than or equal to the version required for this OS (Required Version: $NDISDefinition)" | Out-File -FilePath $Log -Append
-            
+
             $testsFailed ++
         }
         else {
             Write-WTTLogError "[$FAIL] The in use NDIS version for adapter $($thisAdapter.Name) was below the required versionfor this OS (Required: $NDISDefinition; Actual: $NDISInfo)"
             "[$FAIL] The in use NDIS version for adapter $($thisAdapter.Name) was below the required versionfor this OS (Required: $NDISDefinition; Actual: $NDISInfo)" | Out-File -FilePath $Log -Append
-            
+
             $testsFailed ++
         }
 
@@ -264,7 +264,7 @@ function Test-NICAdvancedProperties {
             { $_.RegistryKeyword -eq '*JumboPacket' } {
 
                 $thisDefinitionPath = $AdapterDefinition.JumboPacket
-                
+
                 # *JumboPacket: RegistryDefaultValue
                 Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
@@ -343,7 +343,7 @@ function Test-NICAdvancedProperties {
                 }
 
                 # *MaxRSSProcessors: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -OrGreater
 
                 # *MaxRSSProcessors: DisplayParameterType
                 Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -MinValue
@@ -444,7 +444,7 @@ function Test-NICAdvancedProperties {
                 }
 
                 # *NumRSSQueues: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -OrGreater
 
                 # *NumRSSQueues: DisplayParameterType
                 Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath -MinValue
@@ -535,7 +535,7 @@ function Test-NICAdvancedProperties {
 
                 $RequirementsTested += $_.RegistryKeyword
 
-            }            
+            }
 
             { $_.RegistryKeyword -eq '*ReceiveBuffers' } {
 
@@ -940,7 +940,7 @@ function Test-NICAdvancedProperties {
         ElseIf  ($Requirements.Base -eq $null) { $Certification = 'Base' }
     #>
     }
-    
+
     Stop-WTTTest
     Stop-WTTLog
 }
@@ -984,7 +984,7 @@ function Test-SwitchCapability {
         [string] $InterfaceName ,
 
         [Parameter(Mandatory=$false, HelpMessage="Performs all Switch Tests regardless of HCI version")]
-        [Switch] $AllTests = $false 
+        [Switch] $AllTests = $false
     )
 
     Clear-Host
@@ -1004,11 +1004,11 @@ function Test-SwitchCapability {
     $NodeOS = Get-CimInstance -ClassName 'Win32_OperatingSystem'
     $OSDisplayVersion = (Get-ComputerInfo -Property OSDisplayVersion).OSDisplayVersion
 
-    # ID the system as client or server to enable the tests to pivot expected values 
+    # ID the system as client or server to enable the tests to pivot expected values
     if (-not($NodeOS.Caption -like '*Azure Stack HCI*')) {
         #Write-WTTLogError "The OS SKU was incorrect or could not be determined. Ensure the machine is running the Azure Stack HCI SKU. Caption detected: $($NodeOS.Caption)"
         "The OS SKU was incorrect or could not be determined. Ensure the machine is running the Azure Stack HCI SKU. Caption detected: $($NodeOS.Caption)" | Out-File -FilePath $Log -Append
-        
+
         throw
     }
 
@@ -1031,20 +1031,20 @@ function Test-SwitchCapability {
     else {
         #Write-WTTLogMessage "[$PASS] The switch sent an LLDP frame to the interface named: $InterfaceName"
         "[$PASS] The switch sent an LLDP frame to the interface named: $InterfaceName" | Out-File -FilePath $Log -Append
-        
+
         #TODO: ChassisID - Validate that a valid MAC address is set
 
         Switch ($OSDisplayVersion.Substring(0,$OSDisplayVersion.Length-2)) {
-            {$_ -ge '20' -or $AllTests} { 
+            {$_ -ge '20' -or $AllTests} {
                 #region VLAN Name 802.1 Subtype 3
                 if ($FabricInfo.$InterfaceName.Fabric.VLANID -ne 'Information Not Provided By Switch') {
                     if ($FabricInfo.$InterfaceName.Fabric.VLANID.Count -lt 10) {
                         #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
                         "[$Pass] [Test: 802.1AB - 802.1 Subtype 3] The switch must send at least 10 VLANs" | Out-File -FilePath $Log -Append
-            
+
                         $FabricInfo.$InterfaceName.Fabric.VLANID | Foreach-Object {
                             $thisVLAN = $_
-            
+
                             if ($thisVLAN -gt 0 -and $thisVLAN -lt 4096) {
                                 #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
                                 "[$Pass] [Test: 802.1AB - 802.1 Subtype 3] The switch sent a valid Named VLAN: $thisVLAN" | Out-File -FilePath $Log -Append
@@ -1065,7 +1065,7 @@ function Test-SwitchCapability {
                     "[$Fail] [Test: 802.1AB - 802.1 Subtype 3] The switch must indicate the named VLANs" | Out-File -FilePath $Log -Append
                 }
                 #endregion VLAN Name 802.1 Subtype 3
-            
+
                 #region VLAN Name 802.3 Subtype 4
                 if ($FabricInfo.$InterfaceName.Fabric.FrameSize -ne 'Information Not Provided By Switch') {
                     if ($FabricInfo.$InterfaceName.Fabric.FrameSize -gt 9200) {
@@ -1130,13 +1130,13 @@ function Test-SwitchCapability {
                 #endregion VLAN Name 802.1 Subtype 11
             }
 
-            default { 
+            default {
                 #Write-WTTLogError "The OSDisplayVersion was not properly detected by the test. Detected version: $OSDisplayVersion"
                 "[$FAIL] The OSDisplayVersion was not properly detected by the test. Detected version: $OSDisplayVersion" | Out-File -FilePath $Log -Append
             }
         }
     }
-    
+
     Stop-WTTTest
     Stop-WTTLog
 }

@@ -235,7 +235,7 @@ Function Test-OSVersion {
         [Switch] $OrGreater,  # Greater or Equal too the defined value
         [Switch] $OrLess      # Less than or Equal too the defined value
     )
-    
+
     if ( $OrGreater ) {
         if   ( $DefinitionPath -ge $ConfigurationData ) { return $true }
         else { return $false }
@@ -330,7 +330,7 @@ Function Test-DisplayParameterType {
             $testsFailed ++
         }
     }
-    
+
     if ($MinValue) {
         if ($AdvancedRegistryKey.DisplayParameterType -ge $DefinitionPath.DisplayParameterType -and $AdvancedRegistryKey.DisplayParameterType -ne 5) {
             Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is -ge $($DefinitionPath.DisplayParameterType)"
@@ -343,7 +343,7 @@ Function Test-DisplayParameterType {
             $testsFailed ++
         }
     }
-    
+
     if (-not($MaxValue) -and -not($MinValue)) {
         if ($AdvancedRegistryKey.DisplayParameterType -eq $DefinitionPath.DisplayParameterType) {
             Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DisplayParameterType is $($DefinitionPath.DisplayParameterType)"
@@ -463,17 +463,32 @@ Function Test-NumericParameterMinValue {
 Function Test-DefaultRegistryValue {
     param (
         $AdvancedRegistryKey ,  # This is what is configured on the adapter
-        $DefinitionPath         # This is what is defined in the datatypes.ps1
+        $DefinitionPath      ,  # This is what is defined in the datatypes.ps1
+        [Switch] $OrGreater     # Greater or Equal too the defined value
     )
 
-    if ($AdvancedRegistryKey.DefaultRegistryValue -eq $DefinitionPath.DefaultRegistryValue) {
-        Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)"
-        "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)" | Out-File -FilePath $Log -Append
+    if ($OrGreater) {
+        if ([int] $AdvancedRegistryKey.DefaultRegistryValue -ge [int] $DefinitionPath.DefaultRegistryValue) {
+            Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)"
+            "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)" | Out-File -FilePath $Log -Append
+        }
+        else {
+            Write-WTTLogError "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)"
+            "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)" | Out-File -FilePath $Log -Append
+
+            $testsFailed ++
+        }
     }
     else {
-        Write-WTTLogError "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)"
-        "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)" | Out-File -FilePath $Log -Append
+        if ([int] $AdvancedRegistryKey.DefaultRegistryValue -eq [int] $DefinitionPath.DefaultRegistryValue) {
+            Write-WTTLogMessage "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)"
+            "[$PASS] $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)" | Out-File -FilePath $Log -Append
+        }
+        else {
+            Write-WTTLogError "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)"
+            "[$FAIL] $($AdvancedRegistryKey.RegistryKeyword) DefaultRegistryValue is $($DefinitionPath.DefaultRegistryValue)" | Out-File -FilePath $Log -Append
 
-        $testsFailed ++
+            $testsFailed ++
+        }
     }
 }
