@@ -236,18 +236,21 @@ Function Test-OSVersion {
         [Switch] $OrLess      # Less than or Equal too the defined value
     )
 
-    if ( $OrGreater ) {
-        if   ( $DefinitionPath -ge $ConfigurationData ) { return $true }
-        else { return $false }
+    if ($ConfigurationData) {
+        if ( $OrGreater ) {
+            if   ( $DefinitionPath -ge $ConfigurationData ) { return $true }
+            else { return $false }
+        }
+        elseif   ( $OrLess ) {
+            if   ( $DefinitionPath -le $ConfigurationData ) { return $true }
+            else { return $false }
+        }
+        else {
+            if   ( $DefinitionPath -eq $ConfigurationData ) { return $true }
+            else { return $false }
+        }
     }
-    elseif   ( $OrLess ) {
-        if   ( $DefinitionPath -le $ConfigurationData ) { return $true }
-        else { return $false }
-    }
-    else {
-        if   ( $DefinitionPath -eq $ConfigurationData ) { return $true }
-        else { return $false }
-    }
+    else {return $false}
 }
 
 Function Test-ContainsAllMSFTRequiredValidRegistryValues {
