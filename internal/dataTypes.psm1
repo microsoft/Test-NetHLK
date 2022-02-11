@@ -315,8 +315,8 @@ Class QOSOffload {
     [string]   $RegistryKeyword      = '*QOSOffload'
     [int]      $DisplayParameterType = 5
 
-    [string]   $DefaultRegistryValue = [EnableDisable]::Disabled.Value__
-    [string]   $DisplayDefaultValue  = [EnableDisable]::Disabled
+    [string]   $DefaultRegistryValue = [EnableDisable]::Enabled.Value__
+    [string]   $DisplayDefaultValue  = [EnableDisable]::Enabled
     [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('EnableDisable').Value__
 
     QoSOffload () {}
