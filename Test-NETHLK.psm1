@@ -160,9 +160,15 @@ function Test-NICAdvancedProperties {
         if     ($thisAdapter.Speed -ge 10000000000) { $AdapterSpeed = '10Gbps' }
         elseif ($thisAdapter.Speed -ge 1000000000)  { $AdapterSpeed = '1Gbps' }
         elseif ($thisAdapter.Speed -ge 100000000)   { $AdapterSpeed = '100Mbps' }
+        else {
+            Write-WTTLogError "[$FAIL] The link speed for adapter $InterfaceName is invalid($($thisAdapter.Speed) bps)"
+            "[$FAIL] The link speed for adapter $InterfaceName is invalid($($thisAdapter.Speed) bps)" | Out-File -FilePath $Log -Append
+        }
 
         $RequirementsTested = @()
         Switch -Wildcard ($AdapterConfiguration | Sort-Object RegistryKeyword) {
+        
+            {$_.RegistryKeyword}{ $thisDefinitionPath = @() }
 
             { $_.RegistryKeyword -eq '*EncapOverhead' } {
 
