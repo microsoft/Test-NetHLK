@@ -5,8 +5,6 @@
 
 Test-NetHLK is a module used for testing the advanced properties for Network Adapters and determining if a network switch supports the Azure Stack HCI requirements.
 
-**This repo is a work in progress and we are actively receiving feedback to improve.**
-
 ## Installation
 
 This module is available on the PowerShell gallery using the following command:
@@ -36,10 +34,6 @@ This cmdlet tests the properties returned from Get-NetAdapterAdvancedProperty. F
 Example Use:
 ```Test-NICAdvancedProperties -InterfaceName Ethernet```
 
-## Test-SwitchCapability
-
-This cmdlet is used to verify that a network switch supports the [documented requirements](https://docs.microsoft.com/en-us/azure-stack/hci/concepts/physical-network-requirements) for Azure Stack HCI.
-
 # Property Definitions
 
 ## Test-NICAdvancedProperties
@@ -57,10 +51,6 @@ Description: The advanced registry key type
 |3|word|0|65535|
 |4|dword|0|4294967295|
 |5|enum|N/A|N/A|
-
-## Test-SwitchCapability
-
-Coming Soon
 
 ## Contributing
 
