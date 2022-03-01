@@ -66,6 +66,8 @@ else
             ErrorAction = 'Stop'
             Force       = $true
         }
+        
+        Write-Host "Test - $($env:NuGetApiKey)" -ForegroundColor Cyan
 
         Publish-Module @PM
         Write-Host "$($env:RepoName) PowerShell Module version $newVersion published to the PowerShell Gallery." -ForegroundColor Cyan
