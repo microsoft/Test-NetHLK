@@ -392,10 +392,10 @@ Class MaxRSSProcessors_MSIXSupport_10GbOrGreater {
     [string]   $RegistryKeyword      = '*MaxRssProcessors'
     [int]      $DisplayParameterType = 1  # 1 byte unsigned integer
 
-    [int]      $DefaultRegistryValue = 16
+    [int]      $DefaultRegistryValue = 8
 
     [int]      $NumericParameterBaseValue = 10 # Must be this value
-    [int]      $NumericParameterMaxValue  = 16 # Must be >= than this value
+    [int]      $NumericParameterMaxValue  = 8 # Must be >= than this value
     [int]      $NumericParameterMinValue = 1   # Must be this value
     [int]      $NumericParameterStepValue = 1  # Must be this value
 
@@ -457,10 +457,10 @@ Class NumRSSQueues_MSIXSupport_10GbOrGreater {
     [string]   $RegistryKeyword      = '*NumRSSQueues'
     [int]      $DisplayParameterType = 1  # 1 byte unsigned integer
 
-    [int]      $DefaultRegistryValue = 16
+    [int]      $DefaultRegistryValue = 8
 
     [int]      $NumericParameterBaseValue = 10 # Must be this value
-    [int]      $NumericParameterMaxValue  = 16 # Must be >= than this value
+    [int]      $NumericParameterMaxValue  = 8 # Must be >= than this value
     [int]      $NumericParameterMinValue = 1   # Must be this value
     [int]      $NumericParameterStepValue = 1  # Must be this value
 
