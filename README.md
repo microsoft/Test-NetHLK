@@ -13,7 +13,7 @@ This module is available on the PowerShell gallery using the following command:
 For a disconnected system, please use:
 ```Save-Module Test-NetHLK -Path <SomeFolderPath>```
 
-Then move the module to the disconnected system in the PowerShell module path. For example:
+Then move the all downloaded module to the disconnected system in the PowerShell module path. For example:
 ```C:\Program Files\WindowsPowerShell\Modules\Test-NetHLK\...```
 
 ## Updating the module
