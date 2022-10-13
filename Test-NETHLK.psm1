@@ -396,6 +396,9 @@ function Test-NICAdvancedProperties {
 
                 # *NetworkDirectTechnology: DisplayParameterType
                 Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                
+                # *NetworkDirectTechnology: RegistryDefaultValue
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *NetworkDirectTechnology: ValidRegistryValues
                     # As the adapter can choose to support one or more of these types, we will only check that the contained values are within the MSFT defined range
