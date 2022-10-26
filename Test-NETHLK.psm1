@@ -396,15 +396,21 @@ function Test-NICAdvancedProperties {
 
                 # *NetworkDirectTechnology: DisplayParameterType
                 Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
-                
-                # *NetworkDirectTechnology: RegistryDefaultValue
-                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
                 # *NetworkDirectTechnology: ValidRegistryValues
                     # As the adapter can choose to support one or more of these types, we will only check that the contained values are within the MSFT defined range
                     # We will not test to ensure that all defined values are found unlike other enums (because an adapter may support both RoCE and RoCEv2 but not iWARP and visa versa)
                 Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
+                # *NetworkDirectTechnology: RegistryDefaultValue - This test must go after the others to ensure the ValidRegistryValues exist and have been tested
+                # Establish adapter defaults based on the supported adapter values.
+                if     ([int] 1 -in $_.ValidRegistryValues) { $thisDefinitionPath = $AdapterDefinition.FlowControl.FlowControl_iWARP  }
+                elseif ([int] 4 -in $_.ValidRegistryValues) { $thisDefinitionPath = $AdapterDefinition.FlowControl.FlowControl_RoCEv2 }
+                elseif ([int] 3 -in $_.ValidRegistryValues) { $thisDefinitionPath = $AdapterDefinition.FlowControl.FlowControl_RoCE   }
+                elseif ([int] 2 -in $_.ValidRegistryValues) { $thisDefinitionPath = $AdapterDefinition.FlowControl.FlowControl_RoCE   }
+
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+                
                 $RequirementsTested += $_.RegistryKeyword
 
             }
