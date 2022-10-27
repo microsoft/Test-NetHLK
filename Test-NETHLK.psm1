@@ -404,10 +404,10 @@ function Test-NICAdvancedProperties {
 
                 # *NetworkDirectTechnology: RegistryDefaultValue - This test must go after the others to ensure the ValidRegistryValues exist and have been tested
                 # Establish adapter defaults based on the supported adapter values.
-                if     ([int] 1 -in $_.ValidRegistryValues) { $thisDefinitionPath = $AdapterDefinition.FlowControl.FlowControl_iWARP  }
-                elseif ([int] 4 -in $_.ValidRegistryValues) { $thisDefinitionPath = $AdapterDefinition.FlowControl.FlowControl_RoCEv2 }
-                elseif ([int] 3 -in $_.ValidRegistryValues) { $thisDefinitionPath = $AdapterDefinition.FlowControl.FlowControl_RoCE   }
-                elseif ([int] 2 -in $_.ValidRegistryValues) { $thisDefinitionPath = $AdapterDefinition.FlowControl.FlowControl_RoCE   }
+                if     ([int] 1 -in $_.ValidRegistryValues) { $thisDefinitionPath | Add-Member -NotePropertyName DefaultRegistryValue -NotePropertyValue 1 }
+                elseif ([int] 4 -in $_.ValidRegistryValues) { $thisDefinitionPath | Add-Member -NotePropertyName DefaultRegistryValue -NotePropertyValue 4 }
+                elseif ([int] 3 -in $_.ValidRegistryValues) { $thisDefinitionPath | Add-Member -NotePropertyName DefaultRegistryValue -NotePropertyValue 3 }
+                elseif ([int] 2 -in $_.ValidRegistryValues) { $thisDefinitionPath | Add-Member -NotePropertyName DefaultRegistryValue -NotePropertyValue 2 }
 
                 Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
                 
@@ -1159,5 +1159,3 @@ function Test-SwitchCapability {
 }
 
 New-Alias -Name 'Test-NICProperties' -Value 'Test-NICAdvancedProperties'
-
-#TODO: Calculate which capabilities are there and whether they have enough for Standard/Premium
