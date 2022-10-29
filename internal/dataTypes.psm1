@@ -8,23 +8,12 @@ Class ReceiveBuffers {
     [string]   $RegistryKeyword      = '*ReceiveBuffers'
     [int]      $DisplayParameterType = '1' # 1 byte unsigned integer
 
-    # What should base, max, min, step be for this? 
-    # There is some variability in this right now; for example Intel has steps of 8 while mellanox steps by 1, etc.
-
-    #[int]      $NumericParameterBaseValue = 10   # Must be this value
-    #[int]      $NumericParameterMaxValue =   # Must be >= this value 9014 + EncapOverhead (160)
-    #[int]      $NumericParameterMinValue =    # Must be < than this value
-    #[int]      $NumericParameterStepValue = 1    # Must be this value
-
     ReceiveBuffers () {}
 }
 
 Class TransmitBuffers {
     [string]   $RegistryKeyword      = '*TransmitBuffers'
     [int]      $DisplayParameterType = '1' # 1 byte unsigned integer
-
-    # What should base, max, min, step be for this? 
-    # There is some variability in this right now; for example Intel has steps of 8 while mellanox steps by 1, etc.
 
     TransmitBuffers () {}
 }
