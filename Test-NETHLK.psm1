@@ -4,6 +4,7 @@ using assembly .\internal\Microsoft.WTT.Log.dll
 using module .\internal\WttLog.psm1
 using module DataCenterBridging
 
+# Updated as of 2305
 function Test-NICAdvancedProperties {
     <#
     .SYNOPSIS
