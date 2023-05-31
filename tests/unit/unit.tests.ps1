@@ -20,7 +20,7 @@ Describe "$($env:APPVEYOR_BUILD_FOLDER)-Manifest" {
         Import-Module .\$($env:repoName).psd1 -ErrorAction SilentlyContinue
         $Module = Get-Module $($env:repoName) -ErrorAction SilentlyContinue
 
-        'Test-NICAdvancedProperties', 'Test-SwitchCapability' | ForEach-Object {
+        'Test-NICAdvancedProperties' | ForEach-Object {
             It "Should have an available command: $_" {
                 $module.ExportedCommands.ContainsKey($_) | Should be $true
             }
@@ -42,7 +42,7 @@ Describe "$($env:APPVEYOR_BUILD_FOLDER)-Manifest" {
         It "Should list required modules (DataCenterBridging) on the PowerShell Gallery" {
             if ($requiredModule) { $true | Should be $true }
             else { $false | Should be $true }
-            
+
         }
     }
 }

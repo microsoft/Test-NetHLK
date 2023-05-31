@@ -51,7 +51,7 @@ Description = 'Test-NetHLK is a module that compares a NICs driver configuration
 # ProcessorArchitecture = ''
 
 # Modules that must be imported into the global environment prior to importing this module
-RequiredModules = @(@{ModuleName = 'DataCenterBridging'; ModuleVersion = '2021.2.16.33'; })
+# RequiredModules = @()
 
 # Assemblies that must be loaded prior to importing this module
 # RequiredAssemblies = @()
@@ -69,7 +69,7 @@ RequiredModules = @(@{ModuleName = 'DataCenterBridging'; ModuleVersion = '2021.2
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Test-NICAdvancedProperties', 'Test-SwitchCapability'
+FunctionsToExport = 'Test-NICAdvancedProperties'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
