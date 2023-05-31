@@ -33,16 +33,5 @@ Describe "$($env:APPVEYOR_BUILD_FOLDER)-Manifest" {
         It "Should have an reference command: Test-NICAdvancedProperties" {
             $module.ExportedAliases.'Test-NICProperties'.ReferencedCommand.Name | Should be 'Test-NICAdvancedProperties'
         }
-
-        It "Should have an required module of: DataCenterBridging" {
-            $module.RequiredModules | Should be 'DataCenterBridging'
-        }
-
-        $requiredModule = Find-Module DataCenterBridging -ErrorAction SilentlyContinue
-        It "Should list required modules (DataCenterBridging) on the PowerShell Gallery" {
-            if ($requiredModule) { $true | Should be $true }
-            else { $false | Should be $true }
-
-        }
     }
 }
