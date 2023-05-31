@@ -66,8 +66,6 @@ else
             ErrorAction = 'Stop'
             Force       = $true
         }
-        
-        Write-Host "Test - $($env:NuGetApiKey)" -ForegroundColor Cyan
 
         Publish-Module @PM
         Write-Host "$($env:RepoName) PowerShell Module version $newVersion published to the PowerShell Gallery." -ForegroundColor Cyan
@@ -78,7 +76,7 @@ else
         throw $_
     }
 
-    # Publish the new version back to main on GitHub 
+    # Publish the new version back to main on GitHub
     Try
     {
         # Set up a path to the git.exe cmd, import posh-git to give us control over git, and then push changes to GitHub
