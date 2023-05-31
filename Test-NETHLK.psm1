@@ -2,7 +2,7 @@ using module .\internal\helpers.psm1
 using module .\internal\datatypes.psm1
 using assembly .\internal\Microsoft.WTT.Log.dll
 using module .\internal\WttLog.psm1
-using module DataCenterBridging
+# using module DataCenterBridging
 
 # Updated as of 2305
 function Test-NICAdvancedProperties {
@@ -48,6 +48,7 @@ function Test-NICAdvancedProperties {
         [ValidateScript({Get-NetAdapter -Name $_})]
         [string[]] $InterfaceName = '*',
 
+        # This is required for HLK Integration
         [Parameter(Mandatory=$false, ParameterSetName='HLK')]
         [string[]] $HLKNetworkAdapterName
     )
@@ -67,11 +68,10 @@ function Test-NICAdvancedProperties {
     Start-WTTLog  "$here\Results\Results.wtl"
     Start-WTTTest "$here\Results\Results.wtl"
 
+    # Certain key defaults are dependent on client vs server.
     $NodeOS = Get-CimInstance -ClassName 'Win32_OperatingSystem'
-    $OSDisplayVersion = (Get-ComputerInfo -Property OSDisplayVersion).OSDisplayVersion
-
     if (($NodeOS.Caption -like '*Windows Server 2019*') -or
-        ($NodeOS.Caption -like '*Windows Server 2022*') -or
+        ($NodeOS.Caption -like '*Windows Server 202*') -or
         ($NodeOS.Caption -like '*Azure Stack HCI*')) { $SUTType = 'Server' }
     elseif ($NodeOS.Caption -like '*Windows 10*') {$SUTType = 'Client'}
     else {
@@ -85,6 +85,7 @@ function Test-NICAdvancedProperties {
         throw
     }
 
+    # This is required for HLK integration
     if ($HLKNetworkAdapterName) {
         $Adapters = Get-NetAdapter -Physical | Where-Object { $_.MediaType -eq '802.3' -and $_.DeviceID -like "*$HLKNetworkAdapterName*" }
 
@@ -117,19 +118,16 @@ function Test-NICAdvancedProperties {
     # This is the MSFT definition
     $AdapterDefinition = [AdapterDefinition]::new()
 
-    # Test NDIS Version to ensure it meets the minumum required; Assumes that since this test didn't exist previously this won't affect down-level.
-    # However we now have a min-bar to enforce at least the version with 2019 in the else
-    if     ($NodeOS.BuildNumber -eq '17763') { $NDISDefinition = $AdapterDefinition.NDIS.WS2019  }
-    elseif ($NodeOS.BuildNumber -eq '20348') { $NDISDefinition = $AdapterDefinition.NDIS.WS2022  }
-    elseif ($OSDisplayVersion -eq '20H2'   ) { $NDISDefinition = $AdapterDefinition.NDIS.HCI20H2 }
-    elseif ($OSDisplayVersion -eq '21H2'   ) { $NDISDefinition = $AdapterDefinition.NDIS.HCI21H2 }
-    else   {$NDISDefinition = $AdapterDefinition.NDIS.WS2019 }
+    # Test NDIS Version to ensure it meets the minumum required
+    if     ( $NodeOS.BuildNumber -ge '20350' ) { $NDISDefinition = $AdapterDefinition.NDIS.WS2025  }
+    elseif ( $NodeOS.BuildNumber -eq '20348' -or $NodeOS.BuildNumber -eq '20349' ) { $NDISDefinition = $AdapterDefinition.NDIS.WS2022  }
+    elseif ( $NodeOS.BuildNumber -eq '17763' -or $NodeOS.BuildNumber -eq '17784' ) { $NDISDefinition = $AdapterDefinition.NDIS.WS2019  }
+    else   {
+        Write-WTTLogError "[$FAIL] Fatal Exception. Build Number could not be identified. Build Number detected: $($NodeOS.BuildNumber)"
+        "[$FAIL] Fatal Exception. Build Number could not be identified. Build Number detected: $($NodeOS.BuildNumber)" | Out-File -FilePath $Log -Append
 
-    <# Not Implemented
-    $Requirements = ([Requirements]::new())
-    if     (($OSVersion -eq '2019') -or ($OSVersion -eq 'HCIv1')) { $Requirements = ([Requirements]::new()).WS2019_HCIv1 }
-    elseif (($OSVersion -eq '2022') -or ($OSVersion -eq 'HCIv2')) { $Requirements = ([Requirements]::new()).WS2022_HCIv2 }
-    #>
+        $testsFailed ++
+    }
 
     $Adapters | ForEach-Object {
         $thisAdapter = $_
@@ -158,6 +156,7 @@ function Test-NICAdvancedProperties {
 
         Remove-Variable NDISDefinition -ErrorAction SilentlyContinue
 
+        # This is required for determination of MSIX Queues for RSS Settings.
         if     ($thisAdapter.Speed -ge 10000000000) { $AdapterSpeed = '10Gbps' }
         elseif ($thisAdapter.Speed -ge 1000000000)  { $AdapterSpeed = '1Gbps' }
         elseif ($thisAdapter.Speed -ge 100000000)   { $AdapterSpeed = '100Mbps' }
@@ -166,10 +165,12 @@ function Test-NICAdvancedProperties {
             "[$FAIL] The link speed for adapter $InterfaceName is invalid($($thisAdapter.Speed) bps)" | Out-File -FilePath $Log -Append
         }
 
+        $RequiredKeys       = @()
         $RequirementsTested = @()
+
         Switch -Wildcard ($AdapterConfiguration | Sort-Object RegistryKeyword) {
-        
-            {$_.RegistryKeyword}{ $thisDefinitionPath = @() }
+
+            {$_.RegistryKeyword} { $thisDefinitionPath = @() }
 
             { $_.RegistryKeyword -eq '*EncapOverhead' } {
 
@@ -389,6 +390,9 @@ function Test-NICAdvancedProperties {
 
                 $RequirementsTested += $_.RegistryKeyword
 
+                if     ( $NodeOS.BuildNumber -ge '20350' ) { $RequiredKeys += '*NetworkDirectTechnology', '*NetworkDirectRoCEFrameSize'  }
+                elseif ( $NodeOS.BuildNumber -ge '20348' ) { $RequiredKeys += '*NetworkDirectTechnology'  }
+
             }
 
             { $_.RegistryKeyword -eq '*NetworkDirectTechnology' } {
@@ -411,7 +415,24 @@ function Test-NICAdvancedProperties {
                 elseif ([int] 2 -in $_.ValidRegistryValues) { $thisDefinitionPath | Add-Member -NotePropertyName DefaultRegistryValue -NotePropertyValue 2 }
 
                 Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
-                
+
+                $RequirementsTested += $_.RegistryKeyword
+
+            }
+
+            { $_.RegistryKeyword -eq '*NetworkDirectRoCEFrameSize' } {
+
+                $thisDefinitionPath = $AdapterDefinition.NDKPI.NetworkDirectRoCEFrameSize
+
+                # *NetworkDirectRoCEFrameSize: RegistryDefaultValue
+                Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                # *NetworkDirectRoCEFrameSize: DisplayParameterType
+                Test-DisplayParameterType -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
+                # *NetworkDirectRoCEFrameSize: ValidRegistryValues
+                Test-ContainsOnlyMSFTRequiredValidRegistryValues -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
+
                 $RequirementsTested += $_.RegistryKeyword
 
             }
@@ -939,7 +960,18 @@ function Test-NICAdvancedProperties {
 
             }
         }
-    <#
+
+        $RequiredKeys | Foreach-Object {
+            $thisRequiredKey = $_
+
+            if ($thisRequiredKey -notin $RequirementsTested) {
+                Write-WTTLogError "[$FAIL] The required key $thisRequiredKey was not found"
+                "[$FAIL] The required key $thisRequiredKey was not found" | Out-File -FilePath $Log -Append
+                $testsFailed ++
+            }
+        }
+
+        <#
         $RequirementsTested | ForEach-Object {
             $ThisTestedRequirement = $_.TrimStart('*')
 
@@ -949,210 +981,14 @@ function Test-NICAdvancedProperties {
             $Requirements.Premium  = $Requirements.Premium | Where-Object { $_ -ne $ThisTestedRequirement }
         }
 
-        $Certification = 'Fail'
+            $Certification = 'Fail'
 
-        If     (($Requirements.Premium -eq $Null) -and ($Requirements.Standard -eq $Null)  -and
-                ($Requirements.TenGbEOrGreater -eq $Null) -and ($Requirements.Base -eq $Null)) { $Certification = 'Premium' }
-        ElseIf (($Requirements.Standard -eq $Null) -and ($Requirements.TenGbEOrGreater -eq $Null) -and ($Requirements.Base -eq $Null)) { $Certification = 'Standard' }
-        ElseIf (($Requirements.TenGbEOrGreater -eq $Null) -and ($Requirements.Base -eq $Null)) { $Certification = 'TenGbEOrGreater' }
-        ElseIf  ($Requirements.Base -eq $null) { $Certification = 'Base' }
-    #>
-    }
-
-    Stop-WTTTest
-    Stop-WTTLog
-}
-
-function Test-SwitchCapability {
-    <#
-    .SYNOPSIS
-    This module performs strict parameter validation of advanced registry keys and switch validation for Azure Stack HCI devices.
-
-    .DESCRIPTION
-    Advanced registry keys are administrator controls for NIC properties. This module validates that those advanced properties
-    follow the defined specification by Microsoft, validating that each key is of an appropriate type and accepts valid values.
-
-    Additionally, this module performs validation of Azure Stack HCI switch requirements. These requirements are listed here:
-    https://docs.microsoft.com/en-us/azure-stack/hci/concepts/physical-network-requirements
-
-    This module is intended to be run through the automated Hardware Lab Kit (HLK) device tests for NICs or switches
-
-    The following Switch tests are performed:
-    - Tests that 802.1AB packets are sent from the switch
-    - Tests that 802.1 Subtype 1 is sent, only 1 valid VLAN is sent, and cannot be 0
-    - Tests that 802.1 Subtype 3 is sent, contains only valid vlans, and supports at least 10 vlans.
-    - Tests that 802.1 Subtype 11 is sent and has at least one priority enabled between priority 0 - 7
-    - Tests that 802.3 Subtype 4 is sent and has at least an MTU of 9200 or higher
-
-    Switch Setup Instructions:
-    - Enable Native VLAN of non-zero value
-    - Ensure at least 10 VLANs are trunked on the switchport
-    - Enable Jumbo Frames of 9174
-    - Enable PFC on at least 1 of priority0 - priority 7
-    - Enable LLDP 802.1AB on the switchport and subtypes 802.1 Subtype 1, 3, 11 and 802.3 Subtype 4
-
-    .EXAMPLE Test Switch Capabilities using pNIC01 to detect
-    Test-SwitchCapability -Switch -InterfaceName 'pNIC01'
-    #>
-
-    [CmdletBinding(DefaultParameterSetName = 'Default')]
-    param (
-        [Parameter(Mandatory=$true, HelpMessage="Enter the name of a Network Adapter as returned by Get-NetAdapter 'Name' Property")]
-        [ValidateScript({Get-NetAdapter -Name $_})]
-        [string] $InterfaceName ,
-
-        [Parameter(Mandatory=$false, HelpMessage="Performs all Switch Tests regardless of HCI version")]
-        [Switch] $AllTests = $false
-    )
-
-    Clear-Host
-
-    $global:pass = 'PASS'
-    $global:fail = 'FAIL'
-    $global:testsFailed = 0
-
-    $here = Split-Path -Parent (Get-Module -Name Test-NetHLK -ListAvailable | Select-Object -First 1).Path
-
-    # Keep a separate log for easier diagnostics
-    $global:Log = New-Item -Name 'Results.log' -Path "$here\Results" -ItemType File -Force
-    Start-WTTLog "$here\Results\Results.wtl"
-    Start-WTTTest "$here\Results\Results.wtl"
-
-    # Since these tests only apply to Azure Stack HCI SKUs, we will check for an appropriate SKU first, then narrow down tests by version
-    $NodeOS = Get-CimInstance -ClassName 'Win32_OperatingSystem'
-    $OSDisplayVersion = (Get-ComputerInfo -Property OSDisplayVersion).OSDisplayVersion
-
-    # ID the system as client or server to enable the tests to pivot expected values
-    if (-not($NodeOS.Caption -like '*Azure Stack HCI*')) {
-        #Write-WTTLogError "The OS SKU was incorrect or could not be determined. Ensure the machine is running the Azure Stack HCI SKU. Caption detected: $($NodeOS.Caption)"
-        "The OS SKU was incorrect or could not be determined. Ensure the machine is running the Azure Stack HCI SKU. Caption detected: $($NodeOS.Caption)" | Out-File -FilePath $Log -Append
-
-        throw
-    }
-
-    if ($InterfaceName.Count -gt 1) { <#Write-WTTLogMessage "Testing will occur only on the first adapter $($InterfaceName | Select-Object -First 1)."#> }
-    $InterfaceName = ($InterfaceName | Select-Object -First 1)
-
-    #Write-WTTLogMessage "Enabling LLDP on interfaces: $InterfaceName."
-    Enable-FabricInfo -InterfaceNames $InterfaceName
-
-    #Write-WTTLogMessage "Sleep for 35 seconds to ensure an LLDP packet is captured"
-    Start-Sleep -Seconds 35
-
-    Remove-Variable FabricInfo -ErrorAction SilentlyContinue
-    $FabricInfo = Get-FabricInfo -InterfaceNames $InterfaceName
-
-    if (-not ($FabricInfo)) {
-        #Write-WTTLogError "The switch did not send an LLDP frame to the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-        "[$FAIL] The switch did not send an LLDP frame to the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again." | Out-File -FilePath $Log -Append
-    }
-    else {
-        #Write-WTTLogMessage "[$PASS] The switch sent an LLDP frame to the interface named: $InterfaceName"
-        "[$PASS] The switch sent an LLDP frame to the interface named: $InterfaceName" | Out-File -FilePath $Log -Append
-
-        #TODO: ChassisID - Validate that a valid MAC address is set
-
-        Switch ($OSDisplayVersion.Substring(0,$OSDisplayVersion.Length-2)) {
-            {$_ -ge '20' -or $AllTests} {
-                #region VLAN Name 802.1 Subtype 3
-                if ($FabricInfo.$InterfaceName.Fabric.VLANID -ne 'Information Not Provided By Switch') {
-                    if ($FabricInfo.$InterfaceName.Fabric.VLANID.Count -lt 10) {
-                        #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                        "[$Pass] [Test: 802.1AB - 802.1 Subtype 3] The switch must send at least 10 VLANs" | Out-File -FilePath $Log -Append
-
-                        $FabricInfo.$InterfaceName.Fabric.VLANID | Foreach-Object {
-                            $thisVLAN = $_
-
-                            if ($thisVLAN -gt 0 -and $thisVLAN -lt 4096) {
-                                #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                                "[$Pass] [Test: 802.1AB - 802.1 Subtype 3] The switch sent a valid Named VLAN: $thisVLAN" | Out-File -FilePath $Log -Append
-                            }
-                            Else {
-                                #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                                "[$FAIL] [Test: 802.1AB - 802.1 Subtype 3] The switch sent a valid Named VLAN: $thisVLAN" | Out-File -FilePath $Log -Append
-                            }
-                        }
-                    }
-                    Else {
-                        #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                        "[$Fail] [Test: 802.1AB - 802.1 Subtype 3] The switch must send at least 10 VLANs" | Out-File -FilePath $Log -Append
-                    }
-                }
-                Else {
-                    #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                    "[$Fail] [Test: 802.1AB - 802.1 Subtype 3] The switch must indicate the named VLANs" | Out-File -FilePath $Log -Append
-                }
-                #endregion VLAN Name 802.1 Subtype 3
-
-                #region VLAN Name 802.3 Subtype 4
-                if ($FabricInfo.$InterfaceName.Fabric.FrameSize -ne 'Information Not Provided By Switch') {
-                    if ($FabricInfo.$InterfaceName.Fabric.FrameSize -gt 9200) {
-                        #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                        "[$Pass] [Test: 802.1AB - 802.3 Subtype 4] The switch must support a frame size of at least 9200" | Out-File -FilePath $Log -Append
-                    }
-                }
-                Else {
-                    #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                    "[$Fail] [Test: 802.1AB - 802.3 Subtype 4] The switch must indicate the MTU" | Out-File -FilePath $Log -Append
-                }
-                #endregion VLAN Name 802.3 Subtype 4
-            }
-
-            {$_ -ge '21' -or $AllTests} {
-                #region VLAN Name 802.1 Subtype 1
-                if ($FabricInfo.$InterfaceName.Fabric.NativeVLAN -ne 'Information Not Provided By Switch') {
-                    if ($FabricInfo.$InterfaceName.Fabric.NativeVLAN.Count -eq 1) {
-                        #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                        "[$Pass] [Test: 802.1AB - 802.1 Subtype 1] The switch must send exactly 1 VLAN" | Out-File -FilePath $Log -Append
-
-                        if ($thisVLAN -gt 0 -and $thisVLAN -lt 4096) {
-                            #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                            "[$Pass] [Test: 802.1AB - 802.1 Subtype 1] The switch sent a valid Native VLAN" | Out-File -FilePath $Log -Append
-                        }
-                        Else {
-                            #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                            "[$FAIL] [Test: 802.1AB - 802.1 Subtype 1] The switch sent an invalid VLANID of $($FabricInfo.$InterfaceName.Fabric.NativeVLAN)" | Out-File -FilePath $Log -Append
-                        }
-                    }
-                    Else {
-                        #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                        "[$Fail] [Test: 802.1AB - 802.1 Subtype 1] The switch must send exactly 1 VLAN" | Out-File -FilePath $Log -Append
-                    }
-                }
-                Else {
-                    #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                    "[$Fail] [Test: 802.1AB - 802.1 Subtype 1] The switch must indicate the Native VLAN" | Out-File -FilePath $Log -Append
-                }
-                #endregion VLAN Name 802.1 Subtype 1
-
-                #region VLAN Name 802.1 Subtype 11
-                if ($FabricInfo.$InterfaceName.Fabric.PFC -ne 'Information Not Provided By Switch') {
-                    $FabricInfo.$InterfaceName.Fabric.PFC | ForEach-Object {
-                        $thisPriority = $_
-
-                        if ($thisPriority -ne 'Priority0' -or $thisPriority -ne 'Priority1' -or $thisPriority -ne 'Priority2' -or $thisPriority -ne 'Priority3' -or
-                            $thisPriority -ne 'Priority4' -or $thisPriority -ne 'Priority5' -or $thisPriority -ne 'Priority6' -or $thisPriority -ne 'Priority7') {
-                            #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                            "[$Pass] [Test: 802.1AB - 802.1 Subtype 11] The switch must support valid PFC: $thisPriority" | Out-File -FilePath $Log -Append
-                        }
-                        else {
-                            #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                            "[$Fail] [Test: 802.1AB - 802.1 Subtype 11] The switch supports an invalid PFC class: $thisPriority" | Out-File -FilePath $Log -Append
-                        }
-                    }
-                }
-                Else {
-                    #Write-WTTLogError "No LLDP packets were captured on the interface named: $InterfaceName. Ensure that LLDP is enabled on the switchport connected to this interface and try again."
-                    "[$Fail] [Test: 802.1AB - 802.1 Subtype 11] The switch must have at least 1 priority enable with PFC" | Out-File -FilePath $Log -Append
-                }
-                #endregion VLAN Name 802.1 Subtype 11
-            }
-
-            default {
-                #Write-WTTLogError "The OSDisplayVersion was not properly detected by the test. Detected version: $OSDisplayVersion"
-                "[$FAIL] The OSDisplayVersion was not properly detected by the test. Detected version: $OSDisplayVersion" | Out-File -FilePath $Log -Append
-            }
-        }
+            If     (($Requirements.Premium -eq $Null) -and ($Requirements.Standard -eq $Null)  -and
+                    ($Requirements.TenGbEOrGreater -eq $Null) -and ($Requirements.Base -eq $Null)) { $Certification = 'Premium' }
+            ElseIf (($Requirements.Standard -eq $Null) -and ($Requirements.TenGbEOrGreater -eq $Null) -and ($Requirements.Base -eq $Null)) { $Certification = 'Standard' }
+            ElseIf (($Requirements.TenGbEOrGreater -eq $Null) -and ($Requirements.Base -eq $Null)) { $Certification = 'TenGbEOrGreater' }
+            ElseIf  ($Requirements.Base -eq $null) { $Certification = 'Base' }
+        #>
     }
 
     Stop-WTTTest

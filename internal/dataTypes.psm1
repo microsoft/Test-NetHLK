@@ -185,6 +185,14 @@ enum NetworkDirectTechnologyVal {
     RoCEv2     = 4
 }
 
+enum NetworkDirectRoCEFrameSizeVal {
+    Small   = 256
+    Medium  = 512
+    Default = 1024
+    Large   = 2048
+    XLarge  = 4096
+}
+
 Class NetworkDirect {
     [string] $RegistryKeyword      = '*NetworkDirect'
     [int]    $DisplayParameterType = 5
@@ -205,9 +213,20 @@ Class NetworkDirectTechnology {
     NetworkDirectTechnology () {}
 }
 
+Class NetworkDirectRoCEFrameSize {
+    [string]   $RegistryKeyword      = '*NetworkDirectRoCEFrameSize'
+    [int]      $DisplayParameterType = 5
+
+    [string]   $DefaultRegistryValue = [NetworkDirectRoCEFrameSizeVal]::Default.Value__
+    [string[]] $ValidRegistryValues  = [System.Enum]::GetValues('NetworkDirectRoCEFrameSizeVal').Value__
+
+    NetworkDirectRoCEFrameSize () {}
+}
+
 Class NDKPI {
-    $NetworkDirect = [NetworkDirect]::new()
-    $NetworkDirectTechnology = [NetworkDirectTechnology]::new()
+    $NetworkDirect              = [NetworkDirect]::new()
+    $NetworkDirectTechnology    = [NetworkDirectTechnology]::new()
+    $NetworkDirectRoCEFrameSize = [NetworkDirectTechnology]::new()
 }
 #endregion NDKPI
 
@@ -215,10 +234,8 @@ Class NDKPI {
 Class NDIS {
     [string] $WS2016  = '6.60'
     [string] $WS2019  = '6.82'
-    [string] $HCI20H2 = '6.82' #TODO: Update once released
-
-    [string] $WS2022  = '6.85' #TODO: Update once released
-    [string] $HCI21H2 = '6.85' #TODO: Update once released
+    [string] $WS2022  = '6.85'
+    [string] $WS2025  = '6.87'
 
     NDIS () {}
 }
@@ -761,9 +778,9 @@ Class AdapterDefinition {
 
     $QOS        = [QOS]::new()
     $QOSOffload = [QOSOffload]::new()
-    
+
     $RSC = [RSC]::new()
-    
+
     $RSSClass = [RSSClass]::new()
 
     $RSSOnHostVPorts = [RSSOnHostVPorts]::new()
