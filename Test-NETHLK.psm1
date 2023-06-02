@@ -4,7 +4,6 @@ using assembly .\internal\Microsoft.WTT.Log.dll
 using module .\internal\WttLog.psm1
 # using module DataCenterBridging
 
-# Updated as of 2305
 function Test-NICAdvancedProperties {
     <#
     .SYNOPSIS
@@ -390,8 +389,7 @@ function Test-NICAdvancedProperties {
 
                 $RequirementsTested += $_.RegistryKeyword
 
-                if     ( $NodeOS.BuildNumber -ge '20350' ) { $RequiredKeys += '*NetworkDirectTechnology', '*NetworkDirectRoCEFrameSize'  }
-                elseif ( $NodeOS.BuildNumber -ge '20348' ) { $RequiredKeys += '*NetworkDirectTechnology'  }
+                if ( $NodeOS.BuildNumber -ge '20348' ) { $RequiredKeys += '*NetworkDirectTechnology'  }
 
             }
 
@@ -410,9 +408,15 @@ function Test-NICAdvancedProperties {
                 # *NetworkDirectTechnology: RegistryDefaultValue - This test must go after the others to ensure the ValidRegistryValues exist and have been tested
                 # Establish adapter defaults based on the supported adapter values.
                 if     ([int] 1 -in $_.ValidRegistryValues) { $thisDefinitionPath | Add-Member -NotePropertyName DefaultRegistryValue -NotePropertyValue 1 }
-                elseif ([int] 4 -in $_.ValidRegistryValues) { $thisDefinitionPath | Add-Member -NotePropertyName DefaultRegistryValue -NotePropertyValue 4 }
-                elseif ([int] 3 -in $_.ValidRegistryValues) { $thisDefinitionPath | Add-Member -NotePropertyName DefaultRegistryValue -NotePropertyValue 3 }
                 elseif ([int] 2 -in $_.ValidRegistryValues) { $thisDefinitionPath | Add-Member -NotePropertyName DefaultRegistryValue -NotePropertyValue 2 }
+                elseif ([int] 4 -in $_.ValidRegistryValues) {
+                    $thisDefinitionPath | Add-Member -NotePropertyName DefaultRegistryValue -NotePropertyValue 4
+                    if ( $NodeOS.BuildNumber -ge '20350' ) { $RequiredKeys += '*NetworkDirectRoCEFrameSize'  }
+                }
+                elseif ([int] 3 -in $_.ValidRegistryValues) {
+                    $thisDefinitionPath | Add-Member -NotePropertyName DefaultRegistryValue -NotePropertyValue 3
+                    if ( $NodeOS.BuildNumber -ge '20350' ) { $RequiredKeys += '*NetworkDirectRoCEFrameSize'  }
+                }
 
                 Test-DefaultRegistryValue -AdvancedRegistryKey $_ -DefinitionPath $thisDefinitionPath
 
