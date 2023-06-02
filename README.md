@@ -1,3 +1,4 @@
+![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/Test-NetHLK?label=Current%20Version)
 [![Build status](https://ci.appveyor.com/api/projects/status/28dr5irvwqc34ftf?svg=true)](https://ci.appveyor.com/project/MSFTCoreNet/test-nethlk)
 [![downloads](https://img.shields.io/powershellgallery/dt/Test-NetHLK.svg?label=downloads)](https://www.powershellgallery.com/packages/Test-NetHLK)
 
