@@ -226,7 +226,7 @@ Class NetworkDirectRoCEFrameSize {
 Class NDKPI {
     $NetworkDirect              = [NetworkDirect]::new()
     $NetworkDirectTechnology    = [NetworkDirectTechnology]::new()
-    $NetworkDirectRoCEFrameSize = [NetworkDirectTechnology]::new()
+    $NetworkDirectRoCEFrameSize = [NetworkDirectRoCEFrameSize]::new()
 }
 #endregion NDKPI
 
@@ -945,59 +945,3 @@ Class Requirements {
     $WS2022_HCIv2 = [WS2022_HCIv2]::new()
 }
 #endregion Requirements
-
-
-<# -- All Keywords --
-    ReceiveBuffers
-    TransmitBuffers
-
-    # ChecksumOffloads - Not Implemented yet
-
-    EncapOverhead
-
-    # EncapsulatedPacketTaskOffload - Not Implemented yet
-    EncapsulatedPacketTaskOffloadNVGRE
-    EncapsulatedPacketTaskOffloadVXLAN
-
-    FlowControl
-    InterruptModeration
-    JumboPacket
-
-    LSOv2IPV4
-    LSOv2IPV6
-
-    NetworkDirect
-    NetworkDirectTechnology
-
-    #NicSwitch - Not a keyword but should be verified
-
-    PriorityVLANTag
-    PtpHardwareTimestamp
-    QOS
-    QosOffload - HW Qos
-
-    RSCIPv4
-    RSCIPv6
-
-    RSS
-    MaxRSSProcessors
-    NumRSSQueues
-    RSSProfile
-    NumaNodeId
-    RssBaseProcGroup
-    RSSMaxProcGroup
-    RssBaseProcNumber
-    RssMaxProcNumber
-
-    SRIOV
-    USOIPv4
-    USOIPv6
-
-    VLANID
-    VMQVlanFiltering
-    RssOrVmqPreference
-    VMQ
-    RSSOnHostVPorts
-
-    VxlanUDPPortNumber
-#>
