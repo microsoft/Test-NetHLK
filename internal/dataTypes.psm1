@@ -235,7 +235,7 @@ Class NDIS {
     [string] $WS2016  = '6.60'
     [string] $WS2019  = '6.82'
     [string] $WS2022  = '6.85'
-    [string] $WS2025  = '6.88'
+    [string] $WS2025  = '6.89'
 
     NDIS () {}
 }
