@@ -39,7 +39,7 @@ image:
 #CoreNetBuilder
 environment:
   NuGetApiKey:
-    secure: OQDOS75uvRmKLU4He0fyuaXwG5CFQrm0jydBQkLMNSP7qL8A24K89nU64GC3ZDm5
+    secure: JBn9RoiEFv3K2GF62ULDkHPYoqSgBIa4gWxvnIBjZhEXhcQwTwf6ypOlmQxln/o8
   GitHubKey:
     secure: 4VTkUGIAUqMtDSbrIrbn856kPmOLVYNSSy/NwsnQajL+7o+xpoqWZcTpYfEXco2/
 #  APPVEYOR_RDP_PASSWORD:
@@ -63,4 +63,5 @@ pull_requests:
 
 #on_finish:
 #  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
 
