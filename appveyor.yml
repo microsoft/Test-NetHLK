@@ -47,7 +47,7 @@ environment:
 
 # Disable automatic builds; Without this, the following error shows up:
 # "Specify a project or solution file. The directory does not contain a project or solution file."
-build: "off"
+build: off
 
 max_jobs: 1
 
